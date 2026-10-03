@@ -1,0 +1,223 @@
+<title>OTA OS Commercial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;600;700;800;900&display=swap">
+<style>
+/* Screening room: one dark stage, the film centred, the cue sheet beneath it.
+   Palette and type are the brand's own, sampled from the OTA OS logo file. */
+:root {
+  --plate:  #062010;   /* the logo green */
+  --ink:    #030E07;   /* deeper ground */
+  --ink-2:  #0A2A16;   /* raised surface */
+  --cream:  #FEF5DA;   /* the mark, and all primary type */
+  --sage:   #9DAE98;   /* secondary type */
+  --gold:   #D4AF37;
+  --gold-lt:#F0DC9C;
+  --rule:   rgba(212,175,55,0.22);
+  --display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --ui: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding-block: 28px 64px;
+  padding-inline: 20px;
+  background:
+    radial-gradient(1100px 620px at 50% -6%, rgba(212,175,55,0.10), transparent 68%),
+    radial-gradient(900px 700px at 50% 42%, rgba(6,32,16,0.95), transparent 72%),
+    var(--ink);
+  color: var(--cream);
+  font-family: var(--ui);
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1060px; margin: 0 auto; display: grid; gap: 30px; }
+
+/* ── Masthead ── */
+.head { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.mark { width: 46px; height: 46px; border-radius: 6px; flex: none; box-shadow: 0 0 0 1px var(--rule); }
+.names { display: grid; gap: 3px; min-width: 0; }
+.names b { font-size: clamp(1rem, 2.6vw, 1.22rem); font-weight: 900; letter-spacing: 0.14em; }
+.names span { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.22em; color: var(--gold); }
+.spec { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.spec i {
+  font-style: normal; font-size: 0.64rem; font-weight: 800; letter-spacing: 0.14em;
+  color: var(--gold); border: 1px solid var(--rule); border-radius: 100px;
+  padding: 5px 12px; background: rgba(212,175,55,0.06); white-space: nowrap;
+}
+
+/* ── Stage ── */
+.stage { display: grid; gap: 14px; }
+.screen {
+  position: relative; background: #000; border-radius: 14px; overflow: hidden;
+  border: 1px solid rgba(254,245,218,0.1);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.75);
+}
+video { display: block; width: 100%; height: auto; max-width: 100%; background: #000; }
+video[hidden] { display: none; }
+.screen.v video { max-height: 76vh; margin: 0 auto; }
+#overlay {
+  position: absolute; inset: 0; display: grid; place-items: center; gap: 0;
+  border: 0; width: 100%; background: rgba(3,14,7,0.42); cursor: pointer;
+  transition: opacity .3s ease, visibility .3s;
+}
+#overlay[hidden] { display: none; }
+.ring {
+  width: 92px; height: 92px; border-radius: 50%; display: grid; place-items: center;
+  border: 2px solid var(--gold); background: rgba(3,14,7,0.6);
+  box-shadow: 0 0 56px rgba(212,175,55,0.42); transition: transform .22s ease;
+}
+#overlay:hover .ring, #overlay:focus-visible .ring { transform: scale(1.07); }
+.ring::after {
+  content: ""; width: 0; height: 0; margin-left: 7px;
+  border-left: 23px solid var(--gold);
+  border-top: 14px solid transparent; border-bottom: 14px solid transparent;
+}
+#overlay small {
+  position: absolute; bottom: 8%; font-size: 0.68rem; font-weight: 800;
+  letter-spacing: 0.24em; color: var(--gold); text-transform: uppercase;
+}
+.bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+button.fmt {
+  font: inherit; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--sage); background: rgba(254,245,218,0.04);
+  border: 1px solid rgba(254,245,218,0.12); border-radius: 7px; padding: 9px 15px;
+  cursor: pointer; transition: all .16s ease;
+}
+button.fmt:hover { border-color: var(--gold); color: var(--cream); }
+button.fmt[aria-pressed="true"] {
+  color: #06200F; border-color: var(--gold);
+  background: linear-gradient(180deg, var(--gold-lt), var(--gold));
+}
+.bar p { margin: 0 0 0 auto; font-size: 0.72rem; color: var(--sage); }
+
+/* ── Cue sheet ── */
+.sheet {
+  border: 1px solid rgba(254,245,218,0.08); border-radius: 14px;
+  background: linear-gradient(170deg, rgba(10,42,22,0.6), rgba(3,16,9,0.6));
+  padding: 24px 26px;
+}
+.sheet h2 {
+  margin: 0 0 18px; font-size: 0.68rem; font-weight: 900;
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold);
+}
+.sheet ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.sheet li { display: grid; grid-template-columns: 62px 1fr; gap: 14px; align-items: baseline; }
+.tc {
+  font-size: 0.74rem; font-weight: 700; color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+.line { display: grid; gap: 3px; min-width: 0; }
+.vo { font-size: 0.95rem; line-height: 1.45; text-wrap: balance; }
+.shot { font-size: 0.8rem; color: var(--sage); }
+
+/* ── Offer + legal ── */
+.offer {
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  padding-top: 20px; margin-top: 20px; border-top: 1px solid rgba(254,245,218,0.08);
+}
+.offer b {
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; color: var(--gold-lt);
+  border: 1px solid rgba(212,175,55,0.55); background: rgba(212,175,55,0.1);
+  border-radius: 100px; padding: 7px 15px;
+}
+.offer span { font-size: 0.78rem; color: var(--sage); }
+.legal { margin: 0; font-size: 0.7rem; line-height: 1.6; color: rgba(157,174,152,0.8); }
+@media (max-width: 560px) {
+  .sheet li { grid-template-columns: 52px 1fr; gap: 10px; }
+  .sheet { padding: 20px 18px; }
+  .spec { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <svg class="mark" viewBox="0 0 100 100" aria-label="Options Traders Academy">
+      <rect width="100" height="100" fill="var(--plate)"/>
+      <path d="M43.04 7.46L41.77 7.71L39.87 7.98L38.61 8.38L37.34 8.65L36.71 8.94L35.44 9.36L34.81 9.68L34.18 9.90L33.54 10.29L32.91 10.54L31.01 11.69L29.11 13.09L28.22 13.84L26.58 15.44L25.95 16.34L24.38 18.24L23.96 18.87L22.73 20.76L21.37 23.27L20.34 25.79L20.03 26.41L18.87 30.19L18.42 32.07L18.21 32.70L17.78 35.22L17.50 36.48L16.95 41.51L16.78 44.02L16.72 47.80L16.77 51.57L16.93 54.09L17.47 59.12L17.86 61.01L18.16 62.89L18.53 64.15L18.81 65.41L19.96 69.18L20.72 71.07L21.04 71.70L21.26 72.33L21.61 72.96L21.89 73.58L22.27 74.21L22.55 74.84L23.32 76.10L24.58 77.99L26.13 79.87L26.52 80.50L27.85 81.86L29.98 83.65L31.01 84.43L32.91 85.62L33.54 85.89L34.18 86.26L36.08 87.06L36.71 87.26L37.34 87.56L38.61 87.85L39.87 88.25L41.77 88.55L42.41 88.71L43.67 88.87L45.57 89.00L48.10 89.05L51.27 88.94L52.53 88.78L53.16 88.62L55.70 88.18L56.33 87.96L57.59 87.65L58.23 87.36L59.49 86.95L60.13 86.60L60.76 86.35L61.39 85.97L62.02 85.71L64.27 84.28L66.46 82.60L67.72 81.40L68.35 81.09L68.42 81.13L68.67 81.76L68.85 83.65L69.41 85.54L69.75 86.16L70.18 86.79L70.89 87.45L72.15 88.28L74.05 88.84L74.68 88.89L75.95 88.80L77.85 88.17L78.90 87.42L79.58 86.79L80.09 86.16L80.69 84.91L81.13 83.02L81.21 82.39L81.27 81.13L81.25 79.87L81.12 78.62L80.67 76.73L80.03 75.47L79.50 74.84L78.48 73.97L77.22 73.32L75.32 72.97L74.68 72.93L74.05 72.69L73.94 72.33L74.31 71.70L74.53 71.07L74.86 70.44L76.22 66.67L77.39 62.26L77.98 59.12L78.35 55.97L78.69 52.20L78.80 47.80L78.66 43.40L78.12 37.74L77.96 36.48L77.36 33.33L76.20 28.93L75.94 28.30L75.54 27.04L74.26 23.90L73.91 23.27L73.46 22.01L72.39 20.13L71.13 18.24L69.12 15.72L68.49 15.09L67.09 13.75L64.56 11.76L63.92 11.43L62.66 10.62L61.39 9.99L59.49 9.16L58.86 8.99L58.23 8.69L57.59 8.50L55.70 7.99L51.90 7.37L50.00 7.25L47.47 7.19L44.94 7.28L43.04 7.46ZM44.30 8.70L43.67 8.95L42.41 9.33L41.14 9.97L40.10 10.69L39.37 11.32L38.61 12.05L37.64 13.21L37.22 13.84L36.51 15.09L35.66 16.98L34.77 19.50L34.12 22.01L33.24 27.04L32.75 31.45L32.41 36.48L32.20 42.14L32.14 44.02L32.14 52.20L32.27 55.97L32.64 62.89L32.87 65.41L33.39 69.81L33.96 72.96L34.55 75.47L35.11 77.36L35.80 79.25L36.65 81.13L37.79 83.02L38.83 84.28L40.20 85.54L41.14 86.20L42.41 86.88L43.67 87.29L44.30 87.57L44.94 87.69L46.20 87.83L47.47 87.89L49.37 87.84L51.27 87.59L51.90 87.33L53.16 86.95L54.43 86.26L55.06 85.82L56.21 84.91L56.83 84.28L57.84 83.02L59.03 81.13L59.57 79.87L60.30 77.99L61.06 75.47L61.62 72.96L62.26 69.18L62.78 64.15L63.09 59.12L63.30 52.83L63.36 47.80L63.23 40.25L63.10 36.48L62.92 33.33L62.22 26.41L61.42 22.01L60.81 19.50L60.20 17.61L59.16 15.09L58.45 13.84L57.59 12.62L57.04 11.95L56.33 11.25L55.66 10.69L54.43 9.84L53.80 9.57L53.16 9.22L51.27 8.63L50.00 8.47L48.10 8.36L46.20 8.45L44.94 8.58L44.30 8.70Z" fill="var(--cream)" fill-rule="evenodd"/>
+    </svg>
+    <span class="names">
+      <b>OPTIONS TRADERS ACADEMY</b>
+      <span>THE TRADER’S OPERATING SYSTEM</span>
+    </span>
+    <span class="spec"><i>30 seconds</i><i>1920 × 1080</i><i>With sound</i></span>
+  </header>
+
+  <section class="stage">
+    <div class="screen" id="screen">
+      <video id="h" src="ota-16x9.mp4" poster="poster.jpg" controls playsinline preload="metadata"></video>
+      <video id="v" src="ota-9x16.mp4" controls playsinline preload="none" hidden></video>
+      <button id="overlay" aria-label="Play the commercial with sound">
+        <span class="ring"></span>
+        <small>Play with sound</small>
+      </button>
+    </div>
+    <div class="bar">
+      <button class="fmt" id="b16" aria-pressed="true">16:9 · YouTube &amp; web</button>
+      <button class="fmt" id="b9" aria-pressed="false">9:16 · Reels &amp; TikTok</button>
+      <p>Tap the frame to play · audio on</p>
+    </div>
+  </section>
+
+  <section class="sheet">
+    <h2>Voice-over &amp; shot list</h2>
+    <ol>
+      <li><span class="tc">0.00s</span><span class="line"><span class="vo">“The market doesn’t wait.”</span><span class="shot">Push-in through a living candlestick field</span></span></li>
+      <li><span class="tc">3.40s</span><span class="line"><span class="vo">“Trillions move while you sleep. Most people just watch.”</span><span class="shot">Wireframe globe, capital-flow arcs, session overlap</span></span></li>
+      <li><span class="tc">7.20s</span><span class="line"><span class="vo">“This isn’t another app. It’s an operating system for traders.”</span><span class="shot">The logo plate boots up; wordmark lock-up</span></span></li>
+      <li><span class="tc">11.60s</span><span class="line"><span class="vo">“Options. Futures. Investing — one system.”</span><span class="shot">Three numbered system modules land as 3D cards</span></span></li>
+      <li><span class="tc">15.40s</span><span class="line"><span class="vo">“8 modules. 200+ lessons. Live setups you can actually follow.”</span><span class="shot">The OS console installs itself; trade desk fills</span></span></li>
+      <li><span class="tc">19.20s</span><span class="line"><span class="vo">“A risk engine that protects you. A portfolio that compounds.”</span><span class="shot">Compounding towers, 3D equity ribbon, risk shield</span></span></li>
+      <li><span class="tc">23.00s</span><span class="line"><span class="vo">“In your pocket. 24 hours. 365 days a year.”</span><span class="shot">The phone running the OS; orbital session rails</span></span></li>
+      <li><span class="tc">26.80s</span><span class="line"><span class="vo">“Get instant access today.”</span><span class="shot">Lock-up, CTA, 7-day money-back guarantee, disclosure</span></span></li>
+    </ol>
+    <div class="offer">
+      <b>7-DAY MONEY-BACK GUARANTEE</b>
+      <span>The only terms stated in the film. No free trial, no 30-day guarantee.</span>
+    </div>
+  </section>
+
+  <p class="legal">
+    Options and futures trading involves substantial risk of loss and is not suitable for every
+    investor. Educational content only — not financial advice. All figures and screens shown in
+    the film are illustrative.
+  </p>
+</div>
+
+<script>
+(function () {
+  var h = document.getElementById("h"), v = document.getElementById("v");
+  var screen = document.getElementById("screen"), overlay = document.getElementById("overlay");
+  var b16 = document.getElementById("b16"), b9 = document.getElementById("b9");
+  var cur = h;
+
+  function play() {
+    overlay.hidden = true;
+    var p = cur.play();
+    if (p && p.catch) p.catch(function () { overlay.hidden = false; });
+  }
+  overlay.addEventListener("click", play);
+
+  function show(next, vertical) {
+    if (next === cur) return;
+    var t = cur.currentTime, wasPlaying = !cur.paused;
+    cur.pause();
+    cur.hidden = true;
+    next.hidden = false;
+    cur = next;
+    screen.classList.toggle("v", vertical);
+    b16.setAttribute("aria-pressed", String(!vertical));
+    b9.setAttribute("aria-pressed", String(vertical));
+    try { cur.currentTime = t; } catch (e) {}
+    if (wasPlaying) play(); else overlay.hidden = false;
+  }
+  b16.addEventListener("click", function () { show(h, false); });
+  b9.addEventListener("click", function () { show(v, true); });
+
+  [h, v].forEach(function (el) {
+    el.addEventListener("play", function () { overlay.hidden = true; });
+    el.addEventListener("ended", function () { overlay.hidden = false; });
+  });
+})();
+</script>

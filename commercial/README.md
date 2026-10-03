@@ -106,9 +106,19 @@ node render.mjs --fps 60            # smoother motion for web hero use
 node render.mjs --no-captions       # clean plate for a dub or a different language
 node render.mjs --gif               # also write a muted looping GIF
 node render.mjs --stills            # one PNG per scene, for review or thumbnails
+node render.mjs --web               # streamable copies + poster → dist/web/
 
 node tools/fetch-fonts.mjs          # regenerate the inlined webfonts (needs network)
 ```
+
+### Watching it in a browser
+
+GitHub and most file pickers will not stream a 15 MB master — they hand it over as a
+download. `node render.mjs --web` derives copies small enough to play inline (6.4 MB and
+4.7 MB) plus a poster frame, which feed `dist/web/index.html`: a screening page with both
+orientations, a format switch and the cue sheet. That page is committed; the media beside
+it is derived and git-ignored, so regenerate it with the command above before publishing
+the page anywhere.
 
 `render.mjs` does not screen-record. It drives `window.OTA_FILM.renderAt(ms, frame)` in
 headless Chromium one frame at a time and pipes the PNGs straight into ffmpeg, so the

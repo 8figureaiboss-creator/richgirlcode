@@ -14,6 +14,8 @@
      node render.mjs --no-captions       clean plate for a different language
      node render.mjs --gif               also write a muted looping GIF
      node render.mjs --stills            contact sheet of key frames only
+     node render.mjs --web               re-encode the masters light enough to
+                                         stream in a browser, + a poster frame
    ========================================================================== */
 import { createRequire } from 'node:module';
 import { spawn, execFileSync } from 'node:child_process';
@@ -49,6 +51,35 @@ const NAME = `ota-commercial-30s${VERTICAL ? '-9x16' : ''}${FPS !== 30 ? `-${FPS
 
 const t0 = Date.now();
 await mkdir(OUTDIR, { recursive: true });
+
+/* ── Web mode: derive streamable copies of the masters ──────────────────────
+   GitHub and most file pickers will not stream a 15 MB master — they offer it
+   as a download. These copies are small enough to play inline, and feed the
+   screening page in dist/web/. Pure ffmpeg, so no browser is needed. */
+if (flag('--web')) {
+  const web = join(OUTDIR, 'web');
+  await mkdir(web, { recursive: true });
+  const encode = (src, out) => {
+    process.stdout.write(`  ${out} … `);
+    execFileSync('ffmpeg', [
+      '-y', '-loglevel', 'error', '-i', join(OUTDIR, src),
+      '-c:v', 'libx264', '-preset', 'slow', '-crf', '23',
+      '-pix_fmt', 'yuv420p', '-profile:v', 'high',
+      '-c:a', 'aac', '-b:a', '128k',
+      '-movflags', '+faststart', join(web, out),
+    ]);
+    const { size } = require('node:fs').statSync(join(web, out));
+    console.log(`${(size / 1024 / 1024).toFixed(2)} MB`);
+  };
+  encode('ota-commercial-30s.mp4', 'ota-16x9.mp4');
+  encode('ota-commercial-30s-9x16.mp4', 'ota-9x16.mp4');
+  /* Poster: the brand lock-up at 9.6s. */
+  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-ss', '9.6',
+    '-i', join(OUTDIR, 'ota-commercial-30s.mp4'),
+    '-frames:v', '1', '-vf', 'scale=1280:-1', join(web, 'poster.jpg')]);
+  console.log(`  poster.jpg\n\n  → ${web}  (index.html is committed; the media here is derived)\n`);
+  process.exit(0);
+}
 
 console.log(`\n  OTA · 30s spot — headless render`);
 console.log(`  ${VERTICAL ? '1080×1920 (9:16)' : '1920×1080 (16:9)'} · ${FPS} fps · captions ${CAPTIONS ? 'on' : 'off'}\n`);

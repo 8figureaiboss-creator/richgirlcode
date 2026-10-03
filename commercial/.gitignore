@@ -5,3 +5,6 @@ dist/palette.png
 dist/*.gif
 # The 9:16 render writes an identical score stem; one copy is enough
 dist/ota-commercial-30s-9x16.wav
+# Streamable copies derived from the masters — `node render.mjs --web`
+dist/web/*.mp4
+dist/web/poster.jpg
