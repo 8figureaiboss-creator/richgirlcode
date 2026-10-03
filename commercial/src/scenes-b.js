@@ -8,74 +8,73 @@ function quadCorners(m, hw, hh, z) {
     .map(p => M4.xform(m, p).slice(0, 3));
 }
 
-/* ══ S5 · 15.4 → 19.2s ══  Education + execution ══════════════════════════ */
+/* ══ S5 · 15.4 → 19.2s ══  The daily play, on the real app ════════════════ */
+const PLAY_STEPS = [
+  ['01', 'PICK TICKER',   'QQQ, SPY, NVDA\u2026'],
+  ['02', 'UPLOAD CHARTS', 'your own screenshots'],
+  ['03', 'GET CONTRACT',  'strike, entry, exit, stop'],
+  ['04', 'END OF DAY',    'journal it, get a grade'],
+];
+
 function sceneCurriculum(ctx, A) {
   const { t, p, W, H, S, cam } = A;
-  inkBackdrop(ctx, W, H, { warm: 0.4, cy: 0.52 });
+  inkBackdrop(ctx, W, H, { warm: 0.42, cx: 0.66, cy: 0.52 });
 
-  const settle = E.outExpo(clamp(t / 1600));
-  cam.fov = 40 * Math.PI / 180;
-  cam.lookAt([lerp(6.0, 1.5, settle), lerp(-1.4, 1.5, settle), lerp(12.0, 11.3, settle)], [0.5, -0.5, 0]);
+  const settle = E.outExpo(clamp(t / 1700));
+  cam.fov = 38 * Math.PI / 180;
+  cam.lookAt([lerp(0.4, 2.6, settle), lerp(3.0, 0.9, settle), lerp(12.6, 9.6, settle)],
+             [3.1, 0.15, 0]);
 
-  const enter = E.spring(clamp(t / 1500), 5.4, 4.3);
-  const rotY = lerp(-0.85, -0.2, enter) + Math.sin(t / 2800) * 0.022;
-  const m = M4.chain(M4.translate(0.5, -0.5, 0), M4.rotY(rotY), M4.rotX(0.055), M4.scale(lerp(0.86, 1, enter)));
+  const enter = E.spring(clamp(t / 1500), 5.2, 4.2);
+  const rotY = lerp(-0.95, -0.22, enter) + Math.sin(t / 2700) * 0.035;
+  const pm = M4.chain(M4.translate(3.6, 0.1, 0), M4.rotY(rotY), M4.rotX(0.03),
+                      M4.scale(lerp(0.72, 1.04, enter)));
 
   S.reset();
-  floorGrid(S, { half: 20, step: 2.5, y: -3.4, alpha: 0.15 });
-  const slab = Geo.extrude(Geo.roundedRect(9.9, 5.4, 0.3, 6), 0.2);
-  S.mesh(slab, m, fade(MAT.glass, clamp(enter * 1.6)));
-  /* Thin gold bezel */
-  S.mesh(Geo.extrude(Geo.roundedRect(10.05, 5.55, 0.33, 6), 0.16),
-    M4.chain(m, M4.translate(0, 0, -0.09)),
-    { ...fade(MAT.gold, 0.5 * clamp(enter * 1.6)), zBias: -1.4 });
+  floorGrid(S, { half: 20, step: 2.5, y: -3.6, alpha: 0.14 });
+  S.mesh(Geo.extrude(Geo.roundedRect(2.42, 4.88, 0.38, 8), 0.2),
+    M4.chain(pm, M4.translate(0, 0, -0.1)),
+    { ...fade(MAT.gold, 0.6 * clamp(enter * 1.6)), metal: 0.95, zBias: -1.4 });
+  S.mesh(Assets.phone, pm, fade(MAT.steel, clamp(enter * 1.6)));
   S.render(ctx, cam, W, H);
 
+  /* The shipped app, mapped onto the device. */
   if (enter > 0.05) {
-    const tex = panelScreen(t, 1700, 900);
-    texQuad3D(ctx, tex, cam, W, H, quadCorners(m, 4.72, 2.5, 0.105), 8, clamp((enter - 0.05) * 1.8));
+    texQuad3D(ctx, IMG.dailyPlay, cam, W, H,
+      quadCorners(pm, 0.945, 1.985, 0.125), 7, clamp((enter - 0.05) * 1.8));
   }
-
-  /* Screen glare so the slab reads as glass. */
-  FX.sweep(ctx, W * 0.1, H * 0.1, W * 0.8, H * 0.8, seg(t, 1200, 2300), { alpha: 0.13, width: 0.09, angle: -0.55 });
-  dustField(ctx, t, W, H, 46, { speed: 22, alpha: 0.26 });
-
-  FX.scrim(ctx, W, H, 'top', 0.72, 0.3);
+  FX.sweep(ctx, W * 0.52, H * 0.04, W * 0.34, H * 0.92, seg(t, 1500, 2500),
+    { alpha: 0.1, width: 0.05, angle: -0.42 });
+  FX.scrim(ctx, W, H, 'left', 0.82, 0.48);
 
   const out = 1 - seg(t, 3350, 3800, E.inOutQuad);
   ctx.save();
   ctx.globalAlpha = out;
-  FX.eyebrow(ctx, 112, 96, 'THE LEARNING ENGINE', seg(t, 200, 800));
-  /* The second half is positioned from the measured width of the first, so the
-     copy can change without re-tuning pixel offsets. */
-  const headOpt = { size: 76, weight: 900, tracking: -1 };
-  const w1 = kineticWidth(ctx, 'LEARN IT.', headOpt);
-  kinetic(ctx, 'LEARN IT.', { ...headOpt, x: 110, y: 196, p: seg(t, 420, 1100), mode: 'wipe', color: C.white });
-  kinetic(ctx, 'THEN TRADE IT.', { ...headOpt, x: 110 + w1 + 26, y: 196, p: seg(t, 700, 1400), mode: 'wipe', color: C.gold, shadow: 0.5 });
-  ctx.restore();
+  FX.eyebrow(ctx, 112, 186, 'THE DAILY PLAY \u00b7 GUIDED, STEP BY STEP', seg(t, 200, 800));
+  /* Stacked, so the headline never reaches the device on the right. */
+  const hOpt = { size: 70, weight: 900, tracking: -1 };
+  kinetic(ctx, 'LEARN IT.', { ...hOpt, x: 110, y: 268, p: seg(t, 420, 1100), mode: 'wipe', color: C.cream });
+  kinetic(ctx, 'THEN TRADE IT.', { ...hOpt, x: 110, y: 350, p: seg(t, 700, 1400), mode: 'wipe', color: C.gold, shadow: 0.5 });
 
-  /* Value chips, bottom-right. */
-  const rows = [
-    ['8', 'STRUCTURED MODULES'],
-    ['200+', 'ON-DEMAND LESSONS'],
-    ['DAILY', 'LIVE SETUPS'],
-  ];
-  ctx.save();
-  ctx.globalAlpha = out;
-  FX.scrim(ctx, W, H, 'left', 0.7, 0.3);
-  rows.forEach(([k, v], i) => {
-    const e = E.outExpo(clamp((t - 1750 - i * 180) / 700));
+  /* The four steps the app actually walks you through. */
+  PLAY_STEPS.forEach(([n, k, d], i) => {
+    const e = E.outExpo(clamp((t - 1100 - i * 190) / 760));
     if (e <= 0.01) return;
-    const y = 548 + i * 124;
+    const y = 462 + i * 92;
     ctx.globalAlpha = out * e;
-    ctx.translate((1 - e) * -40, 0);
-    setFont(ctx, 62, 900, true);
-    ctx.fillStyle = C.gold;
+    ctx.translate((1 - e) * -34, 0);
+    setFont(ctx, 20, 800, true);
+    ctx.fillStyle = rgba(C.gold, 0.85);
     ctx.textBaseline = 'alphabetic';
-    ctx.fillText(k, 112, y);
-    setFont(ctx, 19, 800);
-    ctx.fillStyle = rgba(C.white, 0.9);
-    tracked(ctx, v, 114, y + 32, 2.4);
+    ctx.fillText(n, 112, y);
+    setFont(ctx, 30, 900);
+    ctx.fillStyle = C.cream;
+    tracked(ctx, k, 162, y, 1.6);
+    setFont(ctx, 20, 600);
+    ctx.fillStyle = rgba(C.slate, 0.95);
+    ctx.fillText(d, 162, y + 30);
+    ctx.fillStyle = rgba(C.gold, 0.3);
+    ctx.fillRect(112, y + 48, 420, 1);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
   });
   ctx.restore();
@@ -88,7 +87,7 @@ function sceneGrowth(ctx, A) {
 
   const settle = E.outExpo(clamp(t / 1800));
   cam.fov = 42 * Math.PI / 180;
-  cam.lookAt([lerp(-9, -4.6, settle), lerp(1.2, 4.0, settle), lerp(9, 12.2, settle)], [-0.4, 1.9, 0]);
+  cam.lookAt([lerp(-9, -5.4, settle), lerp(1.2, 4.4, settle), lerp(9, 13.0, settle)], [-1.6, 2.1, 0]);
 
   S.reset();
   floorGrid(S, { half: 20, step: 2, y: 0, alpha: 0.2 });
@@ -130,25 +129,24 @@ function sceneGrowth(ctx, A) {
         wireColor: rgba(C.goldLt, 0.9), wireWidth: 3, wireGlow: 1.2 });
   }
 
-  /* Risk shield. */
-  const sh = E.spring(clamp((t - 1100) / 1400), 6, 4.6);
-  if (sh > 0.01) {
-    const sm = M4.chain(M4.translate(-5.6, 4.6, 0.6), M4.rotY(-0.42 + Math.sin(t / 2400) * 0.12), M4.scale(0.52 * sh));
-    S.mesh(Assets.hex, sm, fade(MAT.gold, clamp(sh * 1.5)));
-    S.sprite([-5.6, 4.6, 0.8], (c, sc) => {
-      c.globalAlpha = clamp(sh * 1.6);
-      const r = sc * 0.22;
-      c.strokeStyle = C.ink; c.lineWidth = Math.max(2, r * 0.26);
-      c.lineCap = 'round';
-      roundRect(c, -r * 0.62, -r * 0.1, r * 1.24, r * 0.95, r * 0.16);
-      c.fillStyle = C.ink; c.fill();
-      c.beginPath();
-      c.arc(0, -r * 0.1, r * 0.42, Math.PI, 0);
-      c.stroke();
-      c.globalAlpha = 1;
-    }, { zBias: 0.2 });
+  /* The real trade plan, on the device — entry, exit, stop, strike. */
+  const dev = E.spring(clamp((t - 500) / 1600), 5.2, 4.3);
+  let pm6 = null;
+  if (dev > 0.01) {
+    pm6 = M4.chain(M4.translate(-6.7, 2.5, 1.5),
+                   M4.rotY(0.42 + Math.sin(t / 2600) * 0.04), M4.rotX(0.02),
+                   M4.scale(0.94 * dev));
+    S.mesh(Geo.extrude(Geo.roundedRect(2.42, 4.88, 0.38, 8), 0.2),
+      M4.chain(pm6, M4.translate(0, 0, -0.1)),
+      { ...fade(MAT.gold, 0.6 * clamp(dev * 1.6)), metal: 0.95, zBias: -1.4 });
+    S.mesh(Assets.phone, pm6, fade(MAT.steel, clamp(dev * 1.6)));
   }
   S.render(ctx, cam, W, H);
+
+  if (pm6 && dev > 0.05) {
+    texQuad3D(ctx, IMG.tradePlan, cam, W, H,
+      quadCorners(pm6, 0.945, 1.985, 0.125), 7, clamp((dev - 0.05) * 1.8));
+  }
 
   dustField(ctx, t, W, H, 50, { speed: -18, alpha: 0.3 });
   FX.scrim(ctx, W, H, 'right', 0.93, 0.6);
@@ -165,6 +163,17 @@ function sceneGrowth(ctx, A) {
     ['MAX LOSS', 'CAPPED'],
     ['TARGET R : R', '1 : 2.4'],
   ];
+  /* Plan, then outcome. Gated by OTA_CONFIG.showResult: a single real trade is
+     a performance claim, and some ad platforms will not run one. */
+  if (CFG.showResult && IMG.result) {
+    const rp = seg(t, 2350, 3100);
+    if (rp > 0) {
+      ctx.globalAlpha = out;
+      shotCard(ctx, W - 112 - 330, 690, 330, IMG.result, rp,
+        { radius: 12, label: 'INDIVIDUAL RESULT \u00b7 NOT TYPICAL' });
+    }
+  }
+
   meters.forEach(([k, v], i) => {
     const e = E.outExpo(clamp((t - 1800 - i * 200) / 720));
     if (e <= 0.01) return;
@@ -210,7 +219,7 @@ function scenePocket(ctx, A) {
 
   const enter = E.spring(clamp(t / 1600), 5.2, 4.2);
   const rotY = lerp(0.9, 0.17, enter) + Math.sin(t / 2600) * 0.05;
-  const pm = M4.chain(M4.translate(2.5, 0.1, 0), M4.rotY(rotY), M4.rotX(0.02), M4.scale(lerp(0.7, 1.02, enter)));
+  const pm = M4.chain(M4.translate(3.0, 0.1, 0), M4.rotY(rotY), M4.rotX(0.02), M4.scale(lerp(0.7, 1.0, enter)));
 
   S.reset();
 
@@ -251,8 +260,8 @@ function scenePocket(ctx, A) {
   S.render(ctx, cam, W, H);
 
   if (enter > 0.05) {
-    const tex = appScreen(t, 580, 1218);
-    texQuad3D(ctx, tex, cam, W, H, quadCorners(pm, 1.0, 2.1, 0.125), 7, clamp((enter - 0.05) * 1.8));
+    texQuad3D(ctx, IMG.appHome, cam, W, H,
+      quadCorners(pm, 0.945, 1.985, 0.125), 7, clamp((enter - 0.05) * 1.8));
   }
   FX.sweep(ctx, W * 0.5, H * 0.04, W * 0.34, H * 0.92, seg(t, 1500, 2500), { alpha: 0.1, width: 0.05, angle: -0.42 });
   FX.scrim(ctx, W, H, 'left', 0.84, 0.5);
@@ -261,24 +270,19 @@ function scenePocket(ctx, A) {
   ctx.save();
   ctx.globalAlpha = out;
   FX.eyebrow(ctx, 112, 300, 'ONE LOGIN · EVERY SESSION', seg(t, 250, 850));
-  const hOpt = { size: 86, weight: 900, tracking: -1.5 };
+  const hOpt = { size: 76, weight: 900, tracking: -1.5 };
   const wA = kineticWidth(ctx, 'ALWAYS', hOpt);
   kinetic(ctx, 'ALWAYS ON.', { ...hOpt, x: 110, y: 410, p: seg(t, 480, 1200), mode: 'wipe', color: C.white });
   kinetic(ctx, 'ALWAYS',     { ...hOpt, x: 110, y: 510, p: seg(t, 760, 1500), mode: 'wipe', color: C.white });
   kinetic(ctx, 'WITH YOU.',  { ...hOpt, x: 110 + wA + 24, y: 510, p: seg(t, 980, 1750), mode: 'wipe', color: C.gold, shadow: 0.6 });
 
-  const bullets = ['The whole system in your pocket', 'Live alerts the moment they fire', 'A desk that never closes'];
-  bullets.forEach((b, i) => {
-    const e = E.outExpo(clamp((t - 1750 - i * 210) / 700));
-    if (e <= 0.01) return;
-    const y = 620 + i * 56;
-    ctx.globalAlpha = out * e;
-    ctx.fillStyle = C.gold;
-    ctx.beginPath(); ctx.arc(118, y - 8, 4.5, 0, 7); ctx.fill();
-    setFont(ctx, 27, 600);
-    ctx.fillStyle = rgba(C.white, 0.92);
-    ctx.fillText(b, 142 + (1 - e) * 18, y);
-  });
+  /* The real home screen: the OS sits beside the tools they already open. */
+  const hs = seg(t, 1700, 2500);
+  if (hs > 0) {
+    ctx.globalAlpha = out;
+    shotCard(ctx, 110, 600, 560, IMG.homescreen, hs,
+      { radius: 14, label: 'INSTALLED \u00b7 NOT A BOOKMARK' });
+  }
   ctx.restore();
 }
 

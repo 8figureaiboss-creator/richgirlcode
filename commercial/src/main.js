@@ -391,12 +391,10 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft')  { pause(); pausedAt = clamp(pausedAt - 1000 / 30, 0, DURATION); film.renderAt(pausedAt); update(pausedAt); }
 });
 
-/* Poster frame. */
-film.renderAt(1500);
-update(0);
-
-/* Exposed for the headless MP4 renderer. */
+/* Exposed for the headless MP4 renderer. `ready` stays false until every
+   screenshot has decoded, so no frame is ever captured half-loaded. */
 window.OTA_FILM = {
+  ready: false,
   duration: DURATION,
   stageW: STAGE_W,
   stageH: STAGE_H,
@@ -406,5 +404,13 @@ window.OTA_FILM = {
   renderAt(ms, frameIdx) { film.renderAt(ms, frameIdx); },
   canvas: () => film.display,
   bounceWav,
-  ready: true,
 };
+
+update(0);
+els.poster.disabled = true;
+Promise.all([loadShots(), document.fonts ? document.fonts.ready : Promise.resolve()])
+  .then(() => {
+    els.poster.disabled = false;
+    film.renderAt(9600);            // poster frame: the brand lock-up
+    window.OTA_FILM.ready = true;
+  });

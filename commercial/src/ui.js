@@ -438,3 +438,56 @@ function logoStamp(c, x, y, s, { plate = LOGO_ART.plate, mark = LOGO_ART.mark, r
   drawLogoMark(c, x, y, s, mark);
   c.restore();
 }
+
+/* ── Real product screenshots ────────────────────────────────────────────────
+   Decoded once, before the film reports itself ready, so the frame-exact
+   renderer can never capture a frame with an image still decoding. */
+const IMG = {};
+function loadShots() {
+  return Promise.all(Object.keys(SHOTS).map(k => new Promise(done => {
+    const im = new Image();
+    im.onload = () => { IMG[k] = im; done(); };
+    im.onerror = () => done();          // a missing shot degrades, never hangs
+    im.src = SHOTS[k].src;
+  })));
+}
+
+/* A screenshot in a device-style frame, for the wide shots that do not go on
+   the 3D phone. `p` drives a rise-and-settle entrance. */
+function shotCard(ctx, x, y, w, img, p, { label = null, radius = 18, glow = 0.5 } = {}) {
+  if (!img || p <= 0.004) return 0;
+  const e = E.outExpo(clamp(p));
+  const h = w * (img.height / img.width);
+  const yy = y + (1 - e) * 26;
+  ctx.save();
+  ctx.globalAlpha = clamp(p * 2);
+
+  roundRect(ctx, x - 10, yy - 10, w + 20, h + 20, radius + 8);
+  ctx.fillStyle = 'rgba(6,32,16,0.9)';
+  ctx.fill();
+  ctx.strokeStyle = rgba(C.gold, 0.45 * glow + 0.15);
+  ctx.lineWidth = 1.6;
+  ctx.stroke();
+
+  ctx.save();
+  roundRect(ctx, x, yy, w, h, radius);
+  ctx.clip();
+  ctx.drawImage(img, x, yy, w, h);
+  ctx.restore();
+
+  if (label) {
+    setFont(ctx, 15, 800);
+    const tw = trackedWidth(ctx, label, 2) + 26;
+    roundRect(ctx, x, yy + h + 14, tw, 32, 16);
+    ctx.fillStyle = 'rgba(6,32,16,0.92)';
+    ctx.fill();
+    ctx.strokeStyle = rgba(C.gold, 0.4);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = rgba(C.goldLt, 0.95);
+    ctx.textBaseline = 'middle';
+    tracked(ctx, label, x + 13, yy + h + 30, 2);
+  }
+  ctx.restore();
+  return h;
+}

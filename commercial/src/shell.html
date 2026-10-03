@@ -105,9 +105,15 @@ window.OTA_CONFIG = {
   /* The offer, exactly as it is sold: a 7-day money-back guarantee.
      NOT a free trial, and NOT 30 days. */
   badges:   ['7-DAY MONEY-BACK GUARANTEE', 'INSTANT ACCESS'],
+
+  /* Show the real brokerage result screenshot at 22.3s. One trade is a
+     performance claim: it needs the "not typical" label the film puts beside
+     it, the extra disclosure line below, and it may still be refused by some
+     ad platforms. Set false for a version with no results in it at all. */
+  showResult: true,
   disclaimer: [
     'Options and futures trading involves substantial risk of loss and is not suitable for every investor.',
-    'Educational content only \u2014 not financial advice. All figures and screens shown are illustrative.',
+    'Results shown are one individual\u2019s and are not typical. Educational content only \u2014 not financial advice.',
   ],
 
   /* Caption + VO cue sheet. t and d in milliseconds. */
@@ -118,12 +124,12 @@ window.OTA_CONFIG = {
     { t:  7450, d: 1900, text: 'This isn\u2019t another app.',                    shot: 'The mark boots up: gold-rimmed plate, logo artwork mapped onto its face.' },
     { t:  9400, d: 1850, text: 'It\u2019s an operating system for traders.',      shot: 'Wordmark lock-up with the OS line; specular sweep and flare.' },
     { t: 11700, d: 3500, text: 'Options. Futures. Investing \u2014 one system.',  shot: 'Three system modules land as 3D cards: chain, ladder, allocation.' },
-    { t: 15500, d: 1800, text: '8 modules. 200+ lessons.',                    shot: 'Floating console; the curriculum ticks itself off module by module.' },
-    { t: 17450, d: 1700, text: 'Live setups you can actually follow.',        shot: 'Trade-desk feed slides in: entry, target, stop, position risk.' },
-    { t: 19300, d: 1800, text: 'A risk engine that protects you.',            shot: 'Hex risk shield forms; position size, max loss and R:R meters stack.' },
-    { t: 21250, d: 1700, text: 'A portfolio that compounds.',                 shot: 'Compounding towers rise; 3D equity ribbon extrudes over the field.' },
-    { t: 23100, d: 1800, text: 'In your pocket. 24 hours.',                   shot: 'Phone rotates in running the OS; orbital session rails spin.' },
-    { t: 25050, d: 1700, text: '365 days a year.',                            shot: 'Session pips circle the rail \u2014 Sydney through New York light in turn.' },
+    { t: 15500, d: 1800, text: 'It walks you through the play.',             shot: 'The real app: Pick Ticker \u2192 Upload Charts \u2192 Get Contract \u2192 End of Day.' },
+    { t: 17450, d: 1700, text: 'Every step, every day.',                      shot: 'The four steps stack up beside the device.' },
+    { t: 19300, d: 1800, text: 'Entry. Exit. Stop. Before you click buy.',    shot: 'The real trade plan on screen; compounding towers and equity ribbon behind.' },
+    { t: 21250, d: 1700, text: 'That is what defined risk looks like.',       shot: 'Position size, max loss and R:R meters; the result card lands last.' },
+    { t: 23100, d: 1800, text: 'In your pocket. 24 hours.',                   shot: 'The real app home on the device; orbital session rails spin.' },
+    { t: 25050, d: 1700, text: 'Right beside the tools you already open.',    shot: 'The real iOS home screen: OTA between TradingView and Robinhood.' },
     { t: 26950, d: 2850, text: 'Get instant access today.',                   shot: 'Logo plate + wordmark, CTA, URL, 7-day money-back guarantee, disclosure.' },
   ],
 };
@@ -152,6 +158,9 @@ window.OTA_CONFIG = {
 </script>
 <script>
 <!--#include logo-art.js-->
+</script>
+<script>
+<!--#include shots.js-->
 </script>
 <script>
 <!--#include ui.js-->

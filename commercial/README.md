@@ -62,9 +62,9 @@ console nav, the player chrome and the vertical brand bar.
 | 3.4 | 7.2 | `globe` | "Trillions move while you sleep. Most people just watch." | Wireframe globe, capital-flow arcs between eight financial centres; Tokyo/London/New York sessions overlap under a live playhead. |
 | 7.2 | 11.6 | `brand` | "This isn't another app. It's an operating system for traders." | The data collapses into the logo plate; wordmark lock-up, specular sweep, flare. |
 | 11.6 | 15.4 | `pillars` | "Options. Futures. Investing — one system." | **NOT AN APP. AN OPERATING SYSTEM.** Three numbered system modules land as 3D cards. |
-| 15.4 | 19.2 | `curriculum` | "8 modules. 200+ lessons. Live setups you can actually follow." | The OS console: modules install themselves while the trade desk fills with alerts. |
-| 19.2 | 23.0 | `growth` | "A risk engine that protects you. A portfolio that compounds." | Compounding towers rise, a 3D equity ribbon extrudes above them, the risk shield forms. |
-| 23.0 | 26.8 | `pocket` | "In your pocket. 24 hours. 365 days a year." | The phone rotates in running the OS; orbital session rails spin, pips light Sydney → New York. |
+| 15.4 | 19.2 | `curriculum` | "It walks you through the play. Every step, every day." | **Real screenshot:** the Daily Play on the device — Pick Ticker → Upload Charts → Get Contract → End of Day, with the four steps stacked beside it. |
+| 19.2 | 23.0 | `growth` | "Entry. Exit. Stop. Before you click buy. That's what defined risk looks like." | **Real screenshot:** the generated trade plan on the device; compounding towers and the equity ribbon behind; risk meters, then the result card. |
+| 23.0 | 26.8 | `pocket` | "In your pocket. 24 hours. Right beside the tools you already open." | **Real screenshots:** the app home on the device, and the actual iOS home screen — OTA between TradingView and Robinhood. |
 | 26.8 | 30.0 | `close` | "Get instant access today." | Logo plate, wordmark, CTA, URL, **7-day money-back guarantee**, risk disclosure. |
 
 Roughly 75 words — the right density for 30 seconds at a confident read. The cue sheet
@@ -80,6 +80,58 @@ on the musical accents. The score's own impacts sit at 0.0s, 7.2s, 18.0s, 22.5s 
 isolated score stem for that mix.
 
 ---
+
+## Real product footage
+
+Five screenshots of the shipped app carry the middle of the film, in place of
+the invented UI the first cut used. `tools/pack-shots.mjs` conditions them and
+inlines them as data URIs, so the delivered HTML is still one self-contained
+file with no network requests:
+
+| Shot | Where | Why it earns its place |
+|---|---|---|
+| `daily-play.jpg` | 15.4s | The actual guided loop. Shows the product *working*, not described. |
+| `trade-plan.jpg` | 19.2s | Entry, exit, stop and strike on screen — the literal proof of "defined risk". |
+| `app-home.jpg` | 23.0s | The real home screen of the app, on the 3D device. |
+| `homescreen.jpg` | 24.7s | OTA installed between TradingView and Robinhood. "Installed, not a bookmark." |
+| `result.jpg` | 22.3s | One real filled trade. See the warning below. |
+
+Phone shots are pre-cropped to the 3D device's screen aspect (0.476) so they map
+on with no letterbox, and `appHome` has its Safari toolbar trimmed off so the app
+reads as an app. Re-run the packer after changing anything in `tools/shots/`:
+
+```bash
+node tools/pack-shots.mjs     # tools/shots/*.jpg → src/shots.js
+```
+
+Images are decoded before `window.OTA_FILM.ready` flips true, so the frame-exact
+renderer can never capture a frame with an image still loading.
+
+> **More shots are easy to add.** Drop the file in `tools/shots/`, add a line to
+> `PLAN` in the packer, and point a scene at `IMG.<key>`. Good candidates: the
+> Journal screen, the Hit List, a filled end-of-day grade, the Market tab.
+
+### ⚠️ The result screenshot is a performance claim
+
+`result.jpg` shows a single filled SPX call at **+225%**. That is the one element
+in the film that makes a claim about outcomes, and it changes the spot's
+regulatory profile:
+
+- It is labelled **INDIVIDUAL RESULT · NOT TYPICAL** on screen, and the closing
+  disclaimer says results shown are one individual's and are not typical.
+- Meta, Google and TikTok all restrict financial-services ads that show returns.
+  This frame is the most likely reason a version of this spot gets rejected.
+- Showing one winning trade without the surrounding record is the classic FTC
+  testimonial problem. If this is used, be ready to substantiate it.
+
+One switch produces a version with no results in it at all:
+
+```js
+window.OTA_CONFIG = { showResult: false, … };
+```
+
+Everything else in the film stays claim-free by design: strategy *parameters*
+(position size, max loss, target R:R) rather than outcomes.
 
 ## The offer, as stated in the film
 
@@ -146,12 +198,14 @@ else needs touching. The palette lives in `C` inside `src/core.js`.
 - **The remaining claims come from the existing landing page** (8 modules, 200+ lessons,
   daily live setups). Verify each is currently true before the spot airs — an ad makes
   them a promise.
-- **No performance claims are made, deliberately.** There is no win rate, no profit
-  figure, no student-earnings number anywhere in the film. Every screen is marked
-  `ILLUSTRATIVE`, and the meters show strategy *parameters* (position size, max loss,
-  target R:R) rather than results. That is both safer and, in this category, more
-  persuasive — specific profit claims are the single biggest regulatory exposure in
-  trading-education advertising.
+- **One performance claim, and it is deliberate and isolated.** The `result.jpg` frame
+  at 22.3s shows a single filled trade at +225%; it is labelled *individual result, not
+  typical* on screen and covered in the closing disclaimer, and `showResult: false`
+  removes it entirely. See **The result screenshot is a performance claim** above —
+  that one frame is the most likely reason a version of this spot gets rejected by an
+  ad platform. Nothing else in the film makes one: no win rate, no earnings figure, and
+  the meters show strategy *parameters* (position size, max loss, target R:R) rather
+  than outcomes.
 - **The risk disclosure is on screen for the final 1.1 seconds** and in the footer. Check
   the wording against whatever your jurisdiction and ad platform require; Meta, Google
   and TikTok each have their own financial-services policy.
@@ -168,6 +222,7 @@ src/
   shell.html     page shell + OTA_CONFIG (the only block you edit to re-skin)
   fonts.css      generated — Inter, JetBrains Mono and Playfair Display inlined as base64
   logo-art.js    generated — the supplied logo traced to vector outlines
+  shots.js       generated — the real product screenshots, inlined
   style.css      player chrome
   math3d.js      vec3 / mat4, column-major like GLSL · ear-clipping triangulator
   geometry.js    procedural meshes: extrude, box, wire sphere, torus, rings,
@@ -184,7 +239,7 @@ src/
   main.js        compositing, post chain, transport, OTA_FILM seek API
 build.mjs        inlines src/* into one portable HTML file
 render.mjs       headless frame-exact capture → MP4 / GIF / stills
-tools/           font fetcher · logo tracer · logo verifier · the source logo file
+tools/           font fetcher · logo tracer + verifier · screenshot packer · source art
 ```
 
 Three parts are worth a look if you're judging the engineering:
