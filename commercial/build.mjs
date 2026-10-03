@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const SRC = join(here, 'src');
-const OUT = join(here, 'dist', 'ota-commercial-30s.html');
+const OUT = join(here, 'dist', 'ota-commercial.html');
 
 const shell = await readFile(join(SRC, 'shell.html'), 'utf8');
 const seen = [];

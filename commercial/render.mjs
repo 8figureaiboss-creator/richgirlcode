@@ -13,7 +13,10 @@
      node render.mjs --fps 60            smoother motion, 2× the frames
      node render.mjs --no-captions       clean plate for a different language
      node render.mjs --gif               also write a muted looping GIF
-     node render.mjs --stills            contact sheet of key frames only
+     node render.mjs --stills            one PNG per scene, for review
+     node render.mjs --script            timed VO sheet + .srt caption file
+     node render.mjs --vo take3.wav      mux a recorded voice-over, with the
+                                         score side-chained down underneath it
      node render.mjs --web               re-encode the masters light enough to
                                          stream in a browser, + a poster frame
    ========================================================================== */
@@ -24,7 +27,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const FILM = join(here, 'dist', 'ota-commercial-30s.html');
+const FILM = join(here, 'dist', 'ota-commercial.html');
 const OUTDIR = join(here, 'dist');
 
 /* Playwright may be installed globally in this environment rather than locally. */
@@ -47,7 +50,9 @@ const VERTICAL = flag('--vertical');
 const CAPTIONS = !flag('--no-captions');
 const WANT_GIF = flag('--gif');
 const STILLS = flag('--stills');
-const NAME = `ota-commercial-30s${VERTICAL ? '-9x16' : ''}${FPS !== 30 ? `-${FPS}fps` : ''}`;
+const SCRIPT = flag('--script');
+const VO = val('--vo', null);
+const NAME = `ota-commercial${VERTICAL ? '-9x16' : ''}${FPS !== 30 ? `-${FPS}fps` : ''}${VO ? '-vo' : ''}`;
 
 const t0 = Date.now();
 await mkdir(OUTDIR, { recursive: true });
@@ -71,17 +76,21 @@ if (flag('--web')) {
     const { size } = require('node:fs').statSync(join(web, out));
     console.log(`${(size / 1024 / 1024).toFixed(2)} MB`);
   };
-  encode('ota-commercial-30s.mp4', 'ota-16x9.mp4');
-  encode('ota-commercial-30s-9x16.mp4', 'ota-9x16.mp4');
-  /* Poster: the brand lock-up at 9.6s. */
-  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-ss', '9.6',
-    '-i', join(OUTDIR, 'ota-commercial-30s.mp4'),
+  const stem = require('node:fs').existsSync(join(OUTDIR, 'ota-commercial-vo.mp4'))
+    ? 'ota-commercial-vo' : 'ota-commercial';
+  const stemV = require('node:fs').existsSync(join(OUTDIR, 'ota-commercial-9x16-vo.mp4'))
+    ? 'ota-commercial-9x16-vo' : 'ota-commercial-9x16';
+  encode(`${stem}.mp4`, 'ota-16x9.mp4');
+  encode(`${stemV}.mp4`, 'ota-9x16.mp4');
+  /* Poster: the brand lock-up at 12.6s. */
+  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-ss', '12.6',
+    '-i', join(OUTDIR, `${stem}.mp4`),
     '-frames:v', '1', '-vf', 'scale=1280:-1', join(web, 'poster.jpg')]);
   console.log(`  poster.jpg\n\n  → ${web}  (index.html is committed; the media here is derived)\n`);
   process.exit(0);
 }
 
-console.log(`\n  OTA · 30s spot — headless render`);
+console.log(`\n  OTA OS — headless render`);
 console.log(`  ${VERTICAL ? '1080×1920 (9:16)' : '1920×1080 (16:9)'} · ${FPS} fps · captions ${CAPTIONS ? 'on' : 'off'}\n`);
 
 const browser = await chromium.launch({
@@ -100,6 +109,50 @@ await page.evaluate(([v, c]) => {
 }, [VERTICAL, CAPTIONS]);
 
 const DURATION = await page.evaluate(() => window.OTA_FILM.duration);
+
+/* ── Script export: the recording sheet and an .srt, straight from the film ──
+   One source of truth. A voice artist (or a TTS service) is told the exact
+   window each line has to land in, so the recorded track drops onto the cut
+   with no stretching. */
+if (SCRIPT) {
+  const vo = await page.evaluate(() => window.OTA_CONFIG.vo);
+  const scenes = await page.evaluate(() => window.OTA_FILM.scenes);
+  const tc = (ms, sep = ',') => {
+    const h = String(Math.floor(ms / 3600000)).padStart(2, '0');
+    const m = String(Math.floor(ms / 60000) % 60).padStart(2, '0');
+    const s2 = String(Math.floor(ms / 1000) % 60).padStart(2, '0');
+    return `${h}:${m}:${s2}${sep}${String(Math.round(ms) % 1000).padStart(3, '0')}`;
+  };
+  const words = (t) => t.trim().split(/\s+/).length;
+  let txt = `OPTIONS TRADERS ACADEMY OS — VOICE-OVER RECORDING SHEET\n`
+    + `Total runtime ${(DURATION / 1000).toFixed(2)}s · ${vo.length} cues · `
+    + `${vo.reduce((a, c) => a + words(c.text), 0)} words\n`
+    + `Read each line inside its own window. Leave the gaps silent — the score\n`
+    + `and the picture already fill them. Target pace ~175 wpm, warm and certain,\n`
+    + `not hyped. Mix: node render.mjs --vo <your-take.wav>\n`
+    + `${'-'.repeat(78)}\n\n`;
+  for (const [i, c] of vo.entries()) {
+    const sc = scenes.find(s2 => c.t >= s2.start && c.t < s2.end);
+    txt += `${String(i + 1).padStart(2, '0')}.  IN ${(c.t / 1000).toFixed(2)}s   `
+      + `OUT ${((c.t + c.d) / 1000).toFixed(2)}s   `
+      + `(${(c.d / 1000).toFixed(2)}s · ${words(c.text)} words · `
+      + `${Math.round(words(c.text) / (c.d / 60000))} wpm)\n`
+      + `     SCENE  ${(sc ? sc.name : '-').toUpperCase()}\n`
+      + `     VO     "${c.text}"\n`
+      + `     PIC    ${c.shot}\n\n`;
+  }
+  await writeFile(join(OUTDIR, 'ota-voiceover-script.txt'), txt);
+
+  let srt = '';
+  vo.forEach((c, i) => {
+    srt += `${i + 1}\n${tc(c.t)} --> ${tc(c.t + c.d)}\n${c.text}\n\n`;
+  });
+  await writeFile(join(OUTDIR, 'ota-captions.srt'), srt);
+  await browser.close();
+  console.log(`  ✓ ${join(OUTDIR, 'ota-voiceover-script.txt')}`);
+  console.log(`  ✓ ${join(OUTDIR, 'ota-captions.srt')}\n`);
+  process.exit(0);
+}
 
 /* ── Stills mode: one PNG per scene, for review ── */
 if (STILLS) {
@@ -125,16 +178,38 @@ if (STILLS) {
 
 /* ── Score: bounce offline to WAV ── */
 process.stdout.write('  bouncing score … ');
-const wavB64 = await page.evaluate(async () => {
-  const bytes = await window.OTA_FILM.bounceWav(30.6, 48000);
+const wavB64 = await page.evaluate(async (DUR) => {
+  const bytes = await window.OTA_FILM.bounceWav(DUR / 1000 + 0.6, 48000);
   let s = '';
   const CH = 0x8000;
   for (let i = 0; i < bytes.length; i += CH) s += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
   return btoa(s);
-});
-const wavPath = join(OUTDIR, `${NAME}.wav`);
-await writeFile(wavPath, Buffer.from(wavB64, 'base64'));
+}, DURATION);
+const scorePath = join(OUTDIR, `ota-score.wav`);
+await writeFile(scorePath, Buffer.from(wavB64, 'base64'));
 console.log(`${(Buffer.from(wavB64, 'base64').length / 1024 / 1024).toFixed(1)} MB WAV`);
+
+/* ── Voice-over: side-chain the score down under the read ───────────────────
+   The music is keyed off the VO, not faded by hand, so the duck follows the
+   performance exactly and rides back up in every gap. */
+let wavPath = scorePath;
+if (VO) {
+  process.stdout.write('  mixing voice-over … ');
+  wavPath = join(OUTDIR, `${NAME}-mix.wav`);
+  execFileSync('ffmpeg', [
+    '-y', '-loglevel', 'error', '-i', scorePath, '-i', VO,
+    '-filter_complex',
+    '[1:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,'
+    + 'highpass=f=85,acompressor=threshold=0.08:ratio=3:attack=8:release=180,'
+    + 'asplit=2[vo1][vo2];'
+    + '[0:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[mus];'
+    + '[mus][vo1]sidechaincompress=threshold=0.045:ratio=11:attack=12:release=320[duck];'
+    + '[duck][vo2]amix=inputs=2:duration=first:normalize=0,'
+    + 'alimiter=limit=0.94:attack=5:release=60[out]',
+    '-map', '[out]', '-ar', '48000', wavPath,
+  ]);
+  console.log('done');
+}
 
 /* ── Video: stream PNG frames into ffmpeg ── */
 const TOTAL = Math.round((DURATION / 1000) * FPS);
@@ -197,5 +272,6 @@ await browser.close();
 const size = (p) => { try { return (require('node:fs').statSync(p).size / 1024 / 1024).toFixed(2) + ' MB'; } catch { return '?'; } };
 console.log(`\n  ✓ ${mp4Path}  (${size(mp4Path)})`);
 if (WANT_GIF) console.log(`  ✓ ${join(OUTDIR, NAME + '.gif')}  (${size(join(OUTDIR, NAME + '.gif'))})`);
-console.log(`  ✓ ${wavPath}  (${size(wavPath)})  — score stem, for a mix with VO`);
+console.log(`  ✓ ${scorePath}  (${size(scorePath)})  — score stem, for a mix with VO`);
+if (VO) console.log(`  ✓ ${wavPath}  (${size(wavPath)})  — score + voice-over, ducked`);
 console.log(`    ${TOTAL} frames in ${((Date.now() - t0) / 1000).toFixed(0)}s\n`);

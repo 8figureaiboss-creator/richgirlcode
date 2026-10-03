@@ -1,0 +1,97 @@
+OPTIONS TRADERS ACADEMY OS — VOICE-OVER RECORDING SHEET
+Total runtime 74.00s · 18 cues · 160 words
+Read each line inside its own window. Leave the gaps silent — the score
+and the picture already fill them. Target pace ~175 wpm, warm and certain,
+not hyped. Mix: node render.mjs --vo <your-take.wav>
+------------------------------------------------------------------------------
+
+01.  IN 3.70s   OUT 6.00s   (2.30s · 6 words · 157 wpm)
+     SCENE  COLLAPSE
+     VO     "Trading shouldn’t require ten different apps,"
+     PIC    Ten app tiles drift apart over the candle field.
+
+02.  IN 6.30s   OUT 8.80s   (2.50s · 7 words · 168 wpm)
+     SCENE  COLLAPSE
+     VO     "scattered information, and guessing your next move."
+     PIC    The tiles scatter wider; the noise closes in.
+
+03.  IN 9.40s   OUT 12.00s   (2.60s · 7 words · 162 wpm)
+     SCENE  SYSTEM
+     VO     "Meet the Options Traders Academy OS —"
+     PIC    Everything collapses into the gold-rimmed Q tile.
+
+04.  IN 12.20s   OUT 16.10s   (3.90s · 11 words · 169 wpm)
+     SCENE  SYSTEM
+     VO     "one operating system to learn, analyze, trade, invest, and build wealth."
+     PIC    ONE SYSTEM. YOUR FINANCIAL OPERATING SYSTEM.
+
+05.  IN 16.70s   OUT 20.00s   (3.30s · 9 words · 164 wpm)
+     SCENE  PLAY
+     VO     "Choose your ticker. Upload your charts. Build your setup."
+     PIC    Real app: Pick Ticker, Upload Charts, Get Contract light in turn.
+
+06.  IN 20.40s   OUT 23.60s   (3.20s · 9 words · 169 wpm)
+     SCENE  PLAY
+     VO     "Identify confirmation, entry, exit, risk level, and contract —"
+     PIC    Real trade plan: entry, take-profit, stop, strike, OTM runner.
+
+07.  IN 24.00s   OUT 29.70s   (5.70s · 16 words · 168 wpm)
+     SCENE  PLAN
+     VO     "all inside a structured framework built to help you stop chasing and start trading with discipline."
+     PIC    ANALYZE → CONFIRM → EXECUTE → MANAGE RISK.
+
+08.  IN 31.50s   OUT 33.90s   (2.40s · 7 words · 175 wpm)
+     SCENE  ACADEMY
+     VO     "But OTA doesn’t stop at the trade."
+     PIC    The trade desk folds away; the Academy opens.
+
+09.  IN 34.30s   OUT 38.30s   (4.00s · 11 words · 165 wpm)
+     SCENE  ACADEMY
+     VO     "Learn technical analysis, options strategies, risk management, psychology and the Greeks."
+     PIC    Module cards deal out: 32+ LEARNING MODULES.
+
+10.  IN 38.70s   OUT 42.20s   (3.50s · 10 words · 171 wpm)
+     SCENE  TRACK
+     VO     "Track your decisions in your trading journal, review your progress,"
+     PIC    Daily Journal and Hit List panels slide in.
+
+11.  IN 42.60s   OUT 45.40s   (2.80s · 8 words · 171 wpm)
+     SCENE  TRACK
+     VO     "and turn every market day into another lesson."
+     PIC    Mission Control: the progress ring fills.
+
+12.  IN 45.90s   OUT 48.70s   (2.80s · 8 words · 171 wpm)
+     SCENE  WEALTH
+     VO     "Because real wealth is bigger than one trade."
+     PIC    Pull back; the allocation builds itself.
+
+13.  IN 49.10s   OUT 52.70s   (3.60s · 10 words · 167 wpm)
+     SCENE  WEALTH
+     VO     "Build and organize your investment portfolio, explore multiple asset classes,"
+     PIC    Stocks, ETFs, dividends, REITs, bonds, metals, land.
+
+14.  IN 53.50s   OUT 57.40s   (3.90s · 11 words · 169 wpm)
+     SCENE  LIFESTYLE
+     VO     "expand your financial education, and tap into the OTA lifestyle ecosystem."
+     PIC    The Supercar Social Society membership card turns in 3D.
+
+15.  IN 57.80s   OUT 59.60s   (1.80s · 5 words · 167 wpm)
+     SCENE  LIFESTYLE
+     VO     "Options Traders Academy OS —"
+     PIC    The card folds away; the wordmark builds.
+
+16.  IN 60.00s   OUT 64.90s   (4.90s · 14 words · 171 wpm)
+     SCENE  LIFESTYLE
+     VO     "built for what happens before the trade, during the trade, and long after it."
+     PIC    The mark takes the card’s place; picture falls to black.
+
+17.  IN 65.60s   OUT 68.10s   (2.50s · 6 words · 144 wpm)
+     SCENE  LAUNCH
+     VO     "You don’t need another trading app."
+     PIC    Black. The mark fades up alone and waits.
+
+18.  IN 68.60s   OUT 70.90s   (2.30s · 5 words · 130 wpm)
+     SCENE  LAUNCH
+     VO     "You need an operating system."
+     PIC    End card: wordmark, closing lines, CTA, 7-day guarantee.
+

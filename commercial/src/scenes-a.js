@@ -88,14 +88,15 @@ const TICKER_ITEMS = [
 
 /* ══ S1 · 0.0 → 3.4s ══  "The market doesn't wait." ═══════════════════════ */
 function sceneHook(ctx, A) {
-  const { t, p, W, H, S, cam } = A;
-  inkBackdrop(ctx, W, H, { warm: 0.42, cy: 0.62 });
+  const { t, p, W, H, S, cam, V, SAFE } = A;
+  inkBackdrop(ctx, W, H, { warm: 0.42, cy: V ? 0.5 : 0.62 });
 
-  /* Camera: hard push-in through the candle field. */
+  /* Camera: hard push-in through the candle field. Vertical sits lower and
+     closer so the field still fills a frame half as wide. */
   const push = E.outCubic(clamp(t / 3300));
-  const z = lerp(30, 11.5, push);
-  cam.fov = lerp(50, 40, push) * Math.PI / 180;
-  cam.lookAt([Math.sin(t / 2600) * 2.4, lerp(9.5, 5.2, E.inOutCubic(push)), z], [0, 0.8, 0]);
+  const z = lerp(V ? 24 : 30, V ? 9 : 11.5, push);
+  cam.fov = lerp(V ? 62 : 50, V ? 52 : 40, push) * Math.PI / 180;
+  cam.lookAt([Math.sin(t / 2600) * (V ? 1.2 : 2.4), lerp(V ? 7.5 : 9.5, V ? 4.2 : 5.2, E.inOutCubic(push)), z], [0, 0.8, 0]);
 
   S.reset();
   floorGrid(S, { half: 26, step: 2, alpha: 0.2 * clamp(p * 4) });
@@ -134,7 +135,7 @@ function sceneHook(ctx, A) {
   ctx.fillStyle = hz; ctx.fillRect(0, H * 0.3, W, H * 0.34);
 
   dustField(ctx, t, W, H, 70, { speed: -40, alpha: 0.36 });
-  FX.scrim(ctx, W, H, 'left', 0.92, 0.62);
+  FX.scrim(ctx, W, H, V ? 'top' : 'left', V ? 0.86 : 0.92, V ? 0.52 : 0.62);
 
   /* ── Type ── */
   const tp1 = seg(t, 480, 1180), tp2 = seg(t, 900, 1700);
@@ -142,16 +143,29 @@ function sceneHook(ctx, A) {
   ctx.save();
   ctx.globalAlpha = out;
   ctx.translate(0, (1 - out) * -36);
-  kinetic(ctx, 'THE MARKET', { x: 150, y: 470, size: 132, weight: 900, tracking: -3, p: tp1, mode: 'wipe', color: C.white });
-  kinetic(ctx, "DOESN'T WAIT.", { x: 150, y: 612, size: 132, weight: 900, tracking: -3, p: tp2, mode: 'wipe', color: C.gold, shadow: 0.7 });
-  const lw = seg(t, 1500, 2100, E.outExpo);
-  ctx.fillStyle = rgba(C.gold, 0.85 * lw);
-  ctx.fillRect(150, 660, 300 * lw, 3);
-  FX.eyebrow(ctx, 152, 318, 'LIVE MARKET · 24 / 7 / 365', seg(t, 1750, 2350));
+  if (V) {
+    /* Stacked and centred, inside the top safe band. */
+    const y0 = SAFE.top + 120;
+    FX.eyebrow(ctx, 60, y0 - 112, 'LIVE · 24 / 7 / 365', seg(t, 1750, 2350));
+    kinetic(ctx, 'THE',      { x: W / 2, y: y0,       size: 128, weight: 900, tracking: -3, align: 'center', p: tp1, mode: 'wipe', color: C.cream });
+    kinetic(ctx, 'MARKET',   { x: W / 2, y: y0 + 126, size: 128, weight: 900, tracking: -3, align: 'center', p: tp1, mode: 'wipe', color: C.cream });
+    kinetic(ctx, "DOESN'T",  { x: W / 2, y: y0 + 262, size: 128, weight: 900, tracking: -3, align: 'center', p: tp2, mode: 'wipe', color: C.gold, shadow: 0.7 });
+    kinetic(ctx, 'WAIT.',    { x: W / 2, y: y0 + 388, size: 128, weight: 900, tracking: -3, align: 'center', p: tp2, mode: 'wipe', color: C.gold, shadow: 0.7 });
+    const lw = seg(t, 1500, 2100, E.outExpo);
+    ctx.fillStyle = rgba(C.gold, 0.85 * lw);
+    ctx.fillRect(W / 2 - 150 * lw, y0 + 440, 300 * lw, 4);
+  } else {
+    kinetic(ctx, 'THE MARKET', { x: 150, y: 470, size: 132, weight: 900, tracking: -3, p: tp1, mode: 'wipe', color: C.white });
+    kinetic(ctx, "DOESN'T WAIT.", { x: 150, y: 612, size: 132, weight: 900, tracking: -3, p: tp2, mode: 'wipe', color: C.gold, shadow: 0.7 });
+    const lw = seg(t, 1500, 2100, E.outExpo);
+    ctx.fillStyle = rgba(C.gold, 0.85 * lw);
+    ctx.fillRect(150, 660, 300 * lw, 3);
+    FX.eyebrow(ctx, 152, 318, 'LIVE MARKET · 24 / 7 / 365', seg(t, 1750, 2350));
+  }
   ctx.restore();
 
   /* Session clock HUD. */
-  clockHud(ctx, W - 190, 190, 62, t, seg(t, 1200, 2000) * out);
+  clockHud(ctx, W - (V ? 120 : 190), V ? SAFE.top - 80 : 190, V ? 48 : 62, t, seg(t, 1200, 2000) * out);
 
   /* Ticker strip. */
   const tk = seg(t, 260, 900, E.outExpo) * out;
@@ -214,26 +228,29 @@ const CITIES = [
 const ROUTES = [[0, 1], [1, 2], [2, 3], [0, 4], [3, 5], [1, 6], [0, 7], [4, 2]];
 
 function sceneGlobe(ctx, A) {
-  const { t, p, W, H, S, cam } = A;
-  inkBackdrop(ctx, W, H, { warm: 0.34, cx: 0.68, cy: 0.5 });
+  const { t, p, W, H, S, cam, V, SAFE } = A;
+  inkBackdrop(ctx, W, H, { warm: 0.34, cx: V ? 0.5 : 0.68, cy: V ? 0.38 : 0.5 });
 
   const spin = t / 1000 * 0.3 + 2.1;
   const inP = E.outExpo(clamp(t / 1100));
-  cam.fov = 40 * Math.PI / 180;
-  cam.lookAt([lerp(2, 0.6, inP), lerp(3.4, 1.5, inP), lerp(15, 11.4, inP)], [2.9, 0.1, 0]);
+  /* Vertical: globe centred in the upper third, type beneath it. */
+  const GC = V ? [0, 3.0, 0] : [2.9, 0.1, 0];
+  cam.fov = (V ? 46 : 40) * Math.PI / 180;
+  cam.lookAt(V ? [0, lerp(4.6, 3.2, inP), lerp(16, 12.6, inP)]
+               : [lerp(2, 0.6, inP), lerp(3.4, 1.5, inP), lerp(15, 11.4, inP)], GC);
 
   S.reset();
   const R = 3.25;
-  const gm = M4.chain(M4.translate(2.9, 0.1, 0), M4.rotY(spin), M4.rotZ(0.38));
+  const gm = M4.chain(M4.translate(GC[0], GC[1], GC[2]), M4.rotY(spin), M4.rotZ(0.38));
 
   /* Globe shell: two wire layers for parallax depth. */
   S.mesh(Assets.globe, gm,
     { wireOnly: true, wireColor: rgba(C.gold, 0.46 * inP), wireWidth: 1.2, wireGlow: 0.7 });
-  S.mesh(Assets.globeIn, M4.chain(M4.translate(2.9, 0.1, 0), M4.rotY(-spin * 0.6), M4.rotZ(0.38)),
+  S.mesh(Assets.globeIn, M4.chain(M4.translate(GC[0], GC[1], GC[2]), M4.rotY(-spin * 0.6), M4.rotZ(0.38)),
     { wireOnly: true, wireColor: rgba(C.cyan, 0.16 * inP), wireWidth: 1 });
 
   /* Dark sphere core so back-facing wires read as "behind". */
-  S.sprite([2.9, 0.1, 0], (c, sc) => {
+  S.sprite(GC, (c, sc) => {
     const r = sc * R * 0.99;
     const g = c.createRadialGradient(-r * 0.3, -r * 0.3, r * 0.1, 0, 0, r);
     g.addColorStop(0, 'rgba(8,34,19,0.97)');
@@ -264,7 +281,7 @@ function sceneGlobe(ctx, A) {
   /* City nodes + labels. */
   CITIES.forEach((city, i) => {
     const wp = M4.xform(gm, Geo.latLng(city.lat, city.lng, R)).slice(0, 3);
-    const toCam = V3.dot(V3.norm(V3.sub(wp, [2.9, 0.1, 0])), V3.norm(V3.sub(cam.eye, wp)));
+    const toCam = V3.dot(V3.norm(V3.sub(wp, GC)), V3.norm(V3.sub(cam.eye, wp)));
     if (toCam < 0.05) return;
     const pulse = 0.5 + 0.5 * Math.sin(t / 420 + i * 1.7);
     const vis = clamp((t - 500 - i * 90) / 420) * toCam;
@@ -289,26 +306,41 @@ function sceneGlobe(ctx, A) {
   S.render(ctx, cam, W, H);
 
   dustField(ctx, t, W, H, 60, { speed: 16, alpha: 0.3 });
-  FX.scrim(ctx, W, H, 'left', 0.8, 0.52);
+  FX.scrim(ctx, W, H, V ? 'bottom' : 'left', V ? 0.88 : 0.8, V ? 0.5 : 0.52);
 
-  /* ── Type (left third) ── */
   const out = 1 - seg(t, 3350, 3800, E.inOutQuad);
   ctx.save();
   ctx.globalAlpha = out;
-  FX.eyebrow(ctx, 152, 350, 'GLOBAL SESSIONS · ALWAYS OPEN', seg(t, 300, 900));
-  kinetic(ctx, 'WHILE YOU SLEEP,', { x: 150, y: 470, size: 92, weight: 900, tracking: -1.5, p: seg(t, 520, 1200), mode: 'wipe', color: C.white });
-  kinetic(ctx, 'CAPITAL MOVES.',   { x: 150, y: 572, size: 92, weight: 900, tracking: -1.5, p: seg(t, 760, 1500), mode: 'wipe', color: C.gold, shadow: 0.6 });
-  const sub = seg(t, 1500, 2300);
-  if (sub > 0) {
-    setFont(ctx, 26, 600);
-    ctx.globalAlpha = out * sub;
-    ctx.fillStyle = rgba(C.slate, 0.95);
-    ctx.fillText('Most people watch from the sidelines.', 152, 650);
+  if (V) {
+    const y0 = H - SAFE.bottom - 400;
+    FX.eyebrow(ctx, 60, y0 - 70, 'GLOBAL SESSIONS · ALWAYS OPEN', seg(t, 300, 900));
+    kinetic(ctx, 'WHILE YOU SLEEP,', { x: W / 2, y: y0 + 40, size: 78, weight: 900, tracking: -1.5, align: 'center', p: seg(t, 520, 1200), mode: 'wipe', color: C.cream });
+    kinetic(ctx, 'CAPITAL MOVES.',   { x: W / 2, y: y0 + 130, size: 78, weight: 900, tracking: -1.5, align: 'center', p: seg(t, 760, 1500), mode: 'wipe', color: C.gold, shadow: 0.6 });
+    const sub = seg(t, 1500, 2300);
+    if (sub > 0) {
+      setFont(ctx, 28, 600);
+      ctx.globalAlpha = out * sub;
+      ctx.fillStyle = rgba(C.slate, 0.95);
+      ctx.textAlign = 'center';
+      ctx.fillText('Most people watch from the sidelines.', W / 2, y0 + 186);
+      ctx.textAlign = 'left';
+    }
+  } else {
+    FX.eyebrow(ctx, 152, 350, 'GLOBAL SESSIONS · ALWAYS OPEN', seg(t, 300, 900));
+    kinetic(ctx, 'WHILE YOU SLEEP,', { x: 150, y: 470, size: 92, weight: 900, tracking: -1.5, p: seg(t, 520, 1200), mode: 'wipe', color: C.white });
+    kinetic(ctx, 'CAPITAL MOVES.',   { x: 150, y: 572, size: 92, weight: 900, tracking: -1.5, p: seg(t, 760, 1500), mode: 'wipe', color: C.gold, shadow: 0.6 });
+    const sub = seg(t, 1500, 2300);
+    if (sub > 0) {
+      setFont(ctx, 26, 600);
+      ctx.globalAlpha = out * sub;
+      ctx.fillStyle = rgba(C.slate, 0.95);
+      ctx.fillText('Most people watch from the sidelines.', 152, 650);
+    }
   }
   ctx.restore();
 
-  /* Session bars — Tokyo / London / New York overlap. */
-  sessionBars(ctx, 152, 760, 560, t, seg(t, 1900, 2700) * out);
+  sessionBars(ctx, V ? 60 : 152, V ? H - SAFE.bottom - 150 : 760, V ? W - 120 : 560,
+    t, seg(t, 1900, 2700) * out);
 }
 
 function sessionBars(ctx, x, y, w, t, a) {
@@ -343,13 +375,14 @@ function sessionBars(ctx, x, y, w, t, a) {
 
 /* ══ S3 · 7.2 → 11.6s ══  Brand reveal ════════════════════════════════════ */
 function sceneBrand(ctx, A) {
-  const { t, p, W, H, S, cam } = A;
-  inkBackdrop(ctx, W, H, { warm: 0.72, cy: 0.46 });
+  const { t, p, W, H, S, cam, V, SAFE } = A;
+  inkBackdrop(ctx, W, H, { warm: 0.72, cy: V ? 0.38 : 0.46 });
 
   const settle = E.outExpo(clamp(t / 1700));
   const spin = lerp(-2.6, 0.26, settle) + Math.sin(t / 2100) * 0.1;
-  cam.fov = lerp(52, 38, settle) * Math.PI / 180;
-  cam.lookAt([0, lerp(2.4, 1.6, settle), lerp(6.4, 12.2, settle)], [0, lerp(0.2, 1.9, settle), 0]);
+  cam.fov = lerp(V ? 58 : 52, V ? 44 : 38, settle) * Math.PI / 180;
+  cam.lookAt([0, lerp(2.4, 1.6, settle), lerp(6.4, V ? 13.4 : 12.2, settle)],
+             [0, lerp(0.2, V ? 2.9 : 1.9, settle), 0]);
 
   S.reset();
   floorGrid(S, { half: 20, step: 2, y: -2.5, alpha: 0.14 * settle });
@@ -374,7 +407,7 @@ function sceneBrand(ctx, A) {
 
   /* The mark: the logo plate itself, gold-rimmed, carrying the real artwork. */
   const mk = E.spring(clamp((t - 420) / 1500), 6.4, 4.6);
-  const MY = 2.45;
+  const MY = V ? 3.35 : 2.45;
   let tileM = null;
   if (mk > 0.004) {
     const a = clamp(mk * 1.4);
@@ -407,18 +440,32 @@ function sceneBrand(ctx, A) {
   const out = 1 - seg(t, 3950, 4400, E.inOutQuad);
   ctx.save();
   ctx.globalAlpha = out;
-  const ty = H * 0.735;
-  kinetic(ctx, CFG.brand, {
-    x: W / 2, y: ty, size: 64, weight: 900, tracking: 7, align: 'center',
-    p: seg(t, 1650, 2600), mode: 'glyph', stagger: 0.022, color: C.cream, shadow: 0.5,
-  });
-  const rl = seg(t, 2500, 3100, E.outExpo);
-  ctx.fillStyle = rgba(C.gold, 0.9 * rl);
-  ctx.fillRect(W / 2 - 230 * rl, ty + 32, 460 * rl, 2.5);
-  kinetic(ctx, CFG.tagline, {
-    x: W / 2, y: ty + 82, size: 29, weight: 700, tracking: 6.5, align: 'center',
-    p: seg(t, 2850, 3500), mode: 'wipe', color: rgba(C.gold, 0.95),
-  });
+  const ty = V ? H - SAFE.bottom - 260 : H * 0.735;
+  if (V) {
+    /* The wordmark is too wide for 1080 on one line — split it. */
+    const wOpt = { size: 60, weight: 900, tracking: 5, align: 'center',
+                   mode: 'glyph', stagger: 0.022, color: C.cream, shadow: 0.5 };
+    kinetic(ctx, 'OPTIONS TRADERS', { ...wOpt, x: W / 2, y: ty, p: seg(t, 1650, 2500) });
+    kinetic(ctx, 'ACADEMY',         { ...wOpt, x: W / 2, y: ty + 74, p: seg(t, 1900, 2750) });
+    const rl = seg(t, 2500, 3100, E.outExpo);
+    ctx.fillStyle = rgba(C.gold, 0.9 * rl);
+    ctx.fillRect(W / 2 - 190 * rl, ty + 112, 380 * rl, 3);
+    const tOpt = { size: 29, weight: 700, tracking: 5, align: 'center', mode: 'wipe', color: rgba(C.gold, 0.95) };
+    kinetic(ctx, 'THE TRADER\u2019S',   { ...tOpt, x: W / 2, y: ty + 168, p: seg(t, 2850, 3400) });
+    kinetic(ctx, 'OPERATING SYSTEM.', { ...tOpt, x: W / 2, y: ty + 208, p: seg(t, 2950, 3500) });
+  } else {
+    kinetic(ctx, CFG.brand, {
+      x: W / 2, y: ty, size: 64, weight: 900, tracking: 7, align: 'center',
+      p: seg(t, 1650, 2600), mode: 'glyph', stagger: 0.022, color: C.cream, shadow: 0.5,
+    });
+    const rl = seg(t, 2500, 3100, E.outExpo);
+    ctx.fillStyle = rgba(C.gold, 0.9 * rl);
+    ctx.fillRect(W / 2 - 230 * rl, ty + 32, 460 * rl, 2.5);
+    kinetic(ctx, CFG.tagline, {
+      x: W / 2, y: ty + 82, size: 29, weight: 700, tracking: 6.5, align: 'center',
+      p: seg(t, 2850, 3500), mode: 'wipe', color: rgba(C.gold, 0.95),
+    });
+  }
   ctx.restore();
 }
 
@@ -430,30 +477,37 @@ const PILLARS = [
 ];
 
 function scenePillars(ctx, A) {
-  const { t, p, W, H, S, cam } = A;
-  inkBackdrop(ctx, W, H, { warm: 0.4, cy: 0.5 });
+  const { t, p, W, H, S, cam, V, SAFE } = A;
+  inkBackdrop(ctx, W, H, { warm: 0.4, cy: V ? 0.56 : 0.5 });
 
   const settle = E.outExpo(clamp(t / 1500));
-  cam.fov = 40 * Math.PI / 180;
-  cam.lookAt([lerp(-5.5, 0, settle), lerp(2.2, 1.0, settle), lerp(13.5, 11.9, settle)], [0, -0.75, 0]);
+  cam.fov = (V ? 47 : 40) * Math.PI / 180;
+  cam.lookAt(V ? [lerp(-3.5, 0, settle), lerp(0.2, -1.5, settle), lerp(22, 18.4, settle)]
+               : [lerp(-5.5, 0, settle), lerp(2.2, 1.0, settle), lerp(13.5, 11.9, settle)],
+             [0, V ? -1.9 : -0.75, 0]);
 
   S.reset();
   floorGrid(S, { half: 18, step: 2, y: -3.1, alpha: 0.18 });
 
   PILLARS.forEach((pl, i) => {
-    const x = (i - 1) * 4.0;
+    /* Side by side in 16:9; stacked into a column in 9:16. */
+    const x = V ? 0 : (i - 1) * 4.0;
+    const yBase = V ? (1 - i) * 4.1 - 1.7 : 0.35;
     const enter = E.spring(clamp((t - 180 - i * 190) / 1500), 5.6, 4.4);
     if (enter <= 0.004) return;
-    const yOff = (1 - enter) * -7;
+    const yOff = (1 - enter) * (V ? -3 : -7);
     const rot = (1 - enter) * 0.9 + Math.sin(t / 2300 + i) * 0.05;
-    const m = M4.chain(M4.translate(x, 0.35 + yOff, 0), M4.rotY(rot), M4.rotX(-0.04));
+    const sc3 = V ? 0.97 : 1;
+    const m = M4.chain(M4.translate(x, yBase + yOff, 0), M4.rotY(rot), M4.rotX(-0.04), M4.scale(sc3));
     S.mesh(Assets.card, m, fade(MAT.glass, clamp(enter * 1.5)));
-    S.mesh(Assets.plinth, M4.chain(M4.translate(x, -2.14 + yOff, 0), M4.rotY(rot), M4.scale(0.94, 0.5, 0.5)),
-      { ...fade(MAT.gold, clamp(enter * 1.5) * 0.5), metal: 0.8, rim: 0.35 });
+    if (!V) {
+      S.mesh(Assets.plinth, M4.chain(M4.translate(x, -2.14 + yOff, 0), M4.rotY(rot), M4.scale(0.94, 0.5, 0.5)),
+        { ...fade(MAT.gold, clamp(enter * 1.5) * 0.5), metal: 0.8, rim: 0.35 });
+    }
 
     /* Card face is drawn in screen space, anchored to the 3D card. */
-    S.sprite([x, 0.35 + yOff, 0.07], (c, sc) => {
-      const w = sc * 2.82, h = sc * 3.82;
+    S.sprite([x, yBase + yOff, 0.07 * sc3], (c, sc) => {
+      const w = sc * 2.82 * sc3, h = sc * 3.82 * sc3;
       c.save();
       c.globalAlpha = clamp(enter * 1.5);
       cardFace(c, -w / 2, -h / 2, w, h, pl, t - i * 190, i);
@@ -466,17 +520,25 @@ function scenePillars(ctx, A) {
   const out = 1 - seg(t, 3350, 3800, E.inOutQuad);
   ctx.save();
   ctx.globalAlpha = out;
-  FX.eyebrow(ctx, W / 2 - 240, 72, 'SYSTEM MODULES · ALWAYS RUNNING', seg(t, 250, 850));
-  const hOpt = { size: 62, weight: 900, tracking: -0.5 };
-  const w1 = kineticWidth(ctx, 'NOT AN APP.', hOpt);
-  const w2 = kineticWidth(ctx, 'AN OPERATING SYSTEM.', hOpt);
-  const gap = 28;
-  const x0 = W / 2 - (w1 + gap + w2) / 2;
-  kinetic(ctx, 'NOT AN APP.', { ...hOpt, x: x0, y: 164, p: seg(t, 500, 1300), mode: 'wipe', color: C.cream });
-  kinetic(ctx, 'AN OPERATING SYSTEM.', { ...hOpt, x: x0 + w1 + gap, y: 164, p: seg(t, 800, 1650), mode: 'wipe', color: C.gold, shadow: 0.5 });
+  if (V) {
+    FX.eyebrow(ctx, 60, SAFE.top - 96, 'SYSTEM MODULES · ALWAYS RUNNING', seg(t, 250, 850));
+    const hOpt = { weight: 900, tracking: -0.5, align: 'center', mode: 'wipe' };
+    kinetic(ctx, 'NOT AN APP.',          { ...hOpt, size: 72, x: W / 2, y: SAFE.top + 4,  p: seg(t, 500, 1300), color: C.cream });
+    kinetic(ctx, 'AN OPERATING SYSTEM.', { ...hOpt, size: 54, x: W / 2, y: SAFE.top + 74, p: seg(t, 800, 1650), color: C.gold, shadow: 0.5 });
+  } else {
+    FX.eyebrow(ctx, W / 2 - 240, 72, 'SYSTEM MODULES · ALWAYS RUNNING', seg(t, 250, 850));
+    const hOpt = { size: 62, weight: 900, tracking: -0.5 };
+    const w1 = kineticWidth(ctx, 'NOT AN APP.', hOpt);
+    const w2 = kineticWidth(ctx, 'AN OPERATING SYSTEM.', hOpt);
+    const gap = 28;
+    const x0 = W / 2 - (w1 + gap + w2) / 2;
+    kinetic(ctx, 'NOT AN APP.', { ...hOpt, x: x0, y: 164, p: seg(t, 500, 1300), mode: 'wipe', color: C.cream });
+    kinetic(ctx, 'AN OPERATING SYSTEM.', { ...hOpt, x: x0 + w1 + gap, y: 164, p: seg(t, 800, 1650), mode: 'wipe', color: C.gold, shadow: 0.5 });
+  }
   ctx.restore();
 
   /* Bottom rail of capability chips. */
+  if (V) return;                      // no room for the chip rail in a Reel
   const chips = ['OPTIONS', 'FUTURES', 'EQUITIES', 'ETFs', 'RISK', 'PORTFOLIO'];
   ctx.save();
   ctx.globalAlpha = out;

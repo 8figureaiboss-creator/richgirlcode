@@ -40,7 +40,7 @@ function makeIR(ac, seconds = 2.6, decay = 3.1) {
   return buf;
 }
 
-/* Schedules the entire 30s arrangement. `t0` is the AudioContext time to
+/* Schedules the entire 74s arrangement. `t0` is the AudioContext time to
    anchor bar 0 to; `from` lets playback start mid-timeline (for scrubbing). */
 function buildScore(ac, dest, { t0 = 0, from = 0, gain = 0.58 } = {}) {
   const noise = makeNoise(ac, 3);
@@ -240,72 +240,126 @@ function buildScore(ac, dest, { t0 = 0, from = 0, gain = 0.58 } = {}) {
     s.connect(nf).connect(ng).connect(fxBus); s.start(t); s.stop(t + dur + 0.2);
   }
 
-  /* ── arrangement ────────────────────────────────────────────────────────── */
+  /* ── arrangement ──────────────────────────────────────────────────────────
+     74 seconds at 120 BPM: one bar = 2s. The score follows the picture's act
+     boundaries exactly, so every impact lands on a cut and the kit drops out
+     where the voice-over needs the room. */
 
-  // ACT I — tension (0.0 → 7.0) "the market doesn't wait"
+  /* Lay a groove over a span. `drive` scales how busy and how loud the kit is. */
+  function groove(from2, to, { drive = 1, kickA = 0.85, clapOn = 2,
+                               line = [N.C2, N.C2, N.Eb2, N.C2, N.Ab2, N.Ab2, N.Bb2, N.G2] } = {}) {
+    const beats = Math.round((to - from2) / BEAT);
+    for (let b = 0; b < beats; b++) {
+      const s2 = from2 + b * BEAT;
+      kick(s2, (b === 0 ? 1 : kickA) * drive);
+      hat(s2 + BEAT / 2, 0.44 * drive);
+      hat(s2 + BEAT / 4, 0.15 * drive);
+      if (drive > 0.93) hat(s2 + BEAT * 0.75, 0.2 * drive);
+      if (b % 4 === clapOn) clap(s2, 0.58 * drive);
+      bass(s2, line[b % line.length], BEAT * 0.86, 0.88 * drive);
+    }
+  }
+
+  const CHORD = {
+    Cm:   [N.C3, N.Eb3, N.G3, N.C4],
+    CmHi: [N.C3, N.Eb3, N.G3, N.Bb3],
+    Ab:   [N.Ab2, N.C3, N.Eb3, N.Ab3],
+    Bb:   [N.Bb2, N.F3, N.Bb3, N.D4],
+    Eb:   [N.Eb3, N.G3, N.Bb3, N.Eb4],
+    Fm:   [N.F3, N.Ab3, N.C4, N.F4],
+    G:    [N.G3, N.Bb3, N.D4, N.G4],
+  };
+  const prog = (list, dur = 3.4, amp = 0.3, cut = 2300) => {
+    for (const [s2, ch] of list) pad(s2, CHORD[ch], dur, amp, cut);
+  };
+  const MEL = [N.G4, N.C5, N.Bb4, N.G4, N.Eb5, N.C5, N.Bb4, N.C5];
+
+  /* COLD OPEN (0.0 → 3.4) — tension only. No groove under the first picture. */
   impact(0.0, 1.0);
-  pad(0.15, [N.C2, N.C3, N.G3], 7.0, 0.3, 700);
-  for (let i = 0; i < 14; i++) bass(0.5 + i * BEAT, N.C2, 0.3, 0.42 + (i % 4 === 0 ? 0.3 : 0));
-  pluck(2.0, N.Eb4, 0.5, 0.3); pluck(3.0, N.G4, 0.5, 0.3); pluck(4.0, N.Bb4, 0.5, 0.34);
-  pluck(5.0, N.C5, 0.45, 0.4); pluck(5.5, N.Bb4, 0.4, 0.3); pluck(6.0, N.G4, 0.9, 0.44);
-  whoosh(7.0, 1.3, 0.7);
-  for (let i = 0; i < 6; i++) hat(5.5 + i * 0.25, 0.1 + i * 0.07);
+  pad(0.15, [N.C2, N.C3, N.G3], 3.5, 0.3, 700);
+  for (let i = 0; i < 7; i++) bass(0.5 + i * BEAT, N.C2, 0.3, 0.42 + (i % 4 === 0 ? 0.3 : 0));
+  pluck(1.0, N.Eb4, 0.5, 0.28); pluck(2.0, N.G4, 0.5, 0.3); pluck(2.75, N.Bb4, 0.6, 0.34);
+  whoosh(3.4, 1.1, 0.6);
 
-  // ACT II — the brand lands, groove enters (7.0 → 18.0)
-  impact(7.0, 0.95);
-  const chords = [
-    [7.0,  [N.C3, N.Eb3, N.G3, N.C4]],
-    [11.0, [N.Ab2, N.C3, N.Eb3, N.Ab3]],
-    [14.0, [N.Bb2, N.F3, N.Bb3, N.D4]],
-    [16.0, [N.C3, N.Eb3, N.G3, N.Bb3]],
-  ];
-  for (const [s, ch] of chords) pad(s, ch, s === 7.0 ? 4.2 : 3.2, 0.3, 2100);
+  /* ACT I a — the collapse (3.4 → 9.2). Fragments, then a riser to the brand. */
+  impact(3.4, 0.7);
+  prog([[3.4, 'Cm'], [6.2, 'Ab']], 2.9, 0.26, 1200);
+  for (let i = 0; i < 11; i++) bass(3.5 + i * BEAT, i % 2 ? N.C2 : N.Ab2, 0.26, 0.4);
+  for (let i = 0; i < 8; i++) pluck(3.6 + i * BEAT * 1.5, [N.C5, N.Bb4, N.G4, N.Eb4][i % 4], 0.22, 0.2 + i * 0.014);
+  for (let i = 0; i < 11; i++) hat(5.4 + i * 0.3, 0.09 + i * 0.028);
+  riser(7.2, 2.0, 0.9);
+  whoosh(9.2, 0.9, 0.5);
 
-  for (let b = 0; b < 22; b++) {               // 7.0 → 18.0 = 22 beats
-    const s = 7.0 + b * BEAT;
-    kick(s, b === 0 ? 1 : 0.85);
-    hat(s + BEAT / 2, 0.42);
-    hat(s + BEAT / 4, 0.14);
-    if (b % 4 === 2) clap(s, 0.55);
-    const bl = [N.C2, N.C2, N.Eb2, N.C2, N.Ab2, N.Ab2, N.Bb2, N.G2];
-    bass(s, bl[b % 8], BEAT * 0.86, 0.85);
-  }
-  const mel = [N.G4, N.C5, N.Bb4, N.G4, N.Eb5, N.C5, N.Bb4, N.C5];
-  for (let i = 0; i < 16; i++) pluck(11.5 + i * BEAT * 0.75, mel[i % 8], 0.3, 0.3);
-  whoosh(11.5, 0.7, 0.45);
-  whoosh(18.0, 0.7, 0.45);
+  /* ACT I b — the brand lands (9.2 → 16.4). Full groove in. */
+  impact(9.2, 1.1);
+  prog([[9.2, 'Cm'], [12.4, 'Ab'], [14.4, 'Bb']], 3.4, 0.3, 2100);
+  groove(9.2, 16.4, { drive: 1 });
+  for (let i = 0; i < 14; i++) pluck(11.4 + i * BEAT * 0.75, MEL[i % 8], 0.3, 0.3);
+  whoosh(16.4, 0.7, 0.45);
 
-  // ACT III — proof + lifestyle (18.0 → 26.5)
-  for (let b = 0; b < 17; b++) {
-    const s = 18.0 + b * BEAT;
-    kick(s, 0.9);
-    hat(s + BEAT / 2, 0.46);
-    hat(s + BEAT / 4, 0.16);
-    hat(s + BEAT * 0.75, 0.2);
-    if (b % 4 === 2) clap(s, 0.6);
-    const bl = [N.F2, N.F2, N.Ab2, N.F2, N.C2, N.C2, N.Eb2, N.G2];
-    bass(s, bl[b % 8], BEAT * 0.86, 0.9);
-  }
-  pad(18.0, [N.F3, N.Ab3, N.C4, N.F4], 4.4, 0.28, 2400);
-  pad(22.5, [N.C3, N.Eb3, N.G3, N.C4], 4.2, 0.3, 2600);
-  for (let i = 0; i < 10; i++) pluck(22.6 + i * BEAT * 0.5, [N.C5, N.Eb5, N.G5, N.C6][i % 4], 0.22, 0.26);
-  impact(18.0, 0.55);
-  impact(22.5, 0.6);
-  riser(24.5, 2.0, 0.85);
-  for (let i = 0; i < 8; i++) hat(25.5 + i * (0.5 - i * 0.045), 0.2 + i * 0.07);
+  /* ACT II a — build the play (16.4 → 23.6). */
+  impact(16.4, 0.7);
+  prog([[16.4, 'Fm'], [19.6, 'Cm'], [21.6, 'Eb']], 3.2, 0.28, 2400);
+  groove(16.4, 23.6, { drive: 0.9, line: [N.F2, N.F2, N.Ab2, N.F2, N.C2, N.C2, N.Eb2, N.G2] });
+  for (let i = 0; i < 10; i++) pluck(17.0 + i * BEAT, [N.C5, N.Eb5, N.G5, N.Eb5][i % 4], 0.24, 0.22);
 
-  // ACT IV — the close (26.5 → 30.0)
-  impact(26.5, 1.15);
-  pad(26.5, [N.C2, N.C3, N.Eb3, N.G3, N.C4, N.Eb4], 3.6, 0.42, 3000);
-  bass(26.5, N.C2, 1.5, 1.0);
-  bass(28.0, N.C2, 0.6, 0.7);
-  bass(28.75, N.G1, 1.3, 0.8);
-  kick(26.5, 1.0); kick(27.5, 0.7); kick(28.0, 0.9); kick(29.0, 0.75);
-  clap(28.0, 0.5);
-  pluck(26.6, N.C5, 0.8, 0.4); pluck(27.0, N.G5, 0.7, 0.34); pluck(27.4, N.C6, 1.2, 0.3);
-  whoosh(29.9, 0.9, 0.3);
+  /* ACT II b — the contract (23.6 → 31.2). */
+  impact(23.6, 0.8);
+  prog([[23.6, 'Cm'], [26.0, 'Ab'], [28.4, 'Bb'], [30.4, 'CmHi']], 2.6, 0.3, 2500);
+  groove(23.6, 31.2, { drive: 1 });
+  for (let i = 0; i < 12; i++) pluck(24.2 + i * BEAT * 0.75, MEL[i % 8], 0.26, 0.24);
+  riser(29.9, 1.3, 0.55);
 
-  return { master, duration: 30.5 };
+  /* ACT III a — the Academy (31.2 → 38.4). The one bright lift in the film. */
+  impact(31.2, 0.95);
+  prog([[31.2, 'Ab'], [34.4, 'Eb'], [36.4, 'Bb']], 3.2, 0.3, 2600);
+  groove(31.2, 38.4, { drive: 0.94, line: [N.Ab2, N.Ab2, N.C3, N.Ab2, N.Eb2, N.Eb2, N.Bb2, N.G2] });
+  for (let i = 0; i < 14; i++) pluck(31.4 + i * BEAT * 0.75, [N.Eb5, N.G5, N.C6, N.G5][i % 4], 0.22, 0.22);
+
+  /* ACT III b — journal, hit list, mission control (38.4 → 45.6). */
+  impact(38.4, 0.6);
+  prog([[38.4, 'Fm'], [41.2, 'Cm'], [43.6, 'G']], 3.0, 0.28, 2400);
+  groove(38.4, 45.6, { drive: 0.88, line: [N.F2, N.F2, N.Ab2, N.F2, N.C2, N.G1, N.C2, N.Eb2] });
+  for (let i = 0; i < 10; i++) pluck(39.0 + i * BEAT, [N.C5, N.F4, N.Ab4, N.C5][i % 4], 0.26, 0.2);
+
+  /* ACT IV a — the portfolio (45.6 → 53.2). Wider, more air. */
+  impact(45.6, 1.0);
+  prog([[45.6, 'Cm'], [48.4, 'Eb'], [50.8, 'Ab']], 3.4, 0.32, 2800);
+  groove(45.6, 53.2, { drive: 1 });
+  for (let i = 0; i < 12; i++) pluck(46.2 + i * BEAT * 0.75, [N.G4, N.C5, N.Eb5, N.G5][i % 4], 0.3, 0.24);
+
+  /* ACT IV b — the lifestyle (53.2 → 62.4), stripped back from 59.4 so the
+     bridge into the close lands in near-silence. */
+  impact(53.2, 0.85);
+  prog([[53.2, 'Ab'], [56.0, 'Bb'], [58.4, 'Cm']], 3.6, 0.34, 3000);
+  groove(53.2, 59.4, { drive: 0.94, line: [N.Ab2, N.Ab2, N.C3, N.Ab2, N.Bb2, N.Bb2, N.F2, N.G2] });
+  for (let i = 0; i < 10; i++) pluck(53.4 + i * BEAT * 0.75, [N.C5, N.Eb5, N.G5, N.C6][i % 4], 0.26, 0.26);
+  bass(59.4, N.C2, 1.6, 0.7);
+  bass(61.0, N.Ab2, 1.4, 0.55);
+  pad(59.4, [N.C2, N.C3, N.Eb3, N.G3], 4.0, 0.3, 1400);
+  whoosh(62.4, 1.6, 0.5);
+
+  /* CLOSE — the launch beat (62.4 → 74.0). Almost nothing, then one resolve. */
+  impact(62.4, 1.2);
+  pad(62.6, [N.C2, N.C3, N.G3], 6.0, 0.26, 900);
+  bass(62.6, N.C2, 2.4, 0.75);
+  pluck(63.2, N.C5, 1.1, 0.26);
+  pluck(65.4, N.G4, 1.0, 0.2);
+  pad(66.6, [N.Ab2, N.C3, N.Eb3, N.Ab3], 4.0, 0.26, 1500);
+  bass(66.6, N.Ab2, 2.0, 0.6);
+  riser(68.4, 1.8, 0.55);
+
+  /* The end card gets the only full cadence in the film. */
+  impact(70.2, 1.15);
+  pad(70.2, [N.C2, N.C3, N.Eb3, N.G3, N.C4, N.Eb4], 3.4, 0.42, 3000);
+  bass(70.2, N.C2, 1.6, 1.0);
+  bass(71.8, N.G1, 1.6, 0.8);
+  kick(70.2, 1.0); kick(71.2, 0.7); kick(71.7, 0.9); kick(72.7, 0.75);
+  clap(71.7, 0.5);
+  pluck(70.3, N.C5, 0.8, 0.4); pluck(70.7, N.G5, 0.7, 0.34); pluck(71.1, N.C6, 1.2, 0.3);
+  whoosh(73.3, 0.9, 0.3);
+
+  return { master, duration: 74.6 };
 }
 
 /* ── Live playback controller ────────────────────────────────────────────── */
@@ -345,7 +399,7 @@ class ScorePlayer {
 }
 
 /* Offline bounce → 16-bit PCM WAV, used by the MP4 renderer. */
-async function bounceWav(seconds = 30.5, sampleRate = 48000) {
+async function bounceWav(seconds = 74.6, sampleRate = 48000) {
   const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
   const ac = new OAC(2, Math.ceil(seconds * sampleRate), sampleRate);
   buildScore(ac, ac.destination, { t0: 0, from: 0 });

@@ -5,32 +5,48 @@
    film one frame at a time instead of screen-recording it.
    ========================================================================== */
 
-const STAGE_W = 1920, STAGE_H = 1080;
-const DURATION = 30000;
+/* The spot composes natively at both sizes. 9:16 is not the 16:9 frame
+   letterboxed — every scene lays itself out again for the taller canvas. */
+const SIZES = { wide: [1920, 1080], vertical: [1080, 1920] };
+
+/* 74 seconds. The supplied voice-over script runs to roughly 185 words; at a
+   brisk-but-natural ad read (~175 wpm) that is 57.6s of speech, and the cold
+   open, the beats between acts and the end card account for the rest. */
+const DURATION = 74000;
+
+/* Instagram/TikTok chrome covers roughly the top 230px and bottom 420px of a
+   1080x1920 Reel. Scenes keep anything that must be read inside this band. */
+const SAFE = { top: 250, bottom: 440 };
 
 /* ── Shot list ───────────────────────────────────────────────────────────── */
 const TL = new Timeline(DURATION);
-TL.add('hook',       0,     3400,  sceneHook,       { xfade: 0 })
-  .add('globe',      3400,  7200,  sceneGlobe,      { xfade: 220 })
-  .add('brand',      7200,  11600, sceneBrand,      { xfade: 0 })
-  .add('pillars',    11600, 15400, scenePillars,    { xfade: 200 })
-  .add('curriculum', 15400, 19200, sceneCurriculum, { xfade: 200 })
-  .add('growth',     19200, 23000, sceneGrowth,     { xfade: 200 })
-  .add('pocket',     23000, 26800, scenePocket,     { xfade: 200 })
-  .add('close',      26800, 30000, sceneClose,      { xfade: 0 });
+/*  ACT I   — ONE SYSTEM        0.0 → 16.4
+    ACT II  — BUILD THE PLAY   16.4 → 31.2
+    ACT III — LEARN · TRACK    31.2 → 45.6
+    ACT IV  — BEYOND TRADING   45.6 → 62.4
+    CLOSE   — the launch beat  62.4 → 74.0                                   */
+TL.add('hook',      0,     3400,  sceneHook,       { xfade: 0 })
+  .add('collapse',  3400,  9200,  sceneCollapse,   { xfade: 260 })
+  .add('system',    9200,  16400, sceneOneSystem,  { xfade: 0 })
+  .add('play',      16400, 23600, sceneBuildPlay,  { xfade: 240 })
+  .add('plan',      23600, 31200, scenePlan,       { xfade: 240 })
+  .add('academy',   31200, 38400, sceneAcademy,    { xfade: 0 })
+  .add('track',     38400, 45600, sceneTrack,      { xfade: 240 })
+  .add('wealth',    45600, 53200, sceneWealth,     { xfade: 0 })
+  .add('lifestyle', 53200, 62400, sceneLifestyle,  { xfade: 240 })
+  .add('launch',    62400, 74000, sceneLaunch,     { xfade: 0 });
 
-/* Hard cuts get an RGB-split + flash kick. */
-const CUTS = [0, 7200, 11600, 26800];
+const CUTS = [0, 9200, 16400, 31200, 45600, 62400];
 
 class Film {
   constructor(display) {
     this.display = display;
     this.dctx = display.getContext('2d');
 
-    this.stage = this._cv(STAGE_W, STAGE_H);
-    this.buf   = this._cv(STAGE_W, STAGE_H);
-    this.copy  = this._cv(STAGE_W, STAGE_H);
-    this.bloom = this._cv(STAGE_W / 3, STAGE_H / 3);
+    this.stage = this._cv(1920, 1080);
+    this.buf   = this._cv(1920, 1080);
+    this.copy  = this._cv(1920, 1080);
+    this.bloom = this._cv(640, 360);
 
     this.sctx = this.stage.getContext('2d');
     this.bctx = this.buf.getContext('2d');
@@ -39,6 +55,7 @@ class Film {
     this.cam = new Camera();
 
     this.aspect = 'wide';
+    this.W = 1920; this.H = 1080;
     this.captions = true;
     this.frame = 0;
     FX.initGrain();
@@ -48,6 +65,19 @@ class Film {
     const c = document.createElement('canvas');
     c.width = w; c.height = h;
     return c;
+  }
+
+  /* Resize every buffer to the chosen delivery size. */
+  setAspect(a) {
+    if (!SIZES[a]) return;
+    this.aspect = a;
+    const [w, h] = SIZES[a];
+    this.W = w; this.H = h;
+    for (const [cv, sw, sh] of [[this.stage, w, h], [this.buf, w, h], [this.copy, w, h],
+                                [this.bloom, Math.round(w / 3), Math.round(h / 3)]]) {
+      cv.width = sw; cv.height = sh;
+    }
+    FX._vign = null;            // the vignette is cached per size
   }
 
   /* Render one scene into a given context. */
@@ -64,7 +94,7 @@ class Film {
     ctx.lineJoin = 'miter';
     ctx.setLineDash([]);
     scene.draw(ctx, {
-      t, p: clamp(t / dur), W: STAGE_W, H: STAGE_H,
+      t, p: clamp(t / dur), W: this.W, H: this.H, V: this.H > this.W, SAFE,
       S: this.S, cam: this.cam, abs: ms, frame: this.frame,
     });
   }
@@ -78,7 +108,7 @@ class Film {
 
     if (!act.length) {
       sctx.fillStyle = '#000';
-      sctx.fillRect(0, 0, STAGE_W, STAGE_H);
+      sctx.fillRect(0, 0, this.W, this.H);
     } else {
       /* Oldest first; newest may dissolve in over the top. */
       act.sort((a, b) => a.start - b.start);
@@ -106,6 +136,7 @@ class Film {
     sctx.globalCompositeOperation = 'source-over';
 
     FX.bloom(sctx, this.stage, this.bloom, 0.24, 4);
+    const W = this.W, H = this.H;
 
     let kick = 0;
     for (const c of CUTS) {
@@ -114,140 +145,84 @@ class Film {
     }
     if (kick > 0.02) FX.aberration(sctx, this.stage, this.copy, kick * 7);
 
-    FX.grain(sctx, STAGE_W, STAGE_H, this.frame, 0.042);
-    FX.vignette(sctx, STAGE_W, STAGE_H, 0.58);
-    FX.scanlines(sctx, STAGE_W, STAGE_H, 0.022, 4);
+    FX.grain(sctx, W, H, this.frame, 0.042);
+    FX.vignette(sctx, W, H, 0.58);
+    FX.scanlines(sctx, W, H, 0.022, 4);
 
     /* Edge-to-edge grade. */
     sctx.save();
     sctx.globalCompositeOperation = 'overlay';
     sctx.globalAlpha = 0.1;
-    const grade = sctx.createLinearGradient(0, 0, STAGE_W, STAGE_H);
+    const grade = sctx.createLinearGradient(0, 0, W, H);
     grade.addColorStop(0, '#0E4A28');
     grade.addColorStop(1, '#4A3306');
     sctx.fillStyle = grade;
-    sctx.fillRect(0, 0, STAGE_W, STAGE_H);
+    sctx.fillRect(0, 0, W, H);
     sctx.restore();
 
     this._present(ms);
   }
 
-  /* Compose the stage into the delivery frame (16:9 or 9:16). */
+  /* The stage IS the delivery frame now — nothing to letterbox or inset. */
   _present(ms) {
-    const vertical = this.aspect === 'vertical';
-    const OW = vertical ? 1080 : STAGE_W;
-    const OH = vertical ? 1920 : STAGE_H;
-    if (this.display.width !== OW || this.display.height !== OH) {
-      this.display.width = OW; this.display.height = OH;
+    const W = this.W, H = this.H;
+    if (this.display.width !== W || this.display.height !== H) {
+      this.display.width = W; this.display.height = H;
     }
     const d = this.dctx;
     d.setTransform(1, 0, 0, 1, 0, 0);
     d.globalAlpha = 1;
     d.globalCompositeOperation = 'source-over';
-    d.filter = 'none';
     d.fillStyle = '#000';
-    d.fillRect(0, 0, OW, OH);
+    d.fillRect(0, 0, W, H);
 
     /* Final grade — restores the contrast the bloom pass softens. */
     d.filter = 'contrast(1.1) saturate(1.06) brightness(1.04)';
-    if (!vertical) {
-      d.drawImage(this.stage, 0, 0, OW, OH);
-      d.filter = 'none';
-      if (this.captions) this._captions(d, OW, OH, ms, OH - 128);
-    } else {
-      const sw = OW, sh = OW * (STAGE_H / STAGE_W);
-      const sy = (OH - sh) / 2 + 26;
-      /* Fill the letterbox with a blown-up, blurred, darkened copy of the frame
-         rather than dead black — the bands then read as ambient light from the
-         shot instead of as a crop. */
-      d.filter = 'blur(42px) brightness(0.3) saturate(1.25)';
-      const cov = Math.max(OW / STAGE_W, OH / STAGE_H) * 1.1;
-      const cw = STAGE_W * cov, chh = STAGE_H * cov;
-      d.drawImage(this.stage, (OW - cw) / 2, (OH - chh) / 2, cw, chh);
-      d.filter = 'contrast(1.1) saturate(1.06) brightness(1.04)';
-      d.drawImage(this.stage, 0, sy, sw, sh);
-      d.filter = 'none';
-      this._verticalChrome(d, OW, OH, ms, sy, sh);
-      if (this.captions) this._captions(d, OW, OH, ms, sy + sh + 86, 0.72);
+    d.drawImage(this.stage, 0, 0, W, H);
+    d.filter = 'none';
+
+    if (this.captions) {
+      const vertical = H > W;
+      this._captions(d, W, H, ms,
+        vertical ? H - SAFE.bottom - 30 : H - 128,
+        vertical ? 1.25 : 1);
     }
   }
 
-  _verticalChrome(d, W, H, ms, sy, sh) {
-    /* Hairline rules turn the 16:9 window's edges into a deliberate frame
-       rather than a seam against the blurred backdrop. */
-    d.save();
-    for (const y of [sy, sy + sh]) {
-      const g = d.createLinearGradient(0, y, W, y);
-      g.addColorStop(0, 'rgba(212,175,55,0)');
-      g.addColorStop(0.5, 'rgba(212,175,55,0.5)');
-      g.addColorStop(1, 'rgba(212,175,55,0)');
-      d.fillStyle = g;
-      d.fillRect(0, y - 1, W, 2);
-    }
-    d.restore();
-
-    /* Brand bar, top. */
-    d.save();
-    const mx = 64, my = 140;
-    logoStamp(d, mx, my, 52, { radius: 6 });
-    d.strokeStyle = rgba(C.gold, 0.55);
-    d.lineWidth = 1.4;
-    roundRect(d, mx, my, 52, 52, 6);
-    d.stroke();
-    setFont(d, 27, 900);
-    d.fillStyle = C.cream;
-    d.textBaseline = 'middle';
-    tracked(d, CFG.brand, mx + 70, my + 26, 2);
-    setFont(d, 18, 700);
-    d.fillStyle = rgba(C.gold, 0.9);
-    tracked(d, CFG.tagline, mx, my + 82, 3.6);
-    d.restore();
-
-    /* CTA bar, bottom. */
-    const bp = E.outExpo(clamp((ms - 1200) / 900));
-    d.save();
-    d.globalAlpha = bp;
-    const bw = W - 128, bh = 96, bx = 64, by = H - 250;
-    roundRect(d, bx, by, bw, bh, 12);
-    const g = d.createLinearGradient(bx, by, bx + bw, by + bh);
-    g.addColorStop(0, C.goldLt); g.addColorStop(0.55, C.gold); g.addColorStop(1, C.goldDk);
-    d.fillStyle = g; d.fill();
-    setFont(d, 32, 900);
-    d.fillStyle = '#0A0C10';
-    d.textBaseline = 'middle';
-    tracked(d, CFG.cta, W / 2, by + bh / 2 + 1, 3, 'center');
-    setFont(d, 21, 800, true);
-    d.fillStyle = rgba(C.cream, 0.92);
-    tracked(d, CFG.url, W / 2, by + bh + 42, 2, 'center');
-    setFont(d, 16, 800);
-    d.fillStyle = rgba(C.gold, 0.95);
-    tracked(d, CFG.badges[0], W / 2, by + bh + 76, 2.2, 'center');
-    setFont(d, 13, 500);
-    d.fillStyle = rgba(C.slate, 0.7);
-    d.textAlign = 'center';
-    d.fillText(CFG.disclaimer[0], W / 2, H - 56);
-    d.fillText(CFG.disclaimer[1], W / 2, H - 38);
-    d.textAlign = 'left';
-    d.restore();
-  }
 
   _captions(d, W, H, ms, y, scale = 1) {
     const line = CFG.vo.find(v => ms >= v.t && ms < v.t + v.d);
     if (!line) return;
     const a = Math.min(1, (ms - line.t) / 120, (line.t + line.d - ms) / 160);
+    const size = 34 * scale;
+    setFont(d, size, 800);
+
+    /* Wrap to the gutters: a vertical frame is half as wide, so most cues
+       need two lines. */
+    const maxW = W - 120;
+    const lines2 = [];
+    let cur = '';
+    for (const w of line.text.toUpperCase().split(' ')) {
+      const test = cur ? `${cur} ${w}` : w;
+      if (cur && d.measureText(test).width > maxW) { lines2.push(cur); cur = w; }
+      else cur = test;
+    }
+    if (cur) lines2.push(cur);
+
+    const lh = size * 1.2, pad = 20 * scale;
+    const boxW = Math.max(...lines2.map(l => d.measureText(l).width)) + pad * 2;
+    const boxH = lines2.length * lh + pad;
+    const top = y - boxH;
+
     d.save();
     d.globalAlpha = clamp(a);
-    setFont(d, 34 * scale, 800);
-    const words = line.text.toUpperCase();
-    const tw = d.measureText(words).width;
-    const pad = 26 * scale;
-    roundRect(d, W / 2 - tw / 2 - pad, y - 32 * scale, tw + pad * 2, 54 * scale, 8);
-    d.fillStyle = 'rgba(4,6,10,0.76)';
+    roundRect(d, W / 2 - boxW / 2, top, boxW, boxH, 10);
+    d.fillStyle = 'rgba(3,14,8,0.82)';
     d.fill();
-    d.fillStyle = C.white;
+    d.fillStyle = C.cream;
     d.textAlign = 'center';
     d.textBaseline = 'middle';
-    d.fillText(words, W / 2, y - 4 * scale);
+    lines2.forEach((l, i) => d.fillText(l, W / 2, top + pad / 2 + lh * (i + 0.5)));
     d.textAlign = 'left';
     d.restore();
   }
@@ -296,7 +271,7 @@ function tick() {
 function update(ms) {
   const f = clamp(ms / DURATION);
   els.fill.style.width = `${f * 100}%`;
-  els.time.textContent = `${fmt(Math.min(ms, DURATION))} / 30.00s`;
+  els.time.textContent = `${fmt(Math.min(ms, DURATION))} / ${(DURATION / 1000).toFixed(2)}s`;
   const sc = TL.scenes.find(s => ms >= s.start && ms < s.end);
   document.getElementById('scene-name').textContent = sc ? sc.name.toUpperCase() : '—';
 }
@@ -396,10 +371,10 @@ window.addEventListener('keydown', (e) => {
 window.OTA_FILM = {
   ready: false,
   duration: DURATION,
-  stageW: STAGE_W,
-  stageH: STAGE_H,
+  get stageW() { return film.W; },
+  get stageH() { return film.H; },
   scenes: TL.scenes.map(s => ({ name: s.name, start: s.start, end: s.end })),
-  setAspect(a) { film.aspect = a; },
+  setAspect(a) { film.setAspect(a); },
   setCaptions(v) { film.captions = v; },
   renderAt(ms, frameIdx) { film.renderAt(ms, frameIdx); },
   canvas: () => film.display,
@@ -411,6 +386,6 @@ els.poster.disabled = true;
 Promise.all([loadShots(), document.fonts ? document.fonts.ready : Promise.resolve()])
   .then(() => {
     els.poster.disabled = false;
-    film.renderAt(9600);            // poster frame: the brand lock-up
+    film.renderAt(12600);           // poster frame: the brand lock-up
     window.OTA_FILM.ready = true;
   });
