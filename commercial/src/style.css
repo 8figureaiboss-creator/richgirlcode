@@ -1,13 +1,14 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --gold: #D4AF37; --gold-lt: #F5DC7A; --ink: #05070B; --ink2: #0A0E16;
-  --ink3: #141A26; --line: rgba(212,175,55,0.22); --text: #C8D4E8; --white: #F2F6FF;
-  --slate: #8095BC;
+  --gold: #D4AF37; --gold-lt: #F0DC9C; --ink: #031108; --ink2: #062010;
+  --ink3: #0A2E18; --line: rgba(212,175,55,0.24); --text: #D8DCCB; --white: #FEF5DA;
+  --slate: #9DAE98;
 }
 html, body { height: 100%; }
 body {
   background:
-    radial-gradient(1200px 700px at 50% -10%, rgba(212,175,55,0.07), transparent 70%),
+    radial-gradient(1200px 700px at 50% -10%, rgba(212,175,55,0.08), transparent 70%),
+    radial-gradient(900px 600px at 50% 40%, rgba(6,32,16,0.9), transparent 75%),
     var(--ink);
   color: var(--text);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -33,7 +34,7 @@ body {
   position: relative; width: 100%; aspect-ratio: 16 / 9;
   background: #000; border: 1px solid rgba(255,255,255,0.09);
   border-radius: 14px; overflow: hidden;
-  box-shadow: 0 40px 120px rgba(0,0,0,0.75), 0 0 0 1px rgba(212,175,55,0.1) inset;
+  box-shadow: 0 40px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(212,175,55,0.12) inset;
   transition: aspect-ratio 0.35s ease;
 }
 #shell.vertical #frame { aspect-ratio: 9 / 16; max-width: 520px; margin: 0 auto; }
@@ -89,7 +90,7 @@ button.ctl.on { border-color: var(--gold); color: #0A0C10; background: linear-gr
 
 /* ── Notes ── */
 .notes { width: 100%; max-width: 1280px; margin-top: 34px; display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
-.note { background: linear-gradient(170deg, rgba(20,26,38,0.8), rgba(8,11,18,0.8)); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 20px 22px; }
+.note { background: linear-gradient(170deg, rgba(10,46,24,0.75), rgba(3,16,9,0.85)); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 20px 22px; }
 .note h3 { font-size: 0.68rem; font-weight: 900; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 14px; }
 .note ol, .note ul { list-style: none; display: grid; gap: 10px; }
 .note li { font-size: 0.83rem; line-height: 1.5; display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: baseline; }

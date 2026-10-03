@@ -57,17 +57,24 @@ function fbm(x, oct = 4) {
 }
 
 /* ── Colour helpers ──────────────────────────────────────────────────────── */
+/* Brand palette, sampled straight from the OTA OS logo:
+   deep green #062010 is the base ink, cream #FEF5DA carries the type, gold
+   is the accent. `white` and `slate` are kept as names so every call site
+   stays readable — they now resolve to cream and a muted cream. */
 const C = {
-  gold:   '#D4AF37',
-  goldLt: '#F5DC7A',
-  goldDk: '#8A6516',
-  ink:    '#05070B',
-  ink2:   '#0A0E16',
-  white:  '#F2F6FF',
-  slate:  '#8095BC',
-  green:  '#15D27C',
-  red:    '#FF4D4D',
-  cyan:   '#52D9FF',
+  gold:    '#D4AF37',
+  goldLt:  '#F0DC9C',
+  goldDk:  '#7E6118',
+  ink:     '#031108',   // deepest green-black, for backgrounds
+  ink2:    '#062010',   // the logo green
+  ink3:    '#0A2E18',   // raised surfaces
+  forest:  '#062010',
+  white:   '#FEF5DA',   // cream — primary type
+  cream:   '#FEF5DA',
+  slate:   '#9DAE98',   // muted sage-cream — secondary type
+  green:   '#3FD98A',   // market up
+  red:     '#E8643F',   // market down (terracotta, not fire-engine red)
+  cyan:    '#6FD9C4',
 };
 const rgba = (hex, a) => {
   const h = hex.replace('#', '');
@@ -87,11 +94,14 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-const FONT = '"Inter var","Inter","Helvetica Neue",Helvetica,Arial,sans-serif';
-const MONO = '"JetBrains Mono","SF Mono",Menlo,Consolas,monospace';
+const FONT  = '"Inter var","Inter","Helvetica Neue",Helvetica,Arial,sans-serif';
+const MONO  = '"JetBrains Mono","SF Mono",Menlo,Consolas,monospace';
+const SERIF = '"Playfair Display",Georgia,"Times New Roman",serif';
 
-function setFont(ctx, size, weight = 800, mono = false, italic = false) {
-  ctx.font = `${italic ? 'italic ' : ''}${weight} ${size}px ${mono ? MONO : FONT}`;
+/* `face`: false/'sans' | true/'mono' | 'serif' (the logo's typeface). */
+function setFont(ctx, size, weight = 800, face = false, italic = false) {
+  const f = face === 'serif' ? SERIF : (face === true || face === 'mono') ? MONO : FONT;
+  ctx.font = `${italic ? 'italic ' : ''}${weight} ${size}px ${f}`;
 }
 
 /* Letter-spaced text with a real measured width (ctx.letterSpacing is not
@@ -123,12 +133,12 @@ function trackedWidth(ctx, text, tracking = 0) {
 function kinetic(ctx, text, opt = {}) {
   const {
     x = 0, y = 0, size = 80, weight = 900, tracking = 0, align = 'left',
-    color = C.white, p = 1, mode = 'wipe', stagger = 0.045, mono = false,
+    color = C.white, p = 1, mode = 'wipe', stagger = 0.045, face = false,
     alpha = 1, shadow = 0, italic = false,
   } = opt;
   if (p <= 0.0005 || alpha <= 0.002) return 0;
 
-  setFont(ctx, size, weight, mono, italic);
+  setFont(ctx, size, weight, face, italic);
   const w = trackedWidth(ctx, text, tracking);
   const x0 = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
 
@@ -185,8 +195,8 @@ function kinetic(ctx, text, opt = {}) {
 
 /* Width a kinetic() call will occupy — lets a two-colour headline lay itself
    out instead of relying on hand-tuned x offsets that break when copy changes. */
-function kineticWidth(ctx, text, { size = 80, weight = 900, tracking = 0, mono = false } = {}) {
-  setFont(ctx, size, weight, mono);
+function kineticWidth(ctx, text, { size = 80, weight = 900, tracking = 0, face = false } = {}) {
+  setFont(ctx, size, weight, face);
   return trackedWidth(ctx, text, tracking);
 }
 

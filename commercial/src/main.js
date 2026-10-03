@@ -105,7 +105,7 @@ class Film {
     sctx.globalAlpha = 1;
     sctx.globalCompositeOperation = 'source-over';
 
-    FX.bloom(sctx, this.stage, this.bloom, 0.3, 4.5);
+    FX.bloom(sctx, this.stage, this.bloom, 0.24, 4);
 
     let kick = 0;
     for (const c of CUTS) {
@@ -123,7 +123,7 @@ class Film {
     sctx.globalCompositeOperation = 'overlay';
     sctx.globalAlpha = 0.1;
     const grade = sctx.createLinearGradient(0, 0, STAGE_W, STAGE_H);
-    grade.addColorStop(0, '#2B3A66');
+    grade.addColorStop(0, '#0E4A28');
     grade.addColorStop(1, '#4A3306');
     sctx.fillStyle = grade;
     sctx.fillRect(0, 0, STAGE_W, STAGE_H);
@@ -188,19 +188,19 @@ class Film {
 
     /* Brand bar, top. */
     d.save();
-    d.fillStyle = C.gold;
-    const mx = 64, my = 150;
-    d.beginPath();
-    d.moveTo(mx, my + 34); d.lineTo(mx + 19, my); d.lineTo(mx + 38, my + 34);
-    d.lineTo(mx + 28, my + 34); d.lineTo(mx + 19, my + 17); d.lineTo(mx + 10, my + 34);
-    d.closePath(); d.fill();
-    setFont(d, 30, 900);
-    d.fillStyle = C.white;
+    const mx = 64, my = 140;
+    logoStamp(d, mx, my, 52, { radius: 6 });
+    d.strokeStyle = rgba(C.gold, 0.55);
+    d.lineWidth = 1.4;
+    roundRect(d, mx, my, 52, 52, 6);
+    d.stroke();
+    setFont(d, 27, 900);
+    d.fillStyle = C.cream;
     d.textBaseline = 'middle';
-    tracked(d, 'OPTIONS TRADERS ACADEMY', mx + 54, my + 18, 2.2);
-    setFont(d, 19, 700);
+    tracked(d, CFG.brand, mx + 70, my + 26, 2);
+    setFont(d, 18, 700);
     d.fillStyle = rgba(C.gold, 0.9);
-    tracked(d, CFG.tagline, mx, my + 68, 4);
+    tracked(d, CFG.tagline, mx, my + 82, 3.6);
     d.restore();
 
     /* CTA bar, bottom. */
@@ -217,8 +217,11 @@ class Film {
     d.textBaseline = 'middle';
     tracked(d, CFG.cta, W / 2, by + bh / 2 + 1, 3, 'center');
     setFont(d, 21, 800, true);
-    d.fillStyle = rgba(C.white, 0.9);
+    d.fillStyle = rgba(C.cream, 0.92);
     tracked(d, CFG.url, W / 2, by + bh + 42, 2, 'center');
+    setFont(d, 16, 800);
+    d.fillStyle = rgba(C.gold, 0.95);
+    tracked(d, CFG.badges[0], W / 2, by + bh + 76, 2.2, 'center');
     setFont(d, 13, 500);
     d.fillStyle = rgba(C.slate, 0.7);
     d.textAlign = 'center';

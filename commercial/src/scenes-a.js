@@ -11,8 +11,10 @@ const Assets = (() => {
     unitBox,
     globe:   Geo.sphereWire(3.25, 9, 18, 56),
     globeIn: Geo.sphereWire(3.08, 5, 10, 40),
-    logo:    Geo.extrude(Geo.chevron(3.0, 1.62, 0.5), 0.5),
-    logoSm:  Geo.extrude(Geo.chevron(1.86, 1.0, 0.31), 0.34),
+    /* The brand mark is a square plate carrying the real logo artwork as a
+       texture, rather than geometry approximating it. */
+    tile:    Geo.extrude(Geo.roundedRect(2.6, 2.6, 0.075, 4), 0.32),
+    tileRim: Geo.extrude(Geo.roundedRect(2.70, 2.70, 0.085, 4), 0.2),
     torus:   Geo.torus(4.3, 0.045, 96, 6),
     phone:   Geo.extrude(Geo.roundedRect(2.26, 4.72, 0.33, 8), 0.24),
     hex:     Geo.extrude(Geo.regularPoly(6, 1.62, Math.PI / 2), 0.3),
@@ -28,30 +30,35 @@ const MAT = {
     groups: { 0: [0.52, 0.39, 0.11], 1: [0.88, 0.71, 0.26], 2: [0.3, 0.22, 0.07], 3: [0.95, 0.8, 0.36] },
     stroke: null, strokeW: 1,
   },
+  /* #062010 — the logo plate. */
+  forest: {
+    color: [0.024, 0.125, 0.063], metal: 0.5, rim: 0.7,
+    groups: { 0: [0.015, 0.08, 0.04], 1: [0.024, 0.125, 0.063], 2: [0.01, 0.05, 0.025], 3: [0.04, 0.18, 0.09] },
+  },
   steel: {
-    color: [0.22, 0.26, 0.33], metal: 0.6, rim: 0.7,
-    groups: { 0: [0.13, 0.16, 0.22], 1: [0.26, 0.3, 0.38], 2: [0.07, 0.09, 0.12], 3: [0.32, 0.36, 0.44] },
+    color: [0.17, 0.25, 0.2], metal: 0.6, rim: 0.7,
+    groups: { 0: [0.1, 0.16, 0.13], 1: [0.21, 0.3, 0.24], 2: [0.05, 0.09, 0.07], 3: [0.26, 0.36, 0.29] },
   },
   glass: {
-    color: [0.09, 0.12, 0.19], metal: 0.35, rim: 1.15, alpha: 0.9,
-    groups: { 0: [0.06, 0.08, 0.13], 1: [0.1, 0.13, 0.21], 2: [0.04, 0.05, 0.09], 3: [0.12, 0.16, 0.25] },
+    color: [0.05, 0.12, 0.08], metal: 0.35, rim: 1.15, alpha: 0.9,
+    groups: { 0: [0.03, 0.08, 0.05], 1: [0.055, 0.13, 0.085], 2: [0.02, 0.05, 0.03], 3: [0.07, 0.17, 0.11] },
   },
-  up:   { color: [0.03, 0.32, 0.2], metal: 0.42, rim: 0.7, emissive: 0.05,
-          groups: { 0: [0.02, 0.2, 0.13], 1: [0.05, 0.46, 0.28], 2: [0.01, 0.1, 0.06], 3: [0.07, 0.6, 0.36] } },
-  down: { color: [0.34, 0.08, 0.1], metal: 0.42, rim: 0.7, emissive: 0.04,
-          groups: { 0: [0.24, 0.055, 0.07], 1: [0.5, 0.12, 0.14], 2: [0.12, 0.03, 0.04], 3: [0.62, 0.16, 0.17] } },
+  up:   { color: [0.06, 0.42, 0.26], metal: 0.42, rim: 0.7, emissive: 0.05,
+          groups: { 0: [0.035, 0.26, 0.17], 1: [0.09, 0.58, 0.36], 2: [0.018, 0.13, 0.085], 3: [0.12, 0.72, 0.46] } },
+  down: { color: [0.45, 0.17, 0.09], metal: 0.42, rim: 0.7, emissive: 0.04,
+          groups: { 0: [0.3, 0.11, 0.06], 1: [0.62, 0.25, 0.13], 2: [0.15, 0.055, 0.03], 3: [0.76, 0.32, 0.17] } },
 };
 
 const fade = (mat, a) => ({ ...mat, alpha: (mat.alpha ?? 1) * a });
 
 /* Shared backdrop: deep ink with a warm pool of light. */
 function inkBackdrop(ctx, W, H, { warm = 0.5, cx = 0.5, cy = 0.56 } = {}) {
-  ctx.fillStyle = '#04060A';
+  ctx.fillStyle = '#020A05';
   ctx.fillRect(0, 0, W, H);
   const g = ctx.createRadialGradient(W * cx, H * cy, 0, W * cx, H * cy, H * 1.05);
-  g.addColorStop(0,   `rgba(32,27,14,${0.95 * warm})`);
-  g.addColorStop(0.4, `rgba(14,16,26,${0.7 * warm})`);
-  g.addColorStop(1,   'rgba(3,4,7,0)');
+  g.addColorStop(0,   `rgba(38,32,15,${0.92 * warm})`);
+  g.addColorStop(0.4, `rgba(6,32,16,${0.85 * warm})`);
+  g.addColorStop(1,   'rgba(2,8,4,0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, H);
 }
@@ -150,7 +157,7 @@ function sceneHook(ctx, A) {
   const tk = seg(t, 260, 900, E.outExpo) * out;
   ctx.save();
   ctx.globalAlpha = tk;
-  ctx.fillStyle = 'rgba(5,7,12,0.82)';
+  ctx.fillStyle = 'rgba(3,14,8,0.86)';
   ctx.fillRect(0, H - 76, W, 76);
   ctx.fillStyle = rgba(C.gold, 0.26);
   ctx.fillRect(0, H - 76, W, 1.5);
@@ -229,8 +236,8 @@ function sceneGlobe(ctx, A) {
   S.sprite([2.9, 0.1, 0], (c, sc) => {
     const r = sc * R * 0.99;
     const g = c.createRadialGradient(-r * 0.3, -r * 0.3, r * 0.1, 0, 0, r);
-    g.addColorStop(0, 'rgba(14,20,34,0.97)');
-    g.addColorStop(1, 'rgba(4,6,11,0.99)');
+    g.addColorStop(0, 'rgba(8,34,19,0.97)');
+    g.addColorStop(1, 'rgba(2,9,5,0.99)');
     c.fillStyle = g;
     c.beginPath(); c.arc(0, 0, r, 0, 7); c.fill();
   }, { scale: 1, zBias: -0.02 });
@@ -365,25 +372,31 @@ function sceneBrand(ctx, A) {
     }
   }
 
-  /* The mark: extruded chevron, milled gold. */
+  /* The mark: the logo plate itself, gold-rimmed, carrying the real artwork. */
   const mk = E.spring(clamp((t - 420) / 1500), 6.4, 4.6);
+  const MY = 2.45;
+  let tileM = null;
   if (mk > 0.004) {
-    const MY = 2.5;
-    const m = M4.chain(
+    const a = clamp(mk * 1.4);
+    tileM = M4.chain(
       M4.translate(0, MY, 0),
       M4.rotY(spin), M4.rotX(Math.sin(t / 2600) * 0.08),
-      M4.scale(lerp(0.2, 0.82, mk)));
-    S.mesh(Assets.logo, m, fade(MAT.gold, clamp(mk * 1.4)));
-    S.mesh(Assets.logoSm,
-      M4.chain(M4.translate(0, MY - 0.44, 0), M4.rotY(spin), M4.rotX(Math.sin(t / 2600) * 0.08),
-               M4.scale(lerp(0.2, 0.82, mk))),
-      { ...fade(MAT.gold, clamp(mk * 1.4) * 0.72), emissive: 0.12 });
-    S.mesh(Assets.logo, M4.chain(M4.translate(0, MY - 2.0, 0), M4.scale(1, -1, 1), M4.rotY(spin), M4.scale(lerp(0.2, 0.82, mk))),
-      { ...fade(MAT.gold, 0.055 * mk), rim: 0.2, cull: false });
-    S.mesh(Assets.torus, M4.chain(M4.translate(0, MY, 0), M4.rotX(1.1 + Math.sin(t / 1800) * 0.1), M4.rotY(t / 1400), M4.scale(0.6 * mk)),
+      M4.scale(lerp(0.2, 0.95, mk)));
+    /* Rim sits behind in local Z — coplanar faces have no stable paint order. */
+    S.mesh(Assets.tileRim, M4.chain(tileM, M4.translate(0, 0, -0.09)),
+      { ...fade(MAT.gold, 0.95 * a), metal: 0.95, zBias: -1.4 });
+    S.mesh(Assets.tile, tileM, fade(MAT.forest, a));
+    S.mesh(Assets.torus,
+      M4.chain(M4.translate(0, MY, 0), M4.rotX(1.1 + Math.sin(t / 1800) * 0.1), M4.rotY(t / 1400), M4.scale(0.78 * mk)),
       fade(MAT.gold, 0.5 * mk));
   }
   S.render(ctx, cam, W, H);
+
+  /* The logo artwork, mapped onto the plate's face. */
+  if (tileM) {
+    texQuad3D(ctx, logoTexture(512), cam, W, H,
+      quadCorners(tileM, 1.3, 1.3, 0.168), 6, clamp((mk - 0.04) * 1.7));
+  }
 
   /* Specular sweep + flare timed to the downbeat. */
   FX.sweep(ctx, W * 0.26, H * 0.08, W * 0.48, H * 0.62, seg(t, 1250, 2100), { alpha: 0.4, width: 0.1 });
@@ -394,16 +407,16 @@ function sceneBrand(ctx, A) {
   const out = 1 - seg(t, 3950, 4400, E.inOutQuad);
   ctx.save();
   ctx.globalAlpha = out;
-  const ty = H * 0.745;
-  kinetic(ctx, 'OPTIONS TRADERS ACADEMY', {
-    x: W / 2, y: ty, size: 72, weight: 900, tracking: 7, align: 'center',
-    p: seg(t, 1650, 2600), mode: 'glyph', stagger: 0.022, color: C.white, shadow: 0.5,
+  const ty = H * 0.735;
+  kinetic(ctx, CFG.brand, {
+    x: W / 2, y: ty, size: 64, weight: 900, tracking: 7, align: 'center',
+    p: seg(t, 1650, 2600), mode: 'glyph', stagger: 0.022, color: C.cream, shadow: 0.5,
   });
   const rl = seg(t, 2500, 3100, E.outExpo);
   ctx.fillStyle = rgba(C.gold, 0.9 * rl);
-  ctx.fillRect(W / 2 - 220 * rl, ty + 34, 440 * rl, 2.5);
+  ctx.fillRect(W / 2 - 230 * rl, ty + 32, 460 * rl, 2.5);
   kinetic(ctx, CFG.tagline, {
-    x: W / 2, y: ty + 84, size: 30, weight: 600, tracking: 6.5, align: 'center',
+    x: W / 2, y: ty + 82, size: 29, weight: 700, tracking: 6.5, align: 'center',
     p: seg(t, 2850, 3500), mode: 'wipe', color: rgba(C.gold, 0.95),
   });
   ctx.restore();
@@ -411,9 +424,9 @@ function sceneBrand(ctx, A) {
 
 /* ══ S4 · 11.6 → 15.4s ══  Three pillars ══════════════════════════════════ */
 const PILLARS = [
-  { k: 'OPTIONS',   d: 'Calls, puts, spreads,\nincome strategies', ico: 'chain' },
-  { k: 'FUTURES',   d: '/ES · /NQ · /CL\nladder & levels',        ico: 'ladder' },
-  { k: 'INVESTING', d: 'Long-term holdings\n& allocation',        ico: 'donut' },
+  { n: '01', k: 'OPTIONS',   d: 'Calls, puts, spreads,\nincome strategies', ico: 'chain' },
+  { n: '02', k: 'FUTURES',   d: '/ES · /NQ · /CL\nladder & levels',        ico: 'ladder' },
+  { n: '03', k: 'INVESTING', d: 'Long-term holdings\n& allocation',        ico: 'donut' },
 ];
 
 function scenePillars(ctx, A) {
@@ -422,7 +435,7 @@ function scenePillars(ctx, A) {
 
   const settle = E.outExpo(clamp(t / 1500));
   cam.fov = 40 * Math.PI / 180;
-  cam.lookAt([lerp(-5.5, 0, settle), lerp(2.2, 1.0, settle), lerp(13.5, 11.6, settle)], [0, -0.35, 0]);
+  cam.lookAt([lerp(-5.5, 0, settle), lerp(2.2, 1.0, settle), lerp(13.5, 11.9, settle)], [0, -0.75, 0]);
 
   S.reset();
   floorGrid(S, { half: 18, step: 2, y: -3.1, alpha: 0.18 });
@@ -453,11 +466,14 @@ function scenePillars(ctx, A) {
   const out = 1 - seg(t, 3350, 3800, E.inOutQuad);
   ctx.save();
   ctx.globalAlpha = out;
-  FX.eyebrow(ctx, W / 2 - 215, 86, 'ONE APP · THREE DISCIPLINES', seg(t, 250, 850));
-  kinetic(ctx, 'NOT JUST TRADING.', {
-    x: W / 2, y: 182, size: 78, weight: 900, tracking: -1, align: 'center',
-    p: seg(t, 500, 1300), mode: 'wipe', color: C.white,
-  });
+  FX.eyebrow(ctx, W / 2 - 240, 72, 'SYSTEM MODULES · ALWAYS RUNNING', seg(t, 250, 850));
+  const hOpt = { size: 62, weight: 900, tracking: -0.5 };
+  const w1 = kineticWidth(ctx, 'NOT AN APP.', hOpt);
+  const w2 = kineticWidth(ctx, 'AN OPERATING SYSTEM.', hOpt);
+  const gap = 28;
+  const x0 = W / 2 - (w1 + gap + w2) / 2;
+  kinetic(ctx, 'NOT AN APP.', { ...hOpt, x: x0, y: 164, p: seg(t, 500, 1300), mode: 'wipe', color: C.cream });
+  kinetic(ctx, 'AN OPERATING SYSTEM.', { ...hOpt, x: x0 + w1 + gap, y: 164, p: seg(t, 800, 1650), mode: 'wipe', color: C.gold, shadow: 0.5 });
   ctx.restore();
 
   /* Bottom rail of capability chips. */
@@ -489,8 +505,8 @@ function scenePillars(ctx, A) {
 function cardFace(c, x, y, w, h, pl, t, idx) {
   roundRect(c, x, y, w, h, w * 0.055);
   const g = c.createLinearGradient(x, y, x + w, y + h);
-  g.addColorStop(0, 'rgba(24,31,46,0.95)');
-  g.addColorStop(1, 'rgba(8,11,18,0.95)');
+  g.addColorStop(0, 'rgba(11,45,25,0.95)');
+  g.addColorStop(1, 'rgba(3,14,8,0.96)');
   c.fillStyle = g; c.fill();
   c.strokeStyle = rgba(C.gold, 0.35); c.lineWidth = Math.max(1, w * 0.004); c.stroke();
 
@@ -498,15 +514,18 @@ function cardFace(c, x, y, w, h, pl, t, idx) {
   roundRect(c, x, y, w, h, w * 0.055); c.clip();
 
   const pad = w * 0.085;
-  setFont(c, w * 0.082, 900);
-  c.fillStyle = C.white;
+  setFont(c, w * 0.045, 800, true);
+  c.fillStyle = rgba(C.gold, 0.85);
   c.textBaseline = 'alphabetic';
-  tracked(c, pl.k, x + pad, y + h * 0.13, w * 0.008);
+  tracked(c, `MODULE ${pl.n}`, x + pad, y + h * 0.075, w * 0.012);
+  setFont(c, w * 0.082, 900);
+  c.fillStyle = C.cream;
+  tracked(c, pl.k, x + pad, y + h * 0.155, w * 0.008);
   c.fillStyle = rgba(C.gold, 0.9);
-  c.fillRect(x + pad, y + h * 0.155, w * 0.18, Math.max(1.5, h * 0.006));
+  c.fillRect(x + pad, y + h * 0.178, w * 0.18, Math.max(1.5, h * 0.006));
 
   const vx = x + pad, vy = y + h * 0.22, vw = w - pad * 2, vh = h * 0.46;
-  if (pl.ico === 'chain')  drawChain(c, vx, vy, vw, vh, t);
+  if (pl.ico === 'chain')  drawChain(c, vx, vy + h * 0.02, vw, vh, t);
   if (pl.ico === 'ladder') drawLadder(c, vx, vy, vw, vh, t);
   if (pl.ico === 'donut')  drawDonut(c, vx + vw / 2, vy + vh / 2, Math.min(vw, vh) * 0.42, t);
 
@@ -553,7 +572,7 @@ function drawLadder(c, x, y, w, h, t) {
 }
 
 function drawDonut(c, cx, cy, r, t) {
-  const slices = [[0.42, C.gold], [0.24, C.cyan], [0.18, C.green], [0.16, '#7A6CFF']];
+  const slices = [[0.42, C.gold], [0.24, C.cyan], [0.18, C.green], [0.16, C.cream]];
   let a0 = -Math.PI / 2;
   const grow = E.outCubic(clamp(t / 1200));
   slices.forEach(([frac, col]) => {

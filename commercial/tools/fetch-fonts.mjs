@@ -10,7 +10,7 @@ import { execFileSync } from 'node:child_process';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
-const API = 'https://fonts.googleapis.com/css2?family=Inter:wght@400..900&family=JetBrains+Mono:wght@400..800&display=swap';
+const API = 'https://fonts.googleapis.com/css2?family=Inter:wght@400..900&family=JetBrains+Mono:wght@400..800&family=Playfair+Display:wght@400..900&display=swap';
 
 /* curl is used deliberately: it honours the environment's proxy CA bundle. */
 const curl = (url, binary = false) =>

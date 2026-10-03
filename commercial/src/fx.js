@@ -51,7 +51,7 @@ const FX = {
     wctx.clearRect(0, 0, work.width, work.height);
     /* The high contrast curve is what turns a blur into a bloom: it crushes
        mid-tones so only genuine highlights bleed. */
-    wctx.filter = `blur(${blur}px) brightness(1.15) contrast(1.75) saturate(1.2)`;
+    wctx.filter = `blur(${blur}px) brightness(1.05) contrast(2.1) saturate(1.2)`;
     wctx.drawImage(src, 0, 0, work.width, work.height);
     wctx.filter = 'none';
 
@@ -165,9 +165,9 @@ const FX = {
       side === 'right' ? W : 0, side === 'bottom' ? H : 0,
       side === 'left' ? W * extent : side === 'right' ? W * (1 - extent) : 0,
       side === 'top' ? H * extent : side === 'bottom' ? H * (1 - extent) : 0);
-    g.addColorStop(0,    `rgba(3,5,9,${0.94 * strength})`);
-    g.addColorStop(0.45, `rgba(3,5,9,${0.66 * strength})`);
-    g.addColorStop(1,    'rgba(3,5,9,0)');
+    g.addColorStop(0,    `rgba(2,9,5,${0.94 * strength})`);
+    g.addColorStop(0.45, `rgba(2,9,5,${0.66 * strength})`);
+    g.addColorStop(1,    'rgba(2,9,5,0)');
     ctx.save();
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
@@ -264,8 +264,8 @@ const FX = {
     ctx.globalAlpha = clamp(p * 2.2);
     roundRect(ctx, x, yy, w, hh, r);
     const g = ctx.createLinearGradient(x, yy, x + w * 0.4, yy + hh);
-    g.addColorStop(0, `rgba(22,28,42,${fill})`);
-    g.addColorStop(1, `rgba(9,12,20,${fill})`);
+    g.addColorStop(0, `rgba(10,42,23,${fill})`);
+    g.addColorStop(1, `rgba(3,16,9,${fill})`);
     ctx.fillStyle = g;
     ctx.fill();
     ctx.strokeStyle = rgba(C.gold, 0.32 * glow + 0.1);

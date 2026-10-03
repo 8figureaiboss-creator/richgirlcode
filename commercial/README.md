@@ -1,4 +1,4 @@
-# Options Traders Academy — 30-second commercial
+# Options Traders Academy OS — 30-second commercial
 
 A broadcast-style spot built entirely in code. No stock footage, no After Effects, no
 video libraries, no CDN. Every frame — the 3D, the motion graphics, the UI on the
@@ -11,18 +11,61 @@ dropped on a thumb drive, embedded in a page, or opened on a plane.
 
 ---
 
+## Positioning
+
+The spot sells **an operating system, not an app.** That claim is made in the voice-over
+("This isn't another app — it's an operating system for traders"), on screen as the
+headline at 11.6s (**NOT AN APP. AN OPERATING SYSTEM.**), in the lock-up line
+(*The trader's operating system.*), and — most importantly — in the product UI itself,
+which is dressed as a system rather than a tool: `OTA OS v4.2`, `SYSTEM MODULES ·
+8 OF 8 INSTALLED`, `LEARNING / TRADE DESK / RISK ENGINE / PORTFOLIO`, `ALL SYSTEMS
+LIVE`, uptime and latency readouts. The three pillars at 11.6s are numbered
+`MODULE 01/02/03` rather than listed as features.
+
+## Brand
+
+Taken from the supplied logo file, sampled exactly:
+
+| | Hex | Use |
+|---|---|---|
+| Deep green | `#062010` | The logo plate; base ink for every background and surface |
+| Cream | `#FEF5DA` | The mark, and all primary type |
+| Gold | `#D4AF37` | Accent, rules, CTA, eyebrows |
+
+**The mark is the supplied artwork itself, not a redraw.** `tools/trace-logo.py`
+reads the original PNG, builds a coverage field from its anti-aliased pixels, and
+runs marching squares at the 0.5 iso-level with linear interpolation on every cell
+edge — recovering the outline at sub-pixel accuracy. The result is committed as
+`src/logo-art.js` and drawn as vector paths (even-odd fill, so the Q's counter is a
+true hole), which means the mark is pin-sharp at any size instead of an upscaled
+159px bitmap.
+
+`tools/verify-logo.py` rasterises those paths back and diffs them against the source:
+**mean coverage error 0.49%, and not a single pixel off by more than half a step.**
+Re-run the tracer if the artwork ever changes:
+
+```bash
+python3 tools/trace-logo.py tools/logo-source.png   # → src/logo-art.js
+python3 tools/verify-logo.py tools/logo-source.png  # prove it still matches
+```
+
+`logoTexture()` composites plate + mark to an off-screen canvas and `texQuad3D` maps
+it onto a gold-rimmed extruded tile, so what rotates on screen at 7.2s and 26.8s is
+the logo itself, lit in 3D. The same paths stamp the mark into the app header, the
+console nav, the player chrome and the vertical brand bar.
+
 ## The 30 seconds
 
 | In | Out | Scene | Voice-over | What's on screen |
 |---|---|---|---|---|
 | 0.0 | 3.4 | `hook` | "The market doesn't wait." | Camera pushes through a living candlestick field; ticker strip; 24-hour session dial. |
-| 3.4 | 7.2 | `globe` | "Trillions move while you sleep. Most people just watch." | Wireframe globe, capital-flow arcs firing between eight financial centres; Tokyo/London/New York session bars overlap under a live playhead. |
-| 7.2 | 11.6 | `brand` | "Options Traders Academy hands you the edge." | The data collapses into the extruded gold mark. Logo lock-up, specular sweep, anamorphic flare. |
-| 11.6 | 15.4 | `pillars` | "Options. Futures. Investing — one system." | Three 3D pillars land: live option chain, futures ladder, allocation donut. |
-| 15.4 | 19.2 | `curriculum` | "8 modules. 200+ lessons. Live setups you can actually follow." | A floating dashboard ticks the curriculum off module by module while the trade desk fills with alerts. |
-| 19.2 | 23.0 | `growth` | "Real risk management. A portfolio that compounds." | Compounding towers rise, a 3D equity ribbon extrudes above them, a hex risk shield forms; position size / max loss / R:R meters stack. |
-| 23.0 | 26.8 | `pocket` | "In your pocket. 24 hours. 365 days a year." | The phone rotates in running the live app UI; orbital session rails spin, pips light Sydney → New York. |
-| 26.8 | 30.0 | `close` | "Start free today." | Mark + wordmark lock-up, pulsing CTA, URL, trust badges, risk disclosure. |
+| 3.4 | 7.2 | `globe` | "Trillions move while you sleep. Most people just watch." | Wireframe globe, capital-flow arcs between eight financial centres; Tokyo/London/New York sessions overlap under a live playhead. |
+| 7.2 | 11.6 | `brand` | "This isn't another app. It's an operating system for traders." | The data collapses into the logo plate; wordmark lock-up, specular sweep, flare. |
+| 11.6 | 15.4 | `pillars` | "Options. Futures. Investing — one system." | **NOT AN APP. AN OPERATING SYSTEM.** Three numbered system modules land as 3D cards. |
+| 15.4 | 19.2 | `curriculum` | "8 modules. 200+ lessons. Live setups you can actually follow." | The OS console: modules install themselves while the trade desk fills with alerts. |
+| 19.2 | 23.0 | `growth` | "A risk engine that protects you. A portfolio that compounds." | Compounding towers rise, a 3D equity ribbon extrudes above them, the risk shield forms. |
+| 23.0 | 26.8 | `pocket` | "In your pocket. 24 hours. 365 days a year." | The phone rotates in running the OS; orbital session rails spin, pips light Sydney → New York. |
+| 26.8 | 30.0 | `close` | "Get instant access today." | Logo plate, wordmark, CTA, URL, **7-day money-back guarantee**, risk disclosure. |
 
 Roughly 75 words — the right density for 30 seconds at a confident read. The cue sheet
 (with exact in-points in milliseconds) is `OTA_CONFIG.vo` at the top of the HTML, and it
@@ -31,10 +74,24 @@ can never drift apart.
 
 ### Recording the voice-over
 Male or female, mid-range, unhurried — the copy is written to breathe. Land
-"**edge**" (7.6s), "**one system**" (14.4s) and "**free**" (28.4s) on the musical
-accents. The score's own impacts sit at 0.0s, 7.2s, 18.0s, 22.5s and 26.5s; duck the
-music 4–5 dB under the VO and it mixes itself. `dist/*.wav` is the isolated score stem
-for that mix.
+"**operating system**" (9.4s), "**one system**" (14.4s) and "**instant access**" (28.4s)
+on the musical accents. The score's own impacts sit at 0.0s, 7.2s, 18.0s, 22.5s and
+26.5s; duck the music 4–5 dB under the VO and it mixes itself. `dist/*.wav` is the
+isolated score stem for that mix.
+
+---
+
+## The offer, as stated in the film
+
+The close says exactly one thing about terms: **7-DAY MONEY-BACK GUARANTEE**, beside
+**INSTANT ACCESS**. There is deliberately no "free", no "free trial", no "7 days free"
+and no 30-day guarantee anywhere in the spot — those read as a different offer and
+would be a misrepresentation.
+
+> ⚠️ The repository's `index.html` landing page still advertises a **7-day free trial**
+> and a **30-day money-back guarantee**. That contradicts the real offer and contradicts
+> this film. It is outside this commercial's scope, so it has been left untouched — but
+> it should be corrected before either is used.
 
 ---
 
@@ -66,26 +123,25 @@ Everything sales-facing is in one block at the top of the HTML (and of `src/shel
 
 ```js
 window.OTA_CONFIG = {
-  brand, tagline, cta, url, badges, disclaimer, vo: [ … ]
+  brand, product, tagline, cta, url, badges, disclaimer, vo: [ … ]
 };
 ```
 
 Change the URL, the offer, the trust badges or any caption there and rebuild — nothing
-else needs touching. The gold/ink palette lives in `C` inside `src/core.js` and matches
-the existing landing page (`#D4AF37` on `#05070B`).
+else needs touching. The palette lives in `C` inside `src/core.js`.
 
 ### Before this runs anywhere paid — please read
 
 - **`url` is a placeholder.** `OPTIONSTRADERSACADEMY.COM` is a guess; set the real domain.
-- **The claims are taken from the existing landing page** (8 modules, 200+ lessons,
-  7-day free trial, 30-day guarantee, daily live setups). Verify each is currently true
-  before the spot airs — an ad makes them a promise.
+- **The remaining claims come from the existing landing page** (8 modules, 200+ lessons,
+  daily live setups). Verify each is currently true before the spot airs — an ad makes
+  them a promise.
 - **No performance claims are made, deliberately.** There is no win rate, no profit
   figure, no student-earnings number anywhere in the film. Every screen is marked
   `ILLUSTRATIVE`, and the meters show strategy *parameters* (position size, max loss,
   target R:R) rather than results. That is both safer and, in this category, more
   persuasive — specific profit claims are the single biggest regulatory exposure in
-  trading education advertising.
+  trading-education advertising.
 - **The risk disclosure is on screen for the final 1.1 seconds** and in the footer. Check
   the wording against whatever your jurisdiction and ad platform require; Meta, Google
   and TikTok each have their own financial-services policy.
@@ -100,24 +156,25 @@ the existing landing page (`#D4AF37` on `#05070B`).
 ```
 src/
   shell.html     page shell + OTA_CONFIG (the only block you edit to re-skin)
-  fonts.css      generated — Inter + JetBrains Mono inlined as base64 woff2
+  fonts.css      generated — Inter, JetBrains Mono and Playfair Display inlined as base64
+  logo-art.js    generated — the supplied logo traced to vector outlines
   style.css      player chrome
   math3d.js      vec3 / mat4, column-major like GLSL · ear-clipping triangulator
   geometry.js    procedural meshes: extrude, box, wire sphere, torus, rings,
-                 rounded rect, chevron, great-circle arcs
+                 rounded rect, great-circle arcs
   render3d.js    painter's-algorithm renderer: cull, depth sort, Blinn-Phong +
                  rim + fill, glow lines, 3D-anchored billboards
   texquad.js     perspective-correct texture mapping on a 2D canvas
-  core.js        easing, deterministic noise, kinetic typography, timeline
+  core.js        brand palette, easing, deterministic noise, kinetic typography, timeline
   fx.js          bloom, RGB split, grain, vignette, scrim, flare, sweep, ticker
   audio.js       the score, synthesised in WebAudio + offline WAV bounce
-  ui.js          the in-film product UI (phone + dashboard)
+  ui.js          the logo renderer and the in-film OS UI (phone + console)
   scenes-a.js    acts I & II   (0.0 → 15.4s)
   scenes-b.js    acts III & IV (15.4 → 30.0s)
   main.js        compositing, post chain, transport, OTA_FILM seek API
 build.mjs        inlines src/* into one portable HTML file
 render.mjs       headless frame-exact capture → MP4 / GIF / stills
-tools/           one-off font fetcher
+tools/           font fetcher · logo tracer · logo verifier · the source logo file
 ```
 
 Three parts are worth a look if you're judging the engineering:
@@ -126,14 +183,14 @@ Three parts are worth a look if you're judging the engineering:
 model → view → clip → screen, culls back-faces by screen-space winding, depth-sorts every
 triangle, line and billboard into one list, and shades each face with a key/fill/rim/
 specular model. Painter's algorithm has a known failure mode — coplanar surfaces have no
-stable order — which is why the phone's gold rim is offset in local Z *and* given an
-explicit `zBias`.
+stable order — which is why the logo plate's gold rim and the phone's are each offset in
+local Z *and* given an explicit `zBias`.
 
 **The screens are real 3D surfaces, not flat overlays.** Canvas2D only offers affine
 transforms, so `texquad.js` subdivides each quad in *world* space, projects the grid, and
 draws every sub-triangle with its own affine map. Because the subdivision happens before
-projection the mapping is exact, not approximated — that's why the dashboard tracks the
-slab and the app UI tracks the phone as they rotate.
+projection the mapping is exact, not approximated — that's why the logo tracks the plate,
+the console tracks the slab, and the app UI tracks the phone as they rotate.
 
 **Nothing depends on frame history.** Every scene is a pure function of its local time,
 so the film can be scrubbed, replayed or stepped frame-by-frame and look identical every

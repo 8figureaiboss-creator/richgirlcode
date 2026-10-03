@@ -44,13 +44,13 @@ function sparkline(c, x, y, w, h, data, p, { color = C.gold, fill = true, width 
   c.restore();
 }
 
-function uiChrome(c, w, h, bg = '#070A11') {
+function uiChrome(c, w, h, bg = '#031108') {
   c.fillStyle = bg;
   c.fillRect(0, 0, w, h);
   const g = c.createLinearGradient(0, 0, w, h);
-  g.addColorStop(0, 'rgba(26,33,50,0.9)');
-  g.addColorStop(0.5, 'rgba(10,13,21,0.95)');
-  g.addColorStop(1, 'rgba(16,13,6,0.9)');
+  g.addColorStop(0, 'rgba(10,46,24,0.92)');
+  g.addColorStop(0.5, 'rgba(4,22,11,0.96)');
+  g.addColorStop(1, 'rgba(20,16,6,0.9)');
   c.fillStyle = g; c.fillRect(0, 0, w, h);
 }
 
@@ -87,26 +87,20 @@ function appScreen(t, w = 580, h = 1218) {
   c.fillText('LTE  ▮▮▮', w - px, 36 * S);
   c.textAlign = 'left';
 
-  /* header */
-  c.fillStyle = C.gold;
-  c.beginPath();
-  c.moveTo(px, 108 * S); c.lineTo(px + 17 * S, 76 * S); c.lineTo(px + 34 * S, 108 * S);
-  c.lineTo(px + 25 * S, 108 * S); c.lineTo(px + 17 * S, 93 * S); c.lineTo(px + 9 * S, 108 * S);
-  c.closePath(); c.fill();
+  /* header — the mark itself, then the OS name and build */
+  logoStamp(c, px, 70 * S, 46 * S, { radius: 5 * S });
   setFont(c, 25 * S, 900);
-  c.fillStyle = C.white;
-  tracked(c, 'OTA', px + 46 * S, 95 * S, 2.4 * S);
-  setFont(c, 17 * S, 600);
-  c.fillStyle = rgba(C.slate, 0.9);
-  c.fillText('Academy', px + 118 * S, 95 * S);
+  c.fillStyle = C.cream;
+  tracked(c, 'OTA OS', px + 60 * S, 95 * S, 2.4 * S);
+  setFont(c, 14 * S, 700, true);
+  c.fillStyle = rgba(C.slate, 0.8);
+  c.fillText('v4.2', px + 174 * S, 95 * S);
   const dotP = 0.5 + 0.5 * Math.sin(t / 300);
   c.fillStyle = rgba(C.green, 0.4 + dotP * 0.6);
   c.beginPath(); c.arc(w - px - 8 * S, 92 * S, 7 * S, 0, 7); c.fill();
-  setFont(c, 15 * S, 800);
+  setFont(c, 14 * S, 800);
   c.fillStyle = rgba(C.green, 0.95);
-  c.textAlign = 'right';
-  tracked(c, 'LIVE', w - px - 24 * S, 93 * S, 1.4 * S);
-  c.textAlign = 'left';
+  tracked(c, 'SYSTEM ONLINE', w - px - 24 * S, 93 * S, 1.2 * S, 'right');
 
   /* portfolio card */
   const cardY = 142 * S, cardH = 352 * S;
@@ -117,9 +111,9 @@ function appScreen(t, w = 580, h = 1218) {
   setFont(c, 17 * S, 800);
   c.fillStyle = rgba(C.slate, 0.95);
   tracked(c, 'PORTFOLIO', px + 26 * S, cardY + 40 * S, 2.2 * S);
-  setFont(c, 13 * S, 700);
-  c.fillStyle = rgba(C.slate, 0.5);
-  tracked(c, 'ILLUSTRATIVE', px + 26 * S, cardY + cardH - 16 * S, 1.2 * S);
+  setFont(c, 12 * S, 700);
+  c.fillStyle = rgba(C.slate, 0.55);
+  tracked(c, 'ILLUSTRATIVE', w - px - 26 * S, cardY + 40 * S, 1.2 * S, 'right');
 
   setFont(c, 54 * S, 900, true);
   c.fillStyle = C.white;
@@ -141,8 +135,8 @@ function appScreen(t, w = 580, h = 1218) {
   c.translate(-w / 2, -(aY + 94 * S));
   roundRect(c, px, aY, w - px * 2, 188 * S, 22 * S);
   const ag = c.createLinearGradient(px, aY, w - px, aY + 188 * S);
-  ag.addColorStop(0, 'rgba(32,26,8,0.95)');
-  ag.addColorStop(1, 'rgba(14,12,8,0.95)');
+  ag.addColorStop(0, 'rgba(36,29,8,0.95)');
+  ag.addColorStop(1, 'rgba(8,20,11,0.96)');
   c.fillStyle = ag; c.fill();
   c.strokeStyle = rgba(C.gold, 0.6); c.lineWidth = 1.6 * S; c.stroke();
   tag(c, px + 24 * S, aY + 38 * S, 'LIVE SETUP', { size: 16 * S });
@@ -170,7 +164,7 @@ function appScreen(t, w = 580, h = 1218) {
   const lY = aY + 220 * S;
   setFont(c, 16 * S, 800);
   c.fillStyle = rgba(C.slate, 0.9);
-  tracked(c, 'CONTINUE LEARNING', px, lY, 2.2 * S);
+  tracked(c, 'LEARNING ENGINE', px, lY, 2.2 * S);
   setFont(c, 25 * S, 800);
   c.fillStyle = C.white;
   c.fillText('Module 03 · Income Strategies', px, lY + 40 * S);
@@ -217,9 +211,9 @@ function appScreen(t, w = 580, h = 1218) {
   });
 
   /* tab bar */
-  const tabs = ['LEARN', 'TRADE', 'PORTFOLIO', 'ALERTS'];
+  const tabs = ['LEARN', 'TRADE', 'RISK', 'ALERTS'];
   const tabY = h - 62 * S;
-  c.fillStyle = 'rgba(5,7,12,0.92)';
+  c.fillStyle = 'rgba(2,11,6,0.94)';
   c.fillRect(0, h - 110 * S, w, 110 * S);
   c.fillStyle = 'rgba(255,255,255,0.07)';
   c.fillRect(0, h - 110 * S, w, 1);
@@ -256,26 +250,27 @@ function panelScreen(t, w = 1700, h = 900) {
   const S = w / 1700;
 
   /* top bar */
-  c.fillStyle = 'rgba(5,7,12,0.7)';
+  c.fillStyle = 'rgba(2,11,6,0.75)';
   c.fillRect(0, 0, w, 76 * S);
   c.fillStyle = rgba(C.gold, 0.2);
   c.fillRect(0, 76 * S, w, 1.4 * S);
-  setFont(c, 24 * S, 900);
-  c.fillStyle = C.white;
+  logoStamp(c, 30 * S, 17 * S, 42 * S, { radius: 5 * S });
+  setFont(c, 23 * S, 900);
+  c.fillStyle = C.cream;
   c.textBaseline = 'middle';
-  tracked(c, 'OTA ACADEMY', 36 * S, 38 * S, 3 * S);
-  ['CURRICULUM', 'ALERTS', 'PORTFOLIO', 'COMMUNITY'].forEach((m, i) => {
+  tracked(c, 'OTA OS', 86 * S, 38 * S, 3 * S);
+  ['LEARNING', 'TRADE DESK', 'RISK ENGINE', 'PORTFOLIO'].forEach((m, i) => {
     setFont(c, 16 * S, 700);
     c.fillStyle = i === 0 ? C.gold : rgba(C.slate, 0.7);
-    tracked(c, m, (330 + i * 190) * S, 38 * S, 2 * S);
+    tracked(c, m, (260 + i * 196) * S, 38 * S, 2 * S);
   });
-  tag(c, w - 210 * S, 38 * S, '● MARKET OPEN', { size: 15 * S, color: C.green });
+  tag(c, w - 230 * S, 38 * S, '● ALL SYSTEMS LIVE', { size: 14 * S, color: C.green });
 
   /* left — curriculum checklist */
   const lx = 44 * S, ly = 128 * S;
   setFont(c, 18 * S, 800);
   c.fillStyle = rgba(C.gold, 0.95);
-  tracked(c, '8 MODULES · 200+ LESSONS', lx, ly, 2.6 * S);
+  tracked(c, 'SYSTEM MODULES · 8 OF 8 INSTALLED', lx, ly, 2.6 * S);
   MODULES.forEach((m, i) => {
     const yy = ly + 56 * S + i * 76 * S;
     const done = clamp((t - 400 - i * 165) / 420);
@@ -307,7 +302,7 @@ function panelScreen(t, w = 1700, h = 900) {
     c.fillStyle = rgba(C.gold, 0.8);
     c.fillText(String(i + 1).padStart(2, '0'), lx + 66 * S, cy2);
     setFont(c, 21 * S, 700);
-    c.fillStyle = done > 0.1 ? C.white : rgba(C.slate, 0.8);
+    c.fillStyle = done > 0.1 ? C.cream : rgba(C.slate, 0.8);
     c.fillText(m, lx + 104 * S, cy2);
   });
 
@@ -316,6 +311,11 @@ function panelScreen(t, w = 1700, h = 900) {
   setFont(c, 18 * S, 800);
   c.fillStyle = rgba(C.gold, 0.95);
   tracked(c, 'LIVE TRADE DESK', rx, ly, 2.6 * S);
+  setFont(c, 14 * S, 700, true);
+  c.fillStyle = rgba(C.slate, 0.7);
+  c.textAlign = 'right';
+  c.fillText('uptime 99.98%  ·  latency 42ms', w - 44 * S, ly);
+  c.textAlign = 'left';
 
   /* chart */
   const chY = ly + 42 * S, chH = 300 * S;
@@ -386,4 +386,55 @@ function candles2d(c, x, y, w, h, t, p) {
     const by = Y(Math.max(o, cl)), bh = Math.max(1.5, Math.abs(Y(cl) - Y(o)));
     c.fillRect(cx - cw * 0.3, by, cw * 0.6, bh);
   }
+}
+
+/* ── Brand mark ──────────────────────────────────────────────────────────────
+   The supplied logo, drawn from the outlines traced out of the original file by
+   tools/trace-logo.py (verified: no pixel differs from the source by more than
+   half a coverage step). Vector paths rather than the 159px bitmap, so the mark
+   is pin-sharp at any size — on a full-screen hero or a 40px app header.      */
+function drawLogoMark(c, x, y, s, color = LOGO_ART.mark) {
+  c.save();
+  c.translate(x, y);
+  c.scale(s, s);
+  c.beginPath();
+  for (const lp of LOGO_ART.loops) {
+    c.moveTo(lp[0][0], lp[0][1]);
+    for (let i = 1; i < lp.length; i++) c.lineTo(lp[i][0], lp[i][1]);
+    c.closePath();
+  }
+  c.fillStyle = color;
+  c.fill('evenodd');          // the Q's counter is a hole, not a second shape
+  c.restore();
+}
+
+/* Full logo tile — plate + mark — rendered for texture mapping onto 3D. */
+function logoTexture(size = 512, { bg = true, mark = LOGO_ART.mark, plate = LOGO_ART.plate } = {}) {
+  const cv = Targets.get(`logo${bg ? '' : '-alpha'}${size}`, size, size);
+  const c = cv.getContext('2d');
+  c.setTransform(1, 0, 0, 1, 0, 0);
+  c.clearRect(0, 0, size, size);
+
+  if (bg) {
+    c.fillStyle = plate;
+    c.fillRect(0, 0, size, size);
+    /* Faint top-left sheen so the flat plate still reads as a surface. */
+    const g = c.createLinearGradient(0, 0, size, size);
+    g.addColorStop(0, 'rgba(255,255,255,0.05)');
+    g.addColorStop(0.5, 'rgba(255,255,255,0)');
+    c.fillStyle = g;
+    c.fillRect(0, 0, size, size);
+  }
+  drawLogoMark(c, 0, 0, size, mark);
+  return cv;
+}
+
+/* Flat 2D stamp of the mark, for screen-space chrome (vertical bars, HUD). */
+function logoStamp(c, x, y, s, { plate = LOGO_ART.plate, mark = LOGO_ART.mark, radius = 0 } = {}) {
+  c.save();
+  if (radius > 0) { roundRect(c, x, y, s, s, radius); c.clip(); }
+  c.fillStyle = plate;
+  c.fillRect(x, y, s, s);
+  drawLogoMark(c, x, y, s, mark);
+  c.restore();
 }

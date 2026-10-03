@@ -45,7 +45,7 @@ function sceneCurriculum(ctx, A) {
   const out = 1 - seg(t, 3350, 3800, E.inOutQuad);
   ctx.save();
   ctx.globalAlpha = out;
-  FX.eyebrow(ctx, 112, 96, 'EDUCATION  +  EXECUTION', seg(t, 200, 800));
+  FX.eyebrow(ctx, 112, 96, 'THE LEARNING ENGINE', seg(t, 200, 800));
   /* The second half is positioned from the measured width of the first, so the
      copy can change without re-tuning pixel offsets. */
   const headOpt = { size: 76, weight: 900, tracking: -1 };
@@ -156,7 +156,7 @@ function sceneGrowth(ctx, A) {
   const out = 1 - seg(t, 3350, 3800, E.inOutQuad);
   ctx.save();
   ctx.globalAlpha = out;
-  FX.eyebrow(ctx, W - 640, 140, 'RISK FIRST · THEN RETURN', seg(t, 250, 850));
+  FX.eyebrow(ctx, W - 660, 140, 'THE RISK ENGINE · ALWAYS ON', seg(t, 250, 850));
   kinetic(ctx, 'DEFINED RISK.', { x: W - 112, y: 252, size: 84, weight: 900, tracking: -1, align: 'right', p: seg(t, 500, 1250), mode: 'wipe', color: C.white });
   kinetic(ctx, 'COMPOUND GROWTH.', { x: W - 112, y: 352, size: 84, weight: 900, tracking: -1, align: 'right', p: seg(t, 820, 1650), mode: 'wipe', color: C.gold, shadow: 0.55 });
 
@@ -260,14 +260,14 @@ function scenePocket(ctx, A) {
   const out = 1 - seg(t, 3350, 3800, E.inOutQuad);
   ctx.save();
   ctx.globalAlpha = out;
-  FX.eyebrow(ctx, 112, 300, 'ONE SUBSCRIPTION · EVERY SESSION', seg(t, 250, 850));
+  FX.eyebrow(ctx, 112, 300, 'ONE LOGIN · EVERY SESSION', seg(t, 250, 850));
   const hOpt = { size: 86, weight: 900, tracking: -1.5 };
   const wA = kineticWidth(ctx, 'ALWAYS', hOpt);
   kinetic(ctx, 'ALWAYS ON.', { ...hOpt, x: 110, y: 410, p: seg(t, 480, 1200), mode: 'wipe', color: C.white });
   kinetic(ctx, 'ALWAYS',     { ...hOpt, x: 110, y: 510, p: seg(t, 760, 1500), mode: 'wipe', color: C.white });
   kinetic(ctx, 'WITH YOU.',  { ...hOpt, x: 110 + wA + 24, y: 510, p: seg(t, 980, 1750), mode: 'wipe', color: C.gold, shadow: 0.6 });
 
-  const bullets = ['Live alerts to your phone', 'Lessons on your commute', 'Community that never closes'];
+  const bullets = ['The whole system in your pocket', 'Live alerts the moment they fire', 'A desk that never closes'];
   bullets.forEach((b, i) => {
     const e = E.outExpo(clamp((t - 1750 - i * 210) / 700));
     if (e <= 0.01) return;
@@ -289,7 +289,7 @@ function sceneClose(ctx, A) {
 
   const settle = E.outExpo(clamp(t / 1500));
   cam.fov = 40 * Math.PI / 180;
-  cam.lookAt([0, lerp(4.8, 4.1, settle), lerp(9.0, 12.8, settle)], [0, 4.5, 0]);
+  cam.lookAt([0, lerp(6.1, 5.4, settle), lerp(9.0, 14.0, settle)], [0, 5.8, 0]);
 
   S.reset();
   floorGrid(S, { half: 22, step: 2, y: -2.6, alpha: 0.16 * settle });
@@ -299,32 +299,38 @@ function sceneClose(ctx, A) {
     const a0 = hash(i * 1.91) * Math.PI * 2;
     const b0 = Math.acos(hash(i * 3.33) * 2 - 1);
     const rr = lerp(0.6, 11, E.outExpo(clamp(t / 2200 - hash(i * 7.3) * 0.3)));
-    const pt = [Math.sin(b0) * Math.cos(a0) * rr, Math.cos(b0) * rr * 0.7 + 5.35, Math.sin(b0) * Math.sin(a0) * rr];
-    const dir = V3.mul(V3.norm(V3.sub(pt, [0, 5.35, 0])), 0.55);
+    const pt = [Math.sin(b0) * Math.cos(a0) * rr, Math.cos(b0) * rr * 0.7 + 7.0, Math.sin(b0) * Math.sin(a0) * rr];
+    const dir = V3.mul(V3.norm(V3.sub(pt, [0, 7.0, 0])), 0.55);
     S.path([pt, V3.add(pt, dir)], { color: rgba(C.gold, 0.4 * (1 - clamp(t / 2400))), width: 1.4, glow: 0.6 });
   }
 
   const mk = E.spring(clamp(t / 1300), 6.2, 4.8);
-  const my = 5.35;
-  S.mesh(Assets.logo,
-    M4.chain(M4.translate(0, my, 0), M4.rotY(0.22 + Math.sin(t / 2600) * 0.07), M4.scale(0.56 * lerp(0.3, 1, mk))),
-    fade(MAT.gold, clamp(mk * 1.5)));
-  S.mesh(Assets.logoSm,
-    M4.chain(M4.translate(0, my - 0.46, 0), M4.rotY(0.22 + Math.sin(t / 2600) * 0.07), M4.scale(0.56 * lerp(0.3, 1, mk))),
-    { ...fade(MAT.gold, clamp(mk * 1.5) * 0.72), emissive: 0.12 });
+  const my = 7.0;
+  const tileM = M4.chain(
+    M4.translate(0, my, 0),
+    M4.rotY(0.14 + Math.sin(t / 2600) * 0.06),
+    M4.scale(0.66 * lerp(0.3, 1, mk)));
+  S.mesh(Assets.tileRim, M4.chain(tileM, M4.translate(0, 0, -0.09)),
+    { ...fade(MAT.gold, 0.95 * clamp(mk * 1.5)), metal: 0.95, zBias: -1.4 });
+  S.mesh(Assets.tile, tileM, fade(MAT.forest, clamp(mk * 1.5)));
   S.mesh(Assets.torus,
-    M4.chain(M4.translate(0, my, 0), M4.rotX(1.08), M4.rotY(t / 2200), M4.scale(0.34 * mk)),
+    M4.chain(M4.translate(0, my, 0), M4.rotX(1.08), M4.rotY(t / 2200), M4.scale(0.36 * mk)),
     fade(MAT.gold, 0.4 * mk));
   S.render(ctx, cam, W, H);
+
+  if (mk > 0.04) {
+    texQuad3D(ctx, logoTexture(512), cam, W, H,
+      quadCorners(tileM, 1.3, 1.3, 0.168), 6, clamp((mk - 0.04) * 1.7));
+  }
 
   FX.lensFlare(ctx, W / 2, H * 0.26, env(clamp(t / 1100), 0.3, 0.6) * 0.7, W);
   FX.flash(ctx, W, H, (1 - clamp(t / 280)) * 1.0);
 
   /* ── Lock-up ── */
   const ty = H * 0.555;
-  kinetic(ctx, 'OPTIONS TRADERS ACADEMY', {
-    x: W / 2, y: ty, size: 62, weight: 900, tracking: 7.5, align: 'center',
-    p: seg(t, 520, 1500), mode: 'glyph', stagger: 0.02, color: C.white, shadow: 0.5,
+  kinetic(ctx, CFG.brand, {
+    x: W / 2, y: ty, size: 56, weight: 900, tracking: 7.5, align: 'center',
+    p: seg(t, 520, 1500), mode: 'glyph', stagger: 0.02, color: C.cream, shadow: 0.5,
   });
   kinetic(ctx, CFG.tagline, {
     x: W / 2, y: ty + 52, size: 24, weight: 600, tracking: 6, align: 'center',
@@ -366,9 +372,25 @@ function sceneClose(ctx, A) {
     ctx.fillStyle = rgba(C.white, 0.95);
     ctx.textBaseline = 'middle';
     tracked(ctx, CFG.url, W / 2, ty + 248, 2.4, 'center');
-    setFont(ctx, 18, 700);
-    ctx.fillStyle = rgba(C.slate, 0.9);
-    tracked(ctx, CFG.badges.join('   ·   '), W / 2, ty + 292, 1.8, 'center');
+    /* The guarantee is the risk-reversal — it earns a bordered chip, not a
+       line of grey small print. */
+    setFont(ctx, 17, 800);
+    const chipW = CFG.badges.map(b => trackedWidth(ctx, b, 2) + 38);
+    const totalW = chipW.reduce((a, b) => a + b, 0) + (CFG.badges.length - 1) * 14;
+    let bx = W / 2 - totalW / 2;
+    CFG.badges.forEach((b, i) => {
+      roundRect(ctx, bx, ty + 274, chipW[i], 40, 20);
+      ctx.fillStyle = rgba(C.gold, i === 0 ? 0.14 : 0.07);
+      ctx.fill();
+      ctx.strokeStyle = rgba(C.gold, i === 0 ? 0.65 : 0.3);
+      ctx.lineWidth = 1.3;
+      ctx.stroke();
+      setFont(ctx, 17, 800);
+      ctx.fillStyle = i === 0 ? C.goldLt : rgba(C.cream, 0.75);
+      ctx.textBaseline = 'middle';
+      tracked(ctx, b, bx + 19, ty + 295, 2);
+      bx += chipW[i] + 14;
+    });
     ctx.restore();
   }
 
