@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OTA Broadcast Spot</title>
+<meta name="description" content="A 30-second, code-generated commercial for Options Traders Academy: real-time 3D, motion graphics and a synthesised score, rendered entirely in the browser." />
+<style>
+<!--#include fonts.css-->
+</style>
+<style>
+<!--#include style.css-->
+</style>
+</head>
+<body>
+
+<header class="head">
+  <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+    <path d="M4 32 L20 6 L36 32 L27 32 L20 20 L13 32 Z" fill="#D4AF37"/>
+  </svg>
+  <h1>Options Traders Academy — 30&#8202;s Spot</h1>
+  <div class="sep"></div>
+  <div class="badge">1920 × 1080 · 30 fps</div>
+  <div class="badge">Real-time 3D</div>
+  <div class="badge">Synthesised score</div>
+</header>
+
+<main id="shell">
+  <div id="frame">
+    <canvas id="stage" width="1920" height="1080"></canvas>
+    <button id="poster" aria-label="Play the commercial">
+      <div class="play-ring"></div>
+      <div class="cap">Play with sound · 30 seconds</div>
+    </button>
+  </div>
+
+  <div class="transport">
+    <div id="bar" role="slider" aria-label="Timeline" aria-valuemin="0" aria-valuemax="30">
+      <div id="bar-fill"></div>
+      <div id="marks"></div>
+    </div>
+    <div class="row">
+      <button class="ctl" id="btn-play">▶&nbsp; Play</button>
+      <button class="ctl on" id="btn-mute">🔊&nbsp; Sound on</button>
+      <button class="ctl on" id="btn-cap">💬&nbsp; Captions on</button>
+      <button class="ctl" id="btn-aspect">🖥&nbsp; 16:9</button>
+      <button class="ctl" id="btn-full">⛶&nbsp; Fullscreen</button>
+      <div class="meta">
+        <span>SCENE&nbsp; <b id="scene-name">—</b></span>
+        <span id="time">00.00s / 30.00s</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<section class="notes">
+  <div class="note">
+    <h3>Voice-over script &amp; shot list</h3>
+    <ol id="script-list"></ol>
+  </div>
+  <div class="note">
+    <h3>What is running in here</h3>
+    <p><b>No libraries, no video file, no stock footage.</b> Every frame is computed at
+    runtime: a hand-written 3D pipeline (matrix math, ear-clipping triangulation,
+    painter-sorted rasterisation, Blinn-Phong shading) feeding a 2D canvas.</p>
+    <p>The phone and the dashboard are <b>perspective-correct textured quads</b> — the app
+    UI is drawn to an off-screen canvas, then mapped onto 3D geometry subdivided in world
+    space, so it tracks the surface exactly.</p>
+    <p>Post chain: bloom, RGB split on cuts, film grain, vignette, scanlines, colour grade.
+    The score is synthesised in WebAudio — kick, sub-bass, hats, plucks, pads, risers and
+    trailer impacts, arranged at 120&nbsp;BPM in C minor and locked to the cut points.</p>
+    <p>Hotkeys: <code>space</code> play · <code>←</code>/<code>→</code> step one frame ·
+    <code>R</code> restart · <code>M</code> mute · <code>C</code> captions ·
+    <code>V</code> 9:16.</p>
+  </div>
+  <div class="note">
+    <h3>Delivery</h3>
+    <p><b>16:9</b> for YouTube pre-roll, CTV, website hero and paid social in-feed.
+    <b>9:16</b> (press <code>V</code>) re-frames the same timeline for Reels, TikTok and
+    Shorts with a brand bar and a persistent CTA.</p>
+    <p>Captions are burned in by default — most feed views are watched with the sound off.</p>
+    <p>Render a distributable file with <code>node commercial/render.mjs</code>: it steps the
+    timeline frame-by-frame in headless Chromium, bounces the score to WAV, and muxes an
+    H.264 MP4 with ffmpeg. Flags: <code>--vertical</code>, <code>--fps 60</code>,
+    <code>--no-captions</code>, <code>--gif</code>.</p>
+    <p>Everything sales-facing — brand, tagline, CTA, URL, trust badges, disclaimer, and the
+    caption track — lives in one <code>OTA_CONFIG</code> block at the top of the file.</p>
+  </div>
+</section>
+
+<p class="foot" id="foot-disclaimer"></p>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════════════
+   OTA_CONFIG — the only block you need to touch to re-skin or re-cut the spot.
+   ════════════════════════════════════════════════════════════════════════════ */
+window.OTA_CONFIG = {
+  brand:    'OPTIONS TRADERS ACADEMY',
+  tagline:  'YOUR EDGE, ENGINEERED.',
+  cta:      'START FREE — 7 DAYS',
+  url:      'OPTIONSTRADERSACADEMY.COM',
+  badges:   ['7-DAY FREE TRIAL', 'NO CREDIT CARD', '30-DAY GUARANTEE'],
+  disclaimer: [
+    'Options and futures trading involves substantial risk of loss and is not suitable for every investor.',
+    'Educational content only — not financial advice. All figures and screens shown are illustrative.',
+  ],
+
+  /* Caption + VO cue sheet. t and d in milliseconds. */
+  vo: [
+    { t:   250, d: 2750, text: "The market doesn't wait.",                  shot: 'Push-in through a living candlestick grid; ticker strip; 24h session dial.' },
+    { t:  3500, d: 1900, text: 'Trillions move while you sleep.',           shot: 'Wireframe globe, capital-flow arcs firing between financial centres.' },
+    { t:  5500, d: 1550, text: 'Most people just watch.',                   shot: 'Tokyo / London / New York session bars overlap under a live playhead.' },
+    { t:  7450, d: 3800, text: 'Options Traders Academy hands you the edge.',shot: 'Data collapses into the extruded gold mark; logo lock-up + flare.' },
+    { t: 11700, d: 3500, text: 'Options. Futures. Investing — one system.',  shot: 'Three 3D pillars land: option chain, futures ladder, allocation donut.' },
+    { t: 15500, d: 1800, text: '8 modules. 200+ lessons.',                  shot: 'Floating dashboard slab; curriculum ticks itself off module by module.' },
+    { t: 17450, d: 1700, text: 'Live setups you can actually follow.',      shot: 'Trade-desk feed slides in: entry, target, stop, position risk.' },
+    { t: 19300, d: 1800, text: 'Real risk management.',                     shot: 'Hex risk shield forms; position size, max loss and R:R meters stack.' },
+    { t: 21250, d: 1700, text: 'A portfolio that compounds.',               shot: 'Compounding towers rise; 3D equity ribbon extrudes over the field.' },
+    { t: 23100, d: 1800, text: 'In your pocket. 24 hours.',                 shot: 'Phone rotates in with the live app UI; orbital session rails spin.' },
+    { t: 25050, d: 1700, text: '365 days a year.',                          shot: 'Session pips circle the rail — Sydney through New York light in turn.' },
+    { t: 26950, d: 2850, text: 'Start free today.',                         shot: 'Mark + wordmark lock-up, pulsing CTA, URL, trust badges, disclosure.' },
+  ],
+};
+</script>
+
+<script>
+<!--#include math3d.js-->
+</script>
+<script>
+<!--#include geometry.js-->
+</script>
+<script>
+<!--#include core.js-->
+</script>
+<script>
+<!--#include render3d.js-->
+</script>
+<script>
+<!--#include texquad.js-->
+</script>
+<script>
+<!--#include fx.js-->
+</script>
+<script>
+<!--#include audio.js-->
+</script>
+<script>
+<!--#include ui.js-->
+</script>
+<script>
+<!--#include scenes-a.js-->
+</script>
+<script>
+<!--#include scenes-b.js-->
+</script>
+<script>
+<!--#include main.js-->
+</script>
+<script>
+/* Script panel + footer, populated from OTA_CONFIG so the page can never
+   drift out of sync with the film. */
+(() => {
+  const list = document.getElementById('script-list');
+  for (const cue of window.OTA_CONFIG.vo) {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="tc">${(cue.t / 1000).toFixed(2)}s</span>`
+      + `<span><span class="vo">“${cue.text}”</span><em>${cue.shot}</em></span>`;
+    list.appendChild(li);
+  }
+  document.getElementById('foot-disclaimer').textContent =
+    window.OTA_CONFIG.disclaimer.join('  ');
+})();
+</script>
+</body>
+</html>

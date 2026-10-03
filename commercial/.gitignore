@@ -1,0 +1,7 @@
+# Review stills and ffmpeg intermediates — regenerate with `node render.mjs --stills`
+dist/stills/
+dist/palette.png
+# GIF is derivable and large — `node render.mjs --gif`
+dist/*.gif
+# The 9:16 render writes an identical score stem; one copy is enough
+dist/ota-commercial-30s-9x16.wav
