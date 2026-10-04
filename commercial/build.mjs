@@ -6,25 +6,31 @@ import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const SRC = join(here, 'src');
-const OUT = join(here, 'dist', 'ota-commercial.html');
+/* Two films share one engine; each has its own shell and its own scenes. */
+const FILMS = [
+  ['shell.html',       'ota-commercial.html'],
+  ['shell-howto.html', 'ota-howto.html'],
+];
 
-const shell = await readFile(join(SRC, 'shell.html'), 'utf8');
-const seen = [];
+await mkdir(join(here, 'dist'), { recursive: true });
+for (const [shellFile, outFile] of FILMS) {
+  const OUT = join(here, 'dist', outFile);
+  const shell = await readFile(join(SRC, shellFile), 'utf8');
+  const seen = [];
 
-const html = await replaceAsync(shell, /^[ \t]*<!--#include\s+([\w.-]+)-->[ \t]*$/gm, async (_m, file) => {
-  const body = await readFile(join(SRC, file), 'utf8');
-  seen.push(file);
-  return body.trimEnd();
-});
+  const html = await replaceAsync(shell, /^[ \t]*<!--#include\s+([\w.-]+)-->[ \t]*$/gm, async (_m, file) => {
+    const body = await readFile(join(SRC, file), 'utf8');
+    seen.push(file);
+    return body.trimEnd();
+  });
 
-if (/<!--#include/.test(html)) throw new Error('unresolved include directive');
+  if (/<!--#include/.test(html)) throw new Error(`unresolved include directive in ${shellFile}`);
 
-await mkdir(dirname(OUT), { recursive: true });
-await writeFile(OUT, html);
-
-const kb = (Buffer.byteLength(html) / 1024).toFixed(1);
-console.log(`built  ${OUT}`);
-console.log(`       ${seen.length} modules inlined · ${kb} KB · ${html.split('\n').length} lines`);
+  await writeFile(OUT, html);
+  const kb = (Buffer.byteLength(html) / 1024).toFixed(1);
+  console.log(`built  ${OUT}`);
+  console.log(`       ${seen.length} modules inlined · ${kb} KB · ${html.split('\n').length} lines`);
+}
 
 async function replaceAsync(str, re, fn) {
   const jobs = [];

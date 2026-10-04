@@ -25,25 +25,45 @@ const tmp = mkdtempSync(join(tmpdir(), 'shots-'));
    captures were taken in a browser, so their Safari toolbar is trimmed away —
    the film is showing the app, not a web page. */
 const PLAN = [
-  ['appHome',    'app-home.jpg',   'phone', [620, 1302], 5, 235],
-  ['dailyPlay',  'daily-play.jpg', 'phone', [620, 1302], 5, 0],
-  ['tradePlan',  'trade-plan.jpg', 'phone', [620, 1302], 5, 0],
-  ['homescreen', 'homescreen.jpg', 'wide',  [1120, 331], 4, 0],
-  ['result',     'result.jpg',     'wide',  [880, 684],  4, 0],
+  ['appHome',    'app-home.jpg',   'phone',  [620, 1302], 5, 235],
+  /* The same capture again, full frame: the how-to film reads the bottom nav,
+     which the phone-aspect centre-crop cuts into. */
+  ['profile',    'app-home.jpg',   'wide',   [660, 1141], 5, 150],
+  ['dailyPlay',  'daily-play.jpg', 'phone',  [620, 1302], 5, 0],
+  ['tradePlan',  'trade-plan.jpg', 'phone',  [620, 1302], 5, 0],
+  /* Mission Control is read as a whole screen, not mapped onto the 3D phone,
+     so it keeps its full frame; only the browser toolbar is trimmed off. */
+  ['mission',    'mission.jpg',    'wide',   [660, 1101], 5, 215],
+  ['homescreen', 'homescreen.jpg', 'wide',   [1120, 331], 4, 0],
+  ['result',     'result.jpg',     'wide',   [880, 684],  4, 0],
+  /* The presenter was shot on white, so she is keyed out and carried as WebP
+     with an alpha channel — a PNG of the same cutout is six times the size. */
+  ['presenter',  'presenter.jpg',  'cutout', [620, 0],    86, 0],
 ];
 
 const out = {};
 let total = 0;
-for (const [key, file, fit, [w, h], q, trim] of PLAN) {
-  const dst = join(tmp, `${key}.jpg`);
+for (const [key, file, fit, [w, h0], q, trim] of PLAN) {
+  let h = h0;
+  const cut = fit === 'cutout';
+  const dst = join(tmp, cut ? `${key}.webp` : `${key}.jpg`);
   const pre = trim ? `crop=iw:ih-${trim}:0:0,` : '';
-  const vf = pre + (fit === 'phone'
-    ? `scale=-1:${h}:flags=lanczos,crop=${w}:${h}`   /* cover, centre-crop */
-    : `scale=${w}:${h}:flags=lanczos`);
+  const vf = pre + (cut
+    /* Key the studio white to alpha, trim the empty sides, then scale. */
+    ? `colorkey=0xFFFFFF:0.14:0.07,crop=iw*0.80:ih:iw*0.10:0,scale=${w}:-1:flags=lanczos`
+    : fit === 'phone'
+      ? `scale=-1:${h}:flags=lanczos,crop=${w}:${h}`   /* cover, centre-crop */
+      : `scale=${w}:${h}:flags=lanczos`);
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', join(SRC, file),
-    '-vf', vf, '-q:v', String(q), dst]);
+    '-vf', vf, ...(cut ? ['-c:v', 'libwebp', '-quality', String(q), '-compression_level', '6']
+                       : ['-q:v', String(q)]), dst]);
+  if (cut) {
+    const dim = execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0',
+      '-show_entries', 'stream=width,height', '-of', 'csv=p=0', dst]).toString().trim().split(',');
+    h = Number(dim[1]);
+  }
   const b64 = readFileSync(dst).toString('base64');
-  out[key] = { w, h, src: `data:image/jpeg;base64,${b64}` };
+  out[key] = { w, h, src: `data:image/${cut ? 'webp' : 'jpeg'};base64,${b64}` };
   total += b64.length;
   console.log(`  ${key.padEnd(11)} ${String(w).padStart(4)}x${h}  ${(b64.length / 1024).toFixed(0)} KB`);
 }

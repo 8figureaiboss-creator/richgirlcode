@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>OTA OS — The Operating System Film</title>
-<meta name="description" content="A code-generated commercial for the Options Traders Academy OS: real-time 3D, motion graphics and a synthesised score, rendered entirely in the browser." />
+<title>OTA OS — How To Find Your Setup</title>
+<meta name="description" content="A code-generated walkthrough of the Options Traders Academy OS: ticker to analysis to a structured trading plan, rendered entirely in the browser." />
 <style>
 <!--#include fonts.css-->
 </style>
@@ -20,7 +20,7 @@
     <text x="20" y="29.4" text-anchor="middle" fill="#FEF5DA"
           font-family="'Playfair Display',Georgia,serif" font-size="29.6" font-weight="500">Q.</text>
   </svg>
-  <h1>Options Traders Academy OS — 1:14 Film</h1>
+  <h1>Options Traders Academy OS — How To Find Your Setup</h1>
   <div class="sep"></div>
   <div class="badge">1920 × 1080 · 30 fps</div>
   <div class="badge">Real-time 3D</div>
@@ -32,12 +32,12 @@
     <canvas id="stage" width="1920" height="1080"></canvas>
     <button id="poster" aria-label="Play the commercial">
       <div class="play-ring"></div>
-      <div class="cap">Play with sound · 1 min 14 s</div>
+      <div class="cap">Play with sound · 2 min 56 s</div>
     </button>
   </div>
 
   <div class="transport">
-    <div id="bar" role="slider" aria-label="Timeline" aria-valuemin="0" aria-valuemax="74">
+    <div id="bar" role="slider" aria-label="Timeline" aria-valuemin="0" aria-valuemax="176">
       <div id="bar-fill"></div>
       <div id="marks"></div>
     </div>
@@ -49,7 +49,7 @@
       <button class="ctl" id="btn-full">⛶&nbsp; Fullscreen</button>
       <div class="meta">
         <span>SCENE&nbsp; <b id="scene-name">—</b></span>
-        <span id="time">00.00s / 74.00s</span>
+        <span id="time">00.00s / 176.00s</span>
       </div>
     </div>
   </div>
@@ -104,55 +104,73 @@
 window.OTA_CONFIG = {
   brand:    'OPTIONS TRADERS ACADEMY',
   product:  'OTA OS',
-  tagline:  'THE TRADER\u2019S OPERATING SYSTEM.',
-  endline:  'Trade smarter. Learn deeper. Build bigger.',
+  tagline:  'ANALYZE. CONFIRM. DECIDE.',
+  endline:  'Analyze. Confirm. Decide.',
   trademark:'SMART. STYLISH. STRATEGIC.\u2122',
   cta:      'GET THE OTA OS APP',
   url:      '',
   badges:   ['7-DAY MONEY-BACK GUARANTEE', 'INSTANT ACCESS'],
-  showResult: true,
+  showResult: false,
 
-  closing:  ['Your market.', 'Your education.', 'Your wealth.', 'One system.'],
+  closing:  ['Analyze.', 'Confirm.', 'Decide.'],
   disclaimer: [
-    'For educational purposes only. Trading and investing involve risk. Results are not guaranteed.',
-    'Results shown are one individual\u2019s and are not typical. Not financial advice.',
+    'Educational purposes only. Not financial advice. Trading involves risk.',
+    'Always conduct your own due diligence.',
   ],
 
   /* \u2500\u2500 Voice-over cue sheet \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-     `t` and `d` are milliseconds. These drive the burned-in captions, the
-     printed script AND the exported recording sheet, so the voice track, the
-     subtitles and the picture can never drift apart. Timed for a natural ad
-     read of about 175 words per minute: speak each cue inside its own window
-     and the mix lines up frame for frame with no stretching. */
+     `t` and `d` are milliseconds. This is a walkthrough, so the read is slower
+     than the brand film \u2014 about 155 words per minute, instructional rather
+     than hyped. Every cue is timed to the thing it describes being on screen.
+     `node render.mjs --film howto --script` prints the recording sheet. */
   vo: [
-    /* ACT I \u2014 ONE SYSTEM (0:00 \u2013 0:16).  0.0\u20133.4 is a cold open: picture and
-       score only, so the first words land on the cut rather than under it. */
-    { t:  3700, d: 2300, text: 'Trading shouldn\u2019t require ten different apps,',       shot: 'Ten app tiles drift apart over the candle field.' },
-    { t:  6300, d: 2500, text: 'scattered information, and guessing your next move.',  shot: 'The tiles scatter wider; the noise closes in.' },
-    { t:  9400, d: 2600, text: 'Meet the Options Traders Academy OS \u2014',               shot: 'Everything collapses into the gold-rimmed Q tile.' },
-    { t: 12200, d: 3900, text: 'one operating system to learn, analyze, trade, invest, and build wealth.', shot: 'ONE SYSTEM. YOUR FINANCIAL OPERATING SYSTEM.' },
+    /* 1 \u2014 ACCESS YOUR OTA OS */
+    { t:  1000, d: 4600, text: 'Finding a trading setup doesn\u2019t have to start with hours of searching.', shot: 'Coach on camera; the floor grid settles in behind her.' },
+    { t:  6000, d: 7200, text: 'Once you have the Options Traders Academy OS, save it directly to your phone or computer as a shortcut', shot: 'The Q icon flies into the real iOS home row and lights up.' },
+    { t: 13700, d: 3400, text: 'so your trading system is always one click away.',         shot: 'PHONE \u00b7 TABLET \u00b7 DESKTOP.' },
 
-    /* ACT II \u2014 BUILD THE PLAY (0:16 \u2013 0:31) */
-    { t: 16700, d: 3300, text: 'Choose your ticker. Upload your charts. Build your setup.', shot: 'Real app: Pick Ticker, Upload Charts, Get Contract light in turn.' },
-    { t: 20400, d: 3200, text: 'Identify confirmation, entry, exit, risk level, and contract \u2014', shot: 'Real trade plan: entry, take-profit, stop, strike, OTM runner.' },
-    { t: 24000, d: 5700, text: 'all inside a structured framework built to help you stop chasing and start trading with discipline.', shot: 'ANALYZE \u2192 CONFIRM \u2192 EXECUTE \u2192 MANAGE RISK.' },
+    /* 2 \u2014 START WITH YOUR PROFILE */
+    { t: 18600, d: 4400, text: 'Log into your OTA OS and start inside your profile.',      shot: 'Real app: the Q header lights, then the profile card.' },
+    { t: 23400, d: 3200, text: 'From there, open Your Daily Play.',                        shot: 'The PROFILE tab in the bottom nav lights.' },
+    { t: 27000, d: 3400, text: 'This is where you begin building your strategy.',          shot: 'PROFILE \u2192 YOUR DAILY PLAY.' },
 
-    /* ACT III \u2014 LEARN + TRACK + GROW (0:31 \u2013 0:46) */
-    { t: 31500, d: 2400, text: 'But OTA doesn\u2019t stop at the trade.',                   shot: 'The trade desk folds away; the Academy opens.' },
-    { t: 34300, d: 4000, text: 'Learn technical analysis, options strategies, risk management, psychology and the Greeks.', shot: 'Module cards deal out: 32+ LEARNING MODULES.' },
-    { t: 38700, d: 3500, text: 'Track your decisions in your trading journal, review your progress,', shot: 'Daily Journal and Hit List panels slide in.' },
-    { t: 42600, d: 2800, text: 'and turn every market day into another lesson.',       shot: 'Mission Control: the progress ring fills.' },
+    /* 3 \u2014 CHOOSE WHAT YOU WANT TO ANALYZE */
+    { t: 31600, d: 7600, text: 'Enter the ticker you want to analyze and choose whether you\u2019re looking for an options setup or a futures setup.', shot: 'The Options / Futures toggle lights on the real dashboard.' },
+    { t: 39700, d: 3600, text: 'You decide what market you want to study.',                shot: 'QQQ types itself into the real ticker field.' },
+    { t: 43700, d: 2600, text: 'The OS helps you organize the analysis.',                  shot: 'QQQ \u00b7 SPY \u00b7 AAPL \u00b7 NVDA light up.' },
 
-    /* ACT IV \u2014 BEYOND TRADING (0:46 \u2013 1:02) */
-    { t: 45900, d: 2800, text: 'Because real wealth is bigger than one trade.',        shot: 'Pull back; the allocation builds itself.' },
-    { t: 49100, d: 3600, text: 'Build and organize your investment portfolio, explore multiple asset classes,', shot: 'Stocks, ETFs, dividends, REITs, bonds, metals, land.' },
-    { t: 53500, d: 3900, text: 'expand your financial education, and tap into the OTA lifestyle ecosystem.', shot: 'The Supercar Social Society membership card turns in 3D.' },
-    { t: 57800, d: 1800, text: 'Options Traders Academy OS \u2014',                       shot: 'The card folds away; the wordmark builds.' },
-    { t: 60000, d: 4900, text: 'built for what happens before the trade, during the trade, and long after it.', shot: 'The mark takes the card\u2019s place; picture falls to black.' },
+    /* 4 \u2014 UPLOAD YOUR CHARTS */
+    { t: 47100, d: 3200, text: 'Next, pull your charts from TradingView.',                 shot: 'Five chart cards begin dealing in.' },
+    { t: 50700, d: 6600, text: 'Upload your full intraday view, four-hour, one-hour, fifteen-minute, and five-minute charts.', shot: 'Each card lands as it is named.' },
+    { t: 57800, d: 4200, text: 'Those timeframes give the system the market structure it needs.', shot: 'The five cards fly into the device.' },
 
-    /* CLOSE \u2014 the product-launch beat (1:02 \u2013 1:14) */
-    { t: 65600, d: 2500, text: 'You don\u2019t need another trading app.',                 shot: 'Black. The mark fades up alone and waits.' },
-    { t: 68600, d: 2300, text: 'You need an operating system.',                        shot: 'End card: wordmark, closing lines, CTA, 7-day guarantee.' },
+    /* 5 \u2014 LET THE OS ANALYZE */
+    { t: 63100, d: 5400, text: 'Once your charts are uploaded, OTA OS analyzes the information and builds your plan.', shot: 'Scan passes: trend, support, resistance, structure.' },
+    { t: 69000, d: 7200, text: 'It may identify a bullish setup, a bearish setup \u2014 or tell you there\u2019s no trade worth taking yet.', shot: 'BULLISH \u00b7 BEARISH \u00b7 OR WAIT. The last one holds.' },
+
+    /* 6 \u2014 GET THE STRATEGY */
+    { t: 77600, d: 2600, text: 'Then read the full strategy.',                             shot: 'The real trade plan scrolls.' },
+    { t: 80600, d: 7400, text: 'The system helps you identify the directional bias, important levels, confirmation, possible entry conditions, exits, and risk considerations.', shot: 'Confirmation, entry, exit and stop light in turn.' },
+    { t: 88500, d: 5000, text: 'And when the better decision may simply be to sit on your hands.', shot: 'BIAS \u00b7 LEVELS \u00b7 CONFIRMATION \u00b7 ENTRY \u00b7 EXIT \u00b7 RISK.' },
+
+    /* 7 \u2014 REVIEW THE CONTRACT */
+    { t: 95100, d: 6800, text: 'For options setups, continue through the analysis and review the contract or strike the system identifies.', shot: 'PRIMARY STRIKE, then OTM RUNNER, on the real plan.' },
+    { t: 102400, d: 3400, text: 'Then open your brokerage platform \u2014 we use Robinhood \u2014', shot: 'OTA OS \u2192 YOUR BROKERAGE \u2192 WATCHLIST.' },
+    { t: 106300, d: 3400, text: 'find that contract, and add it to your watchlist.',       shot: 'The real home row again; the broker icon lights.' },
+
+    /* 8 \u2014 CONFIRMATION BEFORE CAPITAL */
+    { t: 111100, d: 6600, text: 'And this part matters: a contract appearing on your screen does not mean you automatically buy it.', shot: 'The contract sits on a watchlist. WATCHING \u2014 NOT BOUGHT.' },
+    { t: 118200, d: 5400, text: 'Watch the setup. Confirm the conditions. Review the contract yourself. Manage your risk.', shot: 'The confirmation checklist ticks itself off.' },
+    { t: 124100, d: 4000, text: 'Then decide whether the opportunity fits your trading plan.', shot: 'YOU DECIDE. NOT THE SCREEN.' },
+
+    /* 9 \u2014 CLOSE */
+    { t: 129100, d: 8400, text: 'That\u2019s how you use the Options Traders Academy OS to go from a ticker, to market analysis, to a structured trading plan.', shot: 'Phone, tablet and desktop, each carrying a real screen.' },
+    { t: 138000, d: 4200, text: 'No technology can predict what the market will do next.',  shot: 'The line said plainly, in red.' },
+    { t: 142800, d: 9200, text: 'The advantage is having a system that helps you analyze the information, organize the setup, and make a more informed decision instead of guessing.', shot: 'The edge is the system you use to decide.' },
+
+    /* Coach Chris \u2014 the closing line */
+    { t: 152800, d: 4000, text: 'Because trading isn\u2019t about trying to catch every move.', shot: 'Coach on camera, deep green, going quiet.' },
+    { t: 157400, d: 7400, text: 'It\u2019s about having a strategy, waiting for confirmation, managing your risk, and using technology to build a stronger edge.', shot: 'Strategy. Confirmation. Managed risk. A stronger edge.' },
   ],
 };
 </script>
@@ -197,7 +215,7 @@ window.OTA_CONFIG = {
 <!--#include scenes-lib.js-->
 </script>
 <script>
-<!--#include scenes-c.js-->
+<!--#include scenes-howto.js-->
 </script>
 <script>
 <!--#include main.js-->

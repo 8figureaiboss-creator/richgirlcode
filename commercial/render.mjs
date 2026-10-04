@@ -9,6 +9,7 @@
    OfflineAudioContext to WAV and muxed in.
 
      node render.mjs                     1920×1080 · 30 fps · MP4 + audio
+     node render.mjs --film howto        the walkthrough instead of the brand film
      node render.mjs --vertical          1080×1920 for Reels / TikTok / Shorts
      node render.mjs --fps 60            smoother motion, 2× the frames
      node render.mjs --no-captions       clean plate for a different language
@@ -27,7 +28,10 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const FILM = join(here, 'dist', 'ota-commercial.html');
+const FILMS = {
+  brand: { html: 'ota-commercial.html', stem: 'ota-commercial' },
+  howto: { html: 'ota-howto.html',      stem: 'ota-howto' },
+};
 const OUTDIR = join(here, 'dist');
 
 /* Playwright may be installed globally in this environment rather than locally. */
@@ -50,9 +54,12 @@ const VERTICAL = flag('--vertical');
 const CAPTIONS = !flag('--no-captions');
 const WANT_GIF = flag('--gif');
 const STILLS = flag('--stills');
+const WHICH = val('--film', 'brand');
+if (!FILMS[WHICH]) { console.error(`unknown --film ${WHICH}; expected ${Object.keys(FILMS).join(' or ')}`); process.exit(1); }
+const FILM = join(OUTDIR, FILMS[WHICH].html);
 const SCRIPT = flag('--script');
 const VO = val('--vo', null);
-const NAME = `ota-commercial${VERTICAL ? '-9x16' : ''}${FPS !== 30 ? `-${FPS}fps` : ''}${VO ? '-vo' : ''}`;
+const NAME = `${FILMS[WHICH].stem}${VERTICAL ? '-9x16' : ''}${FPS !== 30 ? `-${FPS}fps` : ''}${VO ? '-vo' : ''}`;
 
 const t0 = Date.now();
 await mkdir(OUTDIR, { recursive: true });
@@ -76,21 +83,22 @@ if (flag('--web')) {
     const { size } = require('node:fs').statSync(join(web, out));
     console.log(`${(size / 1024 / 1024).toFixed(2)} MB`);
   };
-  const stem = require('node:fs').existsSync(join(OUTDIR, 'ota-commercial-vo.mp4'))
-    ? 'ota-commercial-vo' : 'ota-commercial';
-  const stemV = require('node:fs').existsSync(join(OUTDIR, 'ota-commercial-9x16-vo.mp4'))
-    ? 'ota-commercial-9x16-vo' : 'ota-commercial-9x16';
-  encode(`${stem}.mp4`, 'ota-16x9.mp4');
-  encode(`${stemV}.mp4`, 'ota-9x16.mp4');
+  const base = FILMS[WHICH].stem;
+  const stem = require('node:fs').existsSync(join(OUTDIR, `${base}-vo.mp4`)) ? `${base}-vo` : base;
+  const stemV = require('node:fs').existsSync(join(OUTDIR, `${base}-9x16-vo.mp4`))
+    ? `${base}-9x16-vo` : `${base}-9x16`;
+  const tag = WHICH === 'brand' ? '' : `-${WHICH}`;
+  encode(`${stem}.mp4`, `ota${tag}-16x9.mp4`);
+  encode(`${stemV}.mp4`, `ota${tag}-9x16.mp4`);
   /* Poster: the brand lock-up at 12.6s. */
-  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-ss', '12.6',
+  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-ss', WHICH === 'brand' ? '12.6' : '16.0',
     '-i', join(OUTDIR, `${stem}.mp4`),
-    '-frames:v', '1', '-vf', 'scale=1280:-1', join(web, 'poster.jpg')]);
+    '-frames:v', '1', '-vf', 'scale=1280:-1', join(web, `poster${tag}.jpg`)]);
   console.log(`  poster.jpg\n\n  → ${web}  (index.html is committed; the media here is derived)\n`);
   process.exit(0);
 }
 
-console.log(`\n  OTA OS — headless render`);
+console.log(`\n  OTA OS — headless render · ${WHICH}`);
 console.log(`  ${VERTICAL ? '1080×1920 (9:16)' : '1920×1080 (16:9)'} · ${FPS} fps · captions ${CAPTIONS ? 'on' : 'off'}\n`);
 
 const browser = await chromium.launch({
@@ -141,16 +149,16 @@ if (SCRIPT) {
       + `     VO     "${c.text}"\n`
       + `     PIC    ${c.shot}\n\n`;
   }
-  await writeFile(join(OUTDIR, 'ota-voiceover-script.txt'), txt);
+  await writeFile(join(OUTDIR, `${FILMS[WHICH].stem}-voiceover-script.txt`), txt);
 
   let srt = '';
   vo.forEach((c, i) => {
     srt += `${i + 1}\n${tc(c.t)} --> ${tc(c.t + c.d)}\n${c.text}\n\n`;
   });
-  await writeFile(join(OUTDIR, 'ota-captions.srt'), srt);
+  await writeFile(join(OUTDIR, `${FILMS[WHICH].stem}-captions.srt`), srt);
   await browser.close();
-  console.log(`  ✓ ${join(OUTDIR, 'ota-voiceover-script.txt')}`);
-  console.log(`  ✓ ${join(OUTDIR, 'ota-captions.srt')}\n`);
+  console.log(`  ✓ ${join(OUTDIR, `${FILMS[WHICH].stem}-voiceover-script.txt`)}`);
+  console.log(`  ✓ ${join(OUTDIR, `${FILMS[WHICH].stem}-captions.srt`)}\n`);
   process.exit(0);
 }
 
@@ -185,7 +193,7 @@ const wavB64 = await page.evaluate(async (DUR) => {
   for (let i = 0; i < bytes.length; i += CH) s += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
   return btoa(s);
 }, DURATION);
-const scorePath = join(OUTDIR, `ota-score.wav`);
+const scorePath = join(OUTDIR, `${FILMS[WHICH].stem}-score.wav`);
 await writeFile(scorePath, Buffer.from(wavB64, 'base64'));
 console.log(`${(Buffer.from(wavB64, 'base64').length / 1024 / 1024).toFixed(1)} MB WAV`);
 

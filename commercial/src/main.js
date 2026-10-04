@@ -9,34 +9,21 @@
    letterboxed — every scene lays itself out again for the taller canvas. */
 const SIZES = { wide: [1920, 1080], vertical: [1080, 1920] };
 
-/* 74 seconds. The supplied voice-over script runs to roughly 185 words; at a
-   brisk-but-natural ad read (~175 wpm) that is 57.6s of speech, and the cold
-   open, the beats between acts and the end card account for the rest. */
-const DURATION = 74000;
-
 /* Instagram/TikTok chrome covers roughly the top 230px and bottom 420px of a
    1080x1920 Reel. Scenes keep anything that must be read inside this band. */
 const SAFE = { top: 250, bottom: 440 };
 
-/* ── Shot list ───────────────────────────────────────────────────────────── */
+/* ── Shot list ───────────────────────────────────────────────────────────────
+   The cut itself lives with its scenes: whichever scenes file the page loads
+   registers `window.OTA_CUT` with its duration, its shot list and its hard
+   cuts. The player below is the same for every film. */
+const CUT = window.OTA_CUT;
+const DURATION = CUT.duration;
 const TL = new Timeline(DURATION);
-/*  ACT I   — ONE SYSTEM        0.0 → 16.4
-    ACT II  — BUILD THE PLAY   16.4 → 31.2
-    ACT III — LEARN · TRACK    31.2 → 45.6
-    ACT IV  — BEYOND TRADING   45.6 → 62.4
-    CLOSE   — the launch beat  62.4 → 74.0                                   */
-TL.add('hook',      0,     3400,  sceneHook,       { xfade: 0 })
-  .add('collapse',  3400,  9200,  sceneCollapse,   { xfade: 260 })
-  .add('system',    9200,  16400, sceneOneSystem,  { xfade: 0 })
-  .add('play',      16400, 23600, sceneBuildPlay,  { xfade: 240 })
-  .add('plan',      23600, 31200, scenePlan,       { xfade: 240 })
-  .add('academy',   31200, 38400, sceneAcademy,    { xfade: 0 })
-  .add('track',     38400, 45600, sceneTrack,      { xfade: 240 })
-  .add('wealth',    45600, 53200, sceneWealth,     { xfade: 0 })
-  .add('lifestyle', 53200, 62400, sceneLifestyle,  { xfade: 240 })
-  .add('launch',    62400, 74000, sceneLaunch,     { xfade: 0 });
+for (const s of CUT.scenes) TL.add(s.name, s.start, s.end, s.draw, { xfade: s.xfade || 0 });
 
-const CUTS = [0, 9200, 16400, 31200, 45600, 62400];
+/* Hard cuts get an RGB-split + flash kick. */
+const CUTS = CUT.cuts;
 
 class Film {
   constructor(display) {
@@ -386,6 +373,6 @@ els.poster.disabled = true;
 Promise.all([loadShots(), document.fonts ? document.fonts.ready : Promise.resolve()])
   .then(() => {
     els.poster.disabled = false;
-    film.renderAt(12600);           // poster frame: the brand lock-up
+    film.renderAt(CUT.poster ?? 12600);   // poster frame
     window.OTA_FILM.ready = true;
   });

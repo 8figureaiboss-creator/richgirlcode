@@ -241,9 +241,10 @@ function buildScore(ac, dest, { t0 = 0, from = 0, gain = 0.58 } = {}) {
   }
 
   /* ── arrangement ──────────────────────────────────────────────────────────
-     74 seconds at 120 BPM: one bar = 2s. The score follows the picture's act
-     boundaries exactly, so every impact lands on a cut and the kit drops out
-     where the voice-over needs the room. */
+     120 BPM, so one bar = 2s. Which arrangement plays is chosen by the cut
+     the page loaded, and every impact in each of them lands on a picture cut.
+     The helpers below are shared; the arrangements themselves are at the foot
+     of this file, written against them. */
 
   /* Lay a groove over a span. `drive` scales how busy and how loud the kit is. */
   function groove(from2, to, { drive = 1, kickA = 0.85, clapOn = 2,
@@ -273,6 +274,20 @@ function buildScore(ac, dest, { t0 = 0, from = 0, gain = 0.58 } = {}) {
     for (const [s2, ch] of list) pad(s2, CHORD[ch], dur, amp, cut);
   };
   const MEL = [N.G4, N.C5, N.Bb4, N.G4, N.Eb5, N.C5, N.Bb4, N.C5];
+
+  const KIT = { kick, hat, clap, bass, pluck, pad, riser, whoosh, impact, groove, prog, MEL };
+  const seconds = ARRANGEMENTS[(window.OTA_CUT && window.OTA_CUT.score) || 'film'](KIT);
+  return { master, duration: seconds + 0.6 };
+}
+
+/* ── Arrangements ───────────────────────────────────────────────────────────
+   Each takes the instrument kit and returns the arrangement's length in
+   seconds. Times are absolute film time, so an impact at 9.2 is the cut at
+   9.2. ─────────────────────────────────────────────────────────────────── */
+const ARRANGEMENTS = {};
+
+/* The 74s brand film. */
+ARRANGEMENTS.film = ({ kick, hat, clap, bass, pluck, pad, riser, whoosh, impact, groove, prog, MEL }) => {
 
   /* COLD OPEN (0.0 → 3.4) — tension only. No groove under the first picture. */
   impact(0.0, 1.0);
@@ -359,8 +374,106 @@ function buildScore(ac, dest, { t0 = 0, from = 0, gain = 0.58 } = {}) {
   pluck(70.3, N.C5, 0.8, 0.4); pluck(70.7, N.G5, 0.7, 0.34); pluck(71.1, N.C6, 1.2, 0.3);
   whoosh(73.3, 0.9, 0.3);
 
-  return { master, duration: 74.6 };
-}
+  return 74.0;
+};
+
+/* The 176s walkthrough. A bed, not a trailer: the kit stays light, every act
+   boundary gets a soft marker rather than a hit, and the one place it drops
+   out entirely is the "don't chase" beat. */
+ARRANGEMENTS.howto = ({ kick, hat, clap, bass, pluck, pad, riser, whoosh, impact, groove, prog }) => {
+  const LINE_C = [N.C2, N.C2, N.Eb2, N.C2, N.G2, N.G2, N.Ab2, N.G2];
+  const LINE_F = [N.F2, N.F2, N.Ab2, N.F2, N.C2, N.C2, N.Eb2, N.C2];
+  const LINE_A = [N.Ab2, N.Ab2, N.C3, N.Ab2, N.Eb2, N.Eb2, N.Bb2, N.G2];
+
+  /* H1 ACCESS (0 → 18) — warm open, groove slides in under the title. */
+  impact(0.0, 0.8);
+  prog([[0.1, 'Cm'], [4.0, 'Ab'], [8.0, 'Eb'], [12.0, 'Bb'], [15.6, 'Cm']], 4.0, 0.3, 1900);
+  bass(0.2, N.C2, 1.6, 0.6);
+  groove(2.0, 18.0, { drive: 0.6, line: LINE_C, clapOn: 2 });
+  for (let i = 0; i < 12; i++) pluck(4.0 + i * BEAT * 1.5, [N.C5, N.Eb5, N.G4, N.Bb4][i % 4], 0.26, 0.2);
+  whoosh(18.0, 0.8, 0.4);
+
+  /* H2 PROFILE (18 → 31) */
+  impact(18.0, 0.55);
+  prog([[18.0, 'Fm'], [22.0, 'Cm'], [26.0, 'Ab'], [29.6, 'Cm']], 4.0, 0.28, 2100);
+  groove(18.0, 31.0, { drive: 0.64, line: LINE_F });
+  for (let i = 0; i < 9; i++) pluck(19.0 + i * BEAT * 1.5, [N.C5, N.F4, N.Ab4, N.C5][i % 4], 0.24, 0.2);
+
+  /* H3 CHOOSE (31 → 46.5) */
+  impact(31.0, 0.6);
+  prog([[31.0, 'Cm'], [35.0, 'Eb'], [39.0, 'Ab'], [43.0, 'Bb']], 4.0, 0.28, 2200);
+  groove(31.0, 46.5, { drive: 0.68, line: LINE_C });
+  for (let i = 0; i < 12; i++) pluck(32.0 + i * BEAT * 1.25, [N.G4, N.C5, N.Eb5, N.C5][i % 4], 0.24, 0.2);
+
+  /* H4 UPLOAD (46.5 → 62.5) — the busiest stretch; five cards land on beats. */
+  impact(46.5, 0.7);
+  prog([[46.5, 'Ab'], [50.5, 'Eb'], [54.5, 'Bb'], [58.5, 'Cm']], 4.0, 0.3, 2400);
+  groove(46.5, 62.5, { drive: 0.76, line: LINE_A });
+  for (let i = 0; i < 5; i++) pluck(48.8 + i * 0.7, [N.C5, N.Eb5, N.G5, N.Bb4, N.C6][i], 0.3, 0.34);
+  for (let i = 0; i < 10; i++) hat(59.0 + i * 0.28, 0.12 + i * 0.03);
+
+  /* H5 ANALYZE (62.5 → 77) — the scan rides a riser into the verdicts. */
+  impact(62.5, 0.85);
+  prog([[62.5, 'Cm'], [66.5, 'Fm'], [70.5, 'G'], [74.0, 'Cm']], 4.0, 0.3, 2500);
+  groove(62.5, 77.0, { drive: 0.7, line: LINE_C });
+  riser(68.0, 1.8, 0.6);
+  impact(69.9, 0.75);
+  for (let i = 0; i < 3; i++) pluck(70.0 + i * 0.6, [N.C5, N.Eb5, N.G5][i], 0.36, 0.34);
+
+  /* H6 STRATEGY (77 → 94.5) */
+  impact(77.0, 0.6);
+  prog([[77.0, 'Ab'], [81.0, 'Eb'], [85.0, 'Cm'], [89.0, 'Bb'], [92.6, 'Cm']], 4.0, 0.28, 2300);
+  groove(77.0, 94.5, { drive: 0.7, line: LINE_A });
+  for (let i = 0; i < 14; i++) pluck(78.0 + i * BEAT * 1.25, [N.Eb5, N.G5, N.C6, N.G5][i % 4], 0.22, 0.18);
+
+  /* H7 CONTRACT (94.5 → 110.5) — the hand-off gets its own little figure. */
+  impact(94.5, 0.65);
+  prog([[94.5, 'Cm'], [98.5, 'Ab'], [102.5, 'Fm'], [106.5, 'Bb']], 4.0, 0.28, 2300);
+  groove(94.5, 110.5, { drive: 0.74, line: LINE_C });
+  for (let i = 0; i < 3; i++) pluck(105.0 + i * 1.0, [N.C5, N.G5, N.C6][i], 0.4, 0.32);
+  whoosh(110.5, 1.2, 0.5);
+
+  /* H8 CONFIRM (110.5 → 128.5) — the kit stops. This is the beat that matters. */
+  impact(110.5, 0.9);
+  pad(110.6, [N.C2, N.C3, N.G3], 7.0, 0.3, 1100);
+  bass(110.6, N.C2, 2.6, 0.72);
+  bass(114.0, N.Ab2, 2.2, 0.55);
+  pluck(112.0, N.C5, 1.0, 0.22);
+  pad(117.8, [N.Ab2, N.C3, N.Eb3, N.Ab3], 5.0, 0.28, 1500);
+  groove(119.0, 128.5, { drive: 0.52, line: LINE_A, clapOn: 6 });
+  for (let i = 0; i < 4; i++) pluck(120.0 + i * 1.6, [N.Eb5, N.C5, N.G4, N.C5][i], 0.34, 0.24);
+
+  /* H9 CLOSE (128.5 → 152.5) — fullest the film gets. */
+  impact(128.5, 1.0);
+  prog([[128.5, 'Cm'], [132.5, 'Eb'], [136.5, 'Ab'], [140.5, 'Fm'],
+        [144.5, 'Bb'], [148.5, 'Cm']], 4.2, 0.32, 2800);
+  groove(128.5, 152.5, { drive: 0.88, line: LINE_C });
+  for (let i = 0; i < 20; i++) pluck(129.0 + i * BEAT * 1.25, [N.G4, N.C5, N.Eb5, N.G5][i % 4], 0.26, 0.24);
+  riser(150.6, 1.6, 0.5);
+
+  /* H10 COACH (152.5 → 176) — strip back for the quote, resolve on the card. */
+  impact(152.5, 0.95);
+  pad(152.6, [N.C2, N.C3, N.Eb3, N.G3], 8.0, 0.3, 1300);
+  bass(152.6, N.C2, 2.8, 0.7);
+  bass(156.0, N.G1, 2.4, 0.55);
+  pluck(153.4, N.C5, 1.2, 0.26);
+  pluck(156.6, N.G4, 1.0, 0.2);
+  pad(160.5, [N.Ab2, N.C3, N.Eb3, N.Ab3], 5.5, 0.28, 1600);
+  bass(160.6, N.Ab2, 2.4, 0.58);
+  riser(164.6, 1.8, 0.55);
+
+  /* The card. */
+  impact(166.5, 1.1);
+  pad(166.5, [N.C2, N.C3, N.Eb3, N.G3, N.C4, N.Eb4], 4.4, 0.4, 3000);
+  bass(166.5, N.C2, 1.8, 0.95);
+  bass(168.5, N.G1, 1.8, 0.78);
+  kick(166.5, 1.0); kick(167.5, 0.7); kick(168.0, 0.9); kick(169.0, 0.75);
+  clap(168.0, 0.48);
+  pluck(166.6, N.C5, 0.9, 0.38); pluck(167.0, N.G5, 0.8, 0.32); pluck(167.4, N.C6, 1.3, 0.3);
+  pad(171.0, [N.C2, N.C3, N.G3], 4.4, 0.24, 1000);
+  whoosh(175.2, 0.9, 0.26);
+  return 176.0;
+};
 
 /* ── Live playback controller ────────────────────────────────────────────── */
 class ScorePlayer {
