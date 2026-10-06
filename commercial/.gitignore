@@ -1,0 +1,7 @@
+# Review stills and ffmpeg intermediates — regenerate with `node render.mjs --stills`
+dist/stills/
+dist/palette.png
+# GIF is derivable and large — `node render.mjs --gif`
+dist/*.gif
+# The score stem is a 14 MB bounce of src/audio.js — `node render.mjs` rewrites it
+dist/*.wav

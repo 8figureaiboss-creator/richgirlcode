@@ -1,0 +1,112 @@
+1
+00:00:01,000 --> 00:00:05,600
+Finding a trading setup doesn’t have to start with hours of searching.
+
+2
+00:00:06,000 --> 00:00:13,200
+Once you have the Options Traders Academy OS, save it directly to your phone or computer as a shortcut
+
+3
+00:00:13,700 --> 00:00:17,100
+so your trading system is always one click away.
+
+4
+00:00:18,600 --> 00:00:23,000
+Log into your OTA OS and start inside your profile.
+
+5
+00:00:23,400 --> 00:00:26,600
+From there, open Your Daily Play.
+
+6
+00:00:27,000 --> 00:00:30,400
+This is where you begin building your strategy.
+
+7
+00:00:31,600 --> 00:00:39,200
+Enter the ticker you want to analyze and choose whether you’re looking for an options setup or a futures setup.
+
+8
+00:00:39,700 --> 00:00:43,300
+You decide what market you want to study.
+
+9
+00:00:43,700 --> 00:00:46,300
+The OS helps you organize the analysis.
+
+10
+00:00:47,100 --> 00:00:50,300
+Next, pull your charts from TradingView.
+
+11
+00:00:50,700 --> 00:00:57,300
+Upload your full intraday view, four-hour, one-hour, fifteen-minute, and five-minute charts.
+
+12
+00:00:57,800 --> 00:01:02,000
+Those timeframes give the system the market structure it needs.
+
+13
+00:01:03,100 --> 00:01:08,500
+Once your charts are uploaded, OTA OS analyzes the information and builds your plan.
+
+14
+00:01:09,000 --> 00:01:16,200
+It may identify a bullish setup, a bearish setup — or tell you there’s no trade worth taking yet.
+
+15
+00:01:17,600 --> 00:01:20,200
+Then read the full strategy.
+
+16
+00:01:20,600 --> 00:01:28,000
+The system helps you identify the directional bias, important levels, confirmation, possible entry conditions, exits, and risk considerations.
+
+17
+00:01:28,500 --> 00:01:33,500
+And when the better decision may simply be to sit on your hands.
+
+18
+00:01:35,100 --> 00:01:41,900
+For options setups, continue through the analysis and review the contract or strike the system identifies.
+
+19
+00:01:42,400 --> 00:01:45,800
+Then open your brokerage platform — we use Robinhood —
+
+20
+00:01:46,300 --> 00:01:49,700
+find that contract, and add it to your watchlist.
+
+21
+00:01:51,100 --> 00:01:57,700
+And this part matters: a contract appearing on your screen does not mean you automatically buy it.
+
+22
+00:01:58,200 --> 00:02:03,600
+Watch the setup. Confirm the conditions. Review the contract yourself. Manage your risk.
+
+23
+00:02:04,100 --> 00:02:08,100
+Then decide whether the opportunity fits your trading plan.
+
+24
+00:02:09,100 --> 00:02:17,500
+That’s how you use the Options Traders Academy OS to go from a ticker, to market analysis, to a structured trading plan.
+
+25
+00:02:18,000 --> 00:02:22,200
+No technology can predict what the market will do next.
+
+26
+00:02:22,800 --> 00:02:32,000
+The advantage is having a system that helps you analyze the information, organize the setup, and make a more informed decision instead of guessing.
+
+27
+00:02:32,800 --> 00:02:36,800
+Because trading isn’t about trying to catch every move.
+
+28
+00:02:37,400 --> 00:02:44,800
+It’s about having a strategy, waiting for confirmation, managing your risk, and using technology to build a stronger edge.
+

@@ -1,0 +1,108 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --gold: #D4AF37; --gold-lt: #F0DC9C; --ink: #031108; --ink2: #062010;
+  --ink3: #0A2E18; --line: rgba(212,175,55,0.24); --text: #D8DCCB; --white: #FEF5DA;
+  --slate: #9DAE98;
+}
+html, body { height: 100%; }
+body {
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(212,175,55,0.08), transparent 70%),
+    radial-gradient(900px 600px at 50% 40%, rgba(6,32,16,0.9), transparent 75%),
+    var(--ink);
+  color: var(--text);
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 26px 18px 64px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Masthead ── */
+.head { width: 100%; max-width: 1280px; display: flex; align-items: center; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+.mark { width: 30px; height: 30px; flex: none; }
+.head h1 { font-size: 0.98rem; font-weight: 900; letter-spacing: 0.2em; color: var(--white); text-transform: uppercase; }
+.head .sep { flex: 1; height: 1px; background: linear-gradient(90deg, var(--line), transparent); min-width: 20px; }
+.badge {
+  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid var(--line); border-radius: 100px; padding: 5px 13px;
+  background: rgba(212,175,55,0.07); white-space: nowrap;
+}
+
+/* ── Player ── */
+#shell { width: 100%; max-width: 1280px; }
+#frame {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  background: #000; border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 40px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(212,175,55,0.12) inset;
+  transition: aspect-ratio 0.35s ease;
+}
+#shell.vertical #frame { aspect-ratio: 9 / 16; max-width: 520px; margin: 0 auto; }
+#stage { width: 100%; height: 100%; display: block; }
+
+#poster {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  background: rgba(3,5,9,0.46); backdrop-filter: blur(2px);
+  cursor: pointer; transition: opacity 0.4s ease, visibility 0.4s;
+  border: 0; width: 100%;
+}
+#poster.hidden { opacity: 0; visibility: hidden; }
+.play-ring {
+  width: 108px; height: 108px; border-radius: 50%;
+  border: 2px solid var(--gold); display: grid; place-items: center;
+  background: rgba(5,7,12,0.55);
+  box-shadow: 0 0 60px rgba(212,175,55,0.4);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+#poster:hover .play-ring { transform: scale(1.07); box-shadow: 0 0 90px rgba(212,175,55,0.65); }
+.play-ring::after {
+  content: ''; width: 0; height: 0; margin-left: 8px;
+  border-left: 26px solid var(--gold); border-top: 16px solid transparent; border-bottom: 16px solid transparent;
+}
+#poster .cap { position: absolute; bottom: 9%; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.26em; color: var(--gold); text-transform: uppercase; }
+
+/* ── Transport ── */
+.transport { margin-top: 14px; display: flex; flex-direction: column; gap: 12px; }
+#bar {
+  position: relative; height: 26px; cursor: pointer;
+  display: flex; align-items: center;
+}
+#bar::before { content: ''; position: absolute; left: 0; right: 0; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; }
+#bar-fill { position: absolute; left: 0; height: 4px; width: 0; background: linear-gradient(90deg, #8A6516, var(--gold), var(--gold-lt)); border-radius: 4px; box-shadow: 0 0 14px rgba(212,175,55,0.6); }
+#marks { position: absolute; inset: 0; }
+#marks .mark {
+  position: absolute; top: 50%; width: 2px; height: 13px; margin-top: -6.5px; margin-left: -1px;
+  background: rgba(255,255,255,0.33); border: 0; padding: 0; cursor: pointer;
+}
+#marks .mark:hover { background: var(--gold-lt); height: 20px; margin-top: -10px; }
+
+.row { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+button.ctl {
+  font-family: inherit; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text); background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; padding: 9px 15px;
+  cursor: pointer; transition: all 0.16s ease; white-space: nowrap;
+}
+button.ctl:hover { border-color: var(--gold); color: var(--white); background: rgba(212,175,55,0.1); }
+button.ctl.on { border-color: var(--gold); color: #0A0C10; background: linear-gradient(180deg, var(--gold-lt), var(--gold)); }
+.meta { margin-left: auto; display: flex; gap: 16px; align-items: center; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.72rem; color: var(--slate); }
+.meta b { color: var(--gold); font-weight: 700; letter-spacing: 0.1em; }
+
+/* ── Notes ── */
+.notes { width: 100%; max-width: 1280px; margin-top: 34px; display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
+.note { background: linear-gradient(170deg, rgba(10,46,24,0.75), rgba(3,16,9,0.85)); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 20px 22px; }
+.note h3 { font-size: 0.68rem; font-weight: 900; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 14px; }
+.note ol, .note ul { list-style: none; display: grid; gap: 10px; }
+.note li { font-size: 0.83rem; line-height: 1.5; display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: baseline; }
+.note li .tc { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.72rem; color: var(--gold); font-weight: 700; }
+.note li span.vo { color: var(--white); }
+.note li em { color: var(--slate); font-style: normal; display: block; font-size: 0.78rem; margin-top: 2px; }
+.note p { font-size: 0.83rem; line-height: 1.6; }
+.note p + p { margin-top: 10px; }
+.note code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.78rem; color: var(--gold-lt); background: rgba(212,175,55,0.1); padding: 1px 6px; border-radius: 4px; }
+.foot { max-width: 1280px; width: 100%; margin-top: 28px; font-size: 0.7rem; line-height: 1.6; color: rgba(128,149,188,0.75); border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; }
+@media (max-width: 720px) {
+  .head h1 { font-size: 0.78rem; letter-spacing: 0.14em; }
+  button.ctl { padding: 8px 11px; font-size: 0.62rem; }
+  .meta { width: 100%; margin-left: 0; }
+}

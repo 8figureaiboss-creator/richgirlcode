@@ -1,0 +1,147 @@
+OPTIONS TRADERS ACADEMY OS — VOICE-OVER RECORDING SHEET
+Total runtime 176.00s · 28 cues · 353 words
+Read each line inside its own window. Leave the gaps silent — the score
+and the picture already fill them. Target pace ~175 wpm, warm and certain,
+not hyped. Mix: node render.mjs --vo <your-take.wav>
+------------------------------------------------------------------------------
+
+01.  IN 1.00s   OUT 5.60s   (4.60s · 12 words · 157 wpm)
+     SCENE  ACCESS
+     VO     "Finding a trading setup doesn’t have to start with hours of searching."
+     PIC    The app icon turns in 3D over the floor grid.
+
+02.  IN 6.00s   OUT 13.20s   (7.20s · 19 words · 158 wpm)
+     SCENE  ACCESS
+     VO     "Once you have the Options Traders Academy OS, save it directly to your phone or computer as a shortcut"
+     PIC    The Q icon flies into the real iOS home row and lights up.
+
+03.  IN 13.70s   OUT 17.10s   (3.40s · 9 words · 159 wpm)
+     SCENE  ACCESS
+     VO     "so your trading system is always one click away."
+     PIC    PHONE · TABLET · DESKTOP.
+
+04.  IN 18.60s   OUT 23.00s   (4.40s · 10 words · 136 wpm)
+     SCENE  PROFILE
+     VO     "Log into your OTA OS and start inside your profile."
+     PIC    Real app: the Q header lights, then the profile card.
+
+05.  IN 23.40s   OUT 26.60s   (3.20s · 6 words · 112 wpm)
+     SCENE  PROFILE
+     VO     "From there, open Your Daily Play."
+     PIC    The PROFILE tab in the bottom nav lights.
+
+06.  IN 27.00s   OUT 30.40s   (3.40s · 8 words · 141 wpm)
+     SCENE  PROFILE
+     VO     "This is where you begin building your strategy."
+     PIC    PROFILE → YOUR DAILY PLAY.
+
+07.  IN 31.60s   OUT 39.20s   (7.60s · 20 words · 158 wpm)
+     SCENE  CHOOSE
+     VO     "Enter the ticker you want to analyze and choose whether you’re looking for an options setup or a futures setup."
+     PIC    The Options / Futures toggle lights on the real dashboard.
+
+08.  IN 39.70s   OUT 43.30s   (3.60s · 8 words · 133 wpm)
+     SCENE  CHOOSE
+     VO     "You decide what market you want to study."
+     PIC    QQQ types itself into the real ticker field.
+
+09.  IN 43.70s   OUT 46.30s   (2.60s · 7 words · 162 wpm)
+     SCENE  CHOOSE
+     VO     "The OS helps you organize the analysis."
+     PIC    QQQ · SPY · AAPL · NVDA light up.
+
+10.  IN 47.10s   OUT 50.30s   (3.20s · 6 words · 112 wpm)
+     SCENE  UPLOAD
+     VO     "Next, pull your charts from TradingView."
+     PIC    Five chart cards begin dealing in.
+
+11.  IN 50.70s   OUT 57.30s   (6.60s · 11 words · 100 wpm)
+     SCENE  UPLOAD
+     VO     "Upload your full intraday view, four-hour, one-hour, fifteen-minute, and five-minute charts."
+     PIC    Each card lands as it is named.
+
+12.  IN 57.80s   OUT 62.00s   (4.20s · 10 words · 143 wpm)
+     SCENE  UPLOAD
+     VO     "Those timeframes give the system the market structure it needs."
+     PIC    The five cards fly into the device.
+
+13.  IN 63.10s   OUT 68.50s   (5.40s · 14 words · 156 wpm)
+     SCENE  ANALYZE
+     VO     "Once your charts are uploaded, OTA OS analyzes the information and builds your plan."
+     PIC    Scan passes: trend, support, resistance, structure.
+
+14.  IN 69.00s   OUT 76.20s   (7.20s · 19 words · 158 wpm)
+     SCENE  ANALYZE
+     VO     "It may identify a bullish setup, a bearish setup — or tell you there’s no trade worth taking yet."
+     PIC    BULLISH · BEARISH · OR WAIT. The last one holds.
+
+15.  IN 77.60s   OUT 80.20s   (2.60s · 5 words · 115 wpm)
+     SCENE  STRATEGY
+     VO     "Then read the full strategy."
+     PIC    The real trade plan scrolls.
+
+16.  IN 80.60s   OUT 88.00s   (7.40s · 18 words · 146 wpm)
+     SCENE  STRATEGY
+     VO     "The system helps you identify the directional bias, important levels, confirmation, possible entry conditions, exits, and risk considerations."
+     PIC    Confirmation, entry, exit and stop light in turn.
+
+17.  IN 88.50s   OUT 93.50s   (5.00s · 13 words · 156 wpm)
+     SCENE  STRATEGY
+     VO     "And when the better decision may simply be to sit on your hands."
+     PIC    BIAS · LEVELS · CONFIRMATION · ENTRY · EXIT · RISK.
+
+18.  IN 95.10s   OUT 101.90s   (6.80s · 16 words · 141 wpm)
+     SCENE  CONTRACT
+     VO     "For options setups, continue through the analysis and review the contract or strike the system identifies."
+     PIC    PRIMARY STRIKE, then OTM RUNNER, on the real plan.
+
+19.  IN 102.40s   OUT 105.80s   (3.40s · 10 words · 176 wpm)
+     SCENE  CONTRACT
+     VO     "Then open your brokerage platform — we use Robinhood —"
+     PIC    OTA OS → YOUR BROKERAGE → WATCHLIST.
+
+20.  IN 106.30s   OUT 109.70s   (3.40s · 9 words · 159 wpm)
+     SCENE  CONTRACT
+     VO     "find that contract, and add it to your watchlist."
+     PIC    The real home row again; the broker icon lights.
+
+21.  IN 111.10s   OUT 117.70s   (6.60s · 17 words · 155 wpm)
+     SCENE  CONFIRM
+     VO     "And this part matters: a contract appearing on your screen does not mean you automatically buy it."
+     PIC    The contract sits on a watchlist. WATCHING — NOT BOUGHT.
+
+22.  IN 118.20s   OUT 123.60s   (5.40s · 13 words · 144 wpm)
+     SCENE  CONFIRM
+     VO     "Watch the setup. Confirm the conditions. Review the contract yourself. Manage your risk."
+     PIC    The confirmation checklist ticks itself off.
+
+23.  IN 124.10s   OUT 128.10s   (4.00s · 9 words · 135 wpm)
+     SCENE  CONFIRM
+     VO     "Then decide whether the opportunity fits your trading plan."
+     PIC    YOU DECIDE. NOT THE SCREEN.
+
+24.  IN 129.10s   OUT 137.50s   (8.40s · 22 words · 157 wpm)
+     SCENE  CLOSE
+     VO     "That’s how you use the Options Traders Academy OS to go from a ticker, to market analysis, to a structured trading plan."
+     PIC    Phone, tablet and desktop, each carrying a real screen.
+
+25.  IN 138.00s   OUT 142.20s   (4.20s · 10 words · 143 wpm)
+     SCENE  CLOSE
+     VO     "No technology can predict what the market will do next."
+     PIC    The line said plainly, in red.
+
+26.  IN 142.80s   OUT 152.00s   (9.20s · 24 words · 157 wpm)
+     SCENE  CLOSE
+     VO     "The advantage is having a system that helps you analyze the information, organize the setup, and make a more informed decision instead of guessing."
+     PIC    The edge is the system you use to decide.
+
+27.  IN 152.80s   OUT 156.80s   (4.00s · 9 words · 135 wpm)
+     SCENE  CARD
+     VO     "Because trading isn’t about trying to catch every move."
+     PIC    Deep green, going quiet. The mark holds, barely lit.
+
+28.  IN 157.40s   OUT 164.80s   (7.40s · 19 words · 154 wpm)
+     SCENE  CARD
+     VO     "It’s about having a strategy, waiting for confirmation, managing your risk, and using technology to build a stronger edge."
+     PIC    Strategy. Confirmation. Managed risk. A stronger edge.
+
