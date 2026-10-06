@@ -8,7 +8,7 @@ not hyped. Mix: node render.mjs --vo <your-take.wav>
 01.  IN 1.00s   OUT 5.60s   (4.60s · 12 words · 157 wpm)
      SCENE  ACCESS
      VO     "Finding a trading setup doesn’t have to start with hours of searching."
-     PIC    Coach on camera; the floor grid settles in behind her.
+     PIC    The app icon turns in 3D over the floor grid.
 
 02.  IN 6.00s   OUT 13.20s   (7.20s · 19 words · 158 wpm)
      SCENE  ACCESS
@@ -136,12 +136,12 @@ not hyped. Mix: node render.mjs --vo <your-take.wav>
      PIC    The edge is the system you use to decide.
 
 27.  IN 152.80s   OUT 156.80s   (4.00s · 9 words · 135 wpm)
-     SCENE  COACH
+     SCENE  CARD
      VO     "Because trading isn’t about trying to catch every move."
-     PIC    Coach on camera, deep green, going quiet.
+     PIC    Deep green, going quiet. The mark holds, barely lit.
 
 28.  IN 157.40s   OUT 164.80s   (7.40s · 19 words · 154 wpm)
-     SCENE  COACH
+     SCENE  CARD
      VO     "It’s about having a strategy, waiting for confirmation, managing your risk, and using technology to build a stronger edge."
      PIC    Strategy. Confirmation. Managed risk. A stronger edge.
 

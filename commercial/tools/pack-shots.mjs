@@ -36,9 +36,10 @@ const PLAN = [
   ['mission',    'mission.jpg',    'wide',   [660, 1101], 5, 215],
   ['homescreen', 'homescreen.jpg', 'wide',   [1120, 331], 4, 0],
   ['result',     'result.jpg',     'wide',   [880, 684],  4, 0],
-  /* The presenter was shot on white, so she is keyed out and carried as WebP
-     with an alpha channel — a PNG of the same cutout is six times the size. */
-  ['presenter',  'presenter.jpg',  'cutout', [620, 0],    86, 0],
+  /* The presenter cutout is kept out of the films on purpose: both of them
+     stay on the product. tools/shots/presenter.jpg and the 'cutout' fit below
+     are left in place, so restoring her is one line.
+     ['presenter', 'presenter.jpg', 'cutout', [620, 0], 86, 0], */
 ];
 
 const out = {};

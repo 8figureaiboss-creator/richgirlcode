@@ -90,35 +90,63 @@ HTML. It drives the burned-in captions, the script panel under the player, the e
 recording sheet and the `.srt` — so the picture, the subtitles and the voice track can
 never drift apart.
 
-### Recording the voice-over
+### The voice-over
 
-There is no text-to-speech in this build and none in the render container — the film
-ships with the score only, and the voice track has to be recorded. Everything needed to
-record it to picture is generated:
-
-```bash
-node render.mjs --script      # → dist/ota-voiceover-script.txt  and  dist/ota-captions.srt
-```
-
-The sheet gives every line its exact in-point, out-point, duration, word count and the
-implied words-per-minute, plus the scene and the picture it plays over. Read each line
-inside its own window and leave the gaps silent; the score and the picture already fill
-them. Direction: mid-range, warm and certain, not hyped — the copy is written to breathe.
-All 18 cues sit between 157 and 175 wpm except the two closing lines, which are
-deliberately slower (144 and 130 wpm) because the picture is holding on the mark.
-
-Then mix it in — the music is side-chained off the voice, not faded by hand, so the duck
-follows the performance and rides back up in every gap:
+Neither film ships with a voice track — the picture and the score are finished,
+the read is not. Everything needed to make one that is already in sync is
+generated from the same cue sheet that drives the burned-in captions, so the
+voice, the subtitles and the picture can never drift apart.
 
 ```bash
-node render.mjs --vo take3.wav              # → dist/ota-commercial-vo.mp4
-node render.mjs --vertical --vo take3.wav   # → dist/ota-commercial-9x16-vo.mp4
+node render.mjs --film howto --script     # the recording sheet, an .srt, and the cue JSON
 ```
 
-`dist/ota-score.wav` is the isolated score stem if you would rather mix elsewhere. The
-score's impacts sit on the act cuts — 0.0, 3.4, 9.2, 16.4, 23.6, 31.2, 38.4, 45.6, 53.2,
-62.4 and the final cadence at 70.2 — and the kit deliberately drops out from 59.4s so the
-last line lands in near-silence.
+The sheet gives every line its exact in-point, out-point, duration, word count
+and implied words-per-minute, plus the scene and the picture it plays over.
+Direction: mid-range, warm and certain, not hyped — the copy is written to
+breathe. Read each line inside its own window and leave the gaps silent; the
+score and the picture already fill them.
+
+Then build the track. `tools/make-vo.mjs` takes one clip per line from whichever
+engine you have, trims each to its first sound, levels it with a single static
+gain, and lays it at its own in-point on a bed the length of the film:
+
+```bash
+node tools/make-vo.mjs --film howto --engine say   --voice Samantha
+node tools/make-vo.mjs --film howto --engine piper --model en_US-lessac-high.onnx
+node tools/make-vo.mjs --film howto --engine files --dir ./vo-lines
+node tools/make-vo.mjs --film howto --engine tone         # timing check, no voice needed
+```
+
+| Engine | What it is |
+|---|---|
+| `say` | macOS, built in, nothing to install. `say -v '?'` lists voices; Samantha, Ava, Tom and Alex all read well for this. |
+| `piper` | Free neural TTS, offline, on any OS, and close to a real read. `pip install piper-tts`, then a voice from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) — `en_US-lessac-high` narrates well, `en_US-ryan-high` is the male equivalent. |
+| `files` | You already have the lines as audio — a booth, ElevenLabs, anywhere. Name them `01.wav`, `02.wav`, … in one folder. |
+| `tone` | A beep per line at the right length. Proves the timing with no voice at all. |
+
+A line that overruns its window is sped up by at most 1.15× (inaudible) and the
+tool says which ones needed it. It never stretches a short line — the silence
+between lines is the point.
+
+Then mux it. The music is ducked by a side-chain compressor keyed off the voice,
+not a hand-drawn fade, so it follows the performance and rides back up in every
+gap:
+
+```bash
+node render.mjs --film howto --vo dist/ota-howto-vo.wav
+node render.mjs --film howto --vertical --vo dist/ota-howto-vo.wav
+```
+
+`dist/<film>-score.wav` is the isolated score stem if you would rather mix
+elsewhere. The score's impacts sit on the act cuts, and in the walkthrough the
+kit drops out entirely under the "don't chase" beat.
+
+> **No text-to-speech runs in the render container.** Its network policy only
+> reaches package registries, so `piper` installs but its voice models (which
+> live on HuggingFace) cannot be fetched. The tool above is the way the voice
+> gets made — on a Mac with `say`, on any machine with `piper`, or from a real
+> recording with `files`.
 
 ### Cutting it down
 
@@ -147,6 +175,7 @@ file with no network requests:
 | `trade-plan.jpg` | 23.6 → 31.2s | Entry, exit, stop, strike and runner on screen — the literal proof of "defined risk". |
 | `result.jpg` | 41.3 → 45.6s | One real filled trade. See the warning below. |
 | `app-home.jpg` | *(held)* | Packed and available as `IMG.appHome`; not placed in this cut. |
+| `presenter.jpg` | *(not packed)* | A presenter cutout, keyed off studio white. **Deliberately out of both films** — they stay on the product. The `'cutout'` fit and the commented `PLAN` line are left in `tools/pack-shots.mjs`, so restoring her is one line. |
 | `homescreen.jpg` | *(held)* | Packed and available as `IMG.homescreen`; not placed in this cut. |
 
 > **Acts III and IV are typographic because there are no screenshots for them yet.**
@@ -209,6 +238,36 @@ would be a misrepresentation.
 
 ---
 
+## The second film — "How to find your setup"
+
+A 2:56 walkthrough built in the same engine: nine steps from a ticker to a
+structured trading plan. It is a tutorial, not a spot, and it carries no
+performance claims at all (`showResult: false`).
+
+| In | Step | What's on screen |
+|---|---|---|
+| 0:00 | — | The app icon turns in 3D, then flies into the real iOS home row and lights up. Phone, tablet and desktop each carry the mark. |
+| 0:18 | 1 · Profile | The real profile screen: the Q header, the profile card, then the PROFILE tab. |
+| 0:31 | 2 · Choose | The Options / Futures toggle, then `QQQ` types itself into the real ticker field. |
+| 0:46 | 3 · Upload | Five chart cards deal in as they are named — full intraday, 4H, 1H, 15M, 5M. |
+| 1:02 | 4 · Analyze | Trend, support, resistance and structure, read in passes. **BULLISH · BEARISH · OR WAIT**, and *OR WAIT* is the one that holds. |
+| 1:17 | 5 · Strategy | The real trade plan, scrolling: confirmation → entry → exit → risk. |
+| 1:34 | 6 · Contract | Primary strike, OTM runner, then **OTA OS → YOUR BROKERAGE → WATCHLIST**. |
+| 1:50 | 7 · Confirm | The contract sits on a watchlist marked *WATCHING — NOT BOUGHT*, and four checks tick off. |
+| 2:08 | — | Phone, tablet and desktop. **No technology can predict what the market does next.** |
+| 2:32 | — | The closing line, then the card. |
+
+Neither the presenter nor any person appears in it. The only faces on screen are
+the ones already inside the shipped app's own UI — its avatar and its Options
+Daily artwork — which are the product, not casting.
+
+**No other company's interface is imitated.** The brokerage hand-off is OTA's own
+graphic, labelled *YOUR BROKERAGE*. Robinhood is named in text, as the script
+does, and its real icon appears only where it already sits on the captured home
+screen.
+
+---
+
 ## Producing files
 
 ```bash
@@ -224,6 +283,8 @@ node render.mjs --gif               # also write a muted looping GIF
 node render.mjs --stills            # one PNG per scene, for review or thumbnails
 node render.mjs --web               # streamable copies + poster → dist/web/
 
+node tools/make-vo.mjs --film howto --engine say   # build a voice track in sync
+node tools/pack-shots.mjs           # tools/shots/*.jpg → src/shots.js
 node tools/fetch-fonts.mjs          # regenerate the inlined webfonts (needs network)
 ```
 

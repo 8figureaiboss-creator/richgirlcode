@@ -18,6 +18,7 @@
      node render.mjs --script            timed VO sheet + .srt caption file
      node render.mjs --vo take3.wav      mux a recorded voice-over, with the
                                          score side-chained down underneath it
+                                         (tools/make-vo.mjs builds one in sync)
      node render.mjs --web               re-encode the masters light enough to
                                          stream in a browser, + a poster frame
    ========================================================================== */
@@ -156,9 +157,17 @@ if (SCRIPT) {
     srt += `${i + 1}\n${tc(c.t)} --> ${tc(c.t + c.d)}\n${c.text}\n\n`;
   });
   await writeFile(join(OUTDIR, `${FILMS[WHICH].stem}-captions.srt`), srt);
+
+  /* The same sheet as data, so tools/make-vo.mjs never re-parses the film. */
+  await writeFile(join(OUTDIR, `${FILMS[WHICH].stem}-cues.json`), JSON.stringify({
+    film: WHICH, duration: DURATION,
+    cues: vo.map((c, i) => ({ n: i + 1, t: c.t, d: c.d, text: c.text, shot: c.shot })),
+  }, null, 2));
   await browser.close();
   console.log(`  ✓ ${join(OUTDIR, `${FILMS[WHICH].stem}-voiceover-script.txt`)}`);
-  console.log(`  ✓ ${join(OUTDIR, `${FILMS[WHICH].stem}-captions.srt`)}\n`);
+  console.log(`  ✓ ${join(OUTDIR, `${FILMS[WHICH].stem}-captions.srt`)}`);
+  console.log(`  ✓ ${join(OUTDIR, `${FILMS[WHICH].stem}-cues.json`)}`);
+  console.log(`\n  build a voice track:  node tools/make-vo.mjs --film ${WHICH} --engine say\n`);
   process.exit(0);
 }
 

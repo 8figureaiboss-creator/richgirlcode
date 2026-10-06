@@ -27,32 +27,51 @@ const R_HOME = {
 
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
 
-/* The presenter, keyed off her studio white and stood on a soft shadow. */
-function presenterFig(ctx, cx, bottom, h, p, opt = {}) {
-  const img = IMG.presenter;
-  if (!img || p <= 0.004) return;
-  const e = E.outExpo(clamp(p));
-  const w = h * (img.width / img.height);
-  const y = bottom - h + (1 - e) * 40;
-  ctx.save();
-  ctx.globalAlpha = clamp(p * 1.8) * (opt.alpha === undefined ? 1 : opt.alpha);
+/* Phone, tablet and desktop, each carrying the mark — "one click away, on
+   whatever you are sitting in front of", said with objects instead of a list. */
+function deviceGlyphs(ctx, cx, baseY, scale, t, start, alpha) {
+  const specs = [[86, 170, 'PHONE'], [132, 176, 'TABLET'], [224, 146, 'DESKTOP']];
+  const gap = 28 * scale;
+  const total = specs.reduce((a, sp) => a + sp[0] * scale, 0) + gap * (specs.length - 1);
+  let x = cx - total / 2;
+  specs.forEach(([w0, h0, lab], i) => {
+    const w = w0 * scale, h = h0 * scale;
+    const e = E.outExpo(clamp((t - start - i * 240) / 760));
+    if (e <= 0.02) { x += w + gap; return; }
+    const y = baseY - h + (1 - e) * 18;
+    ctx.save();
+    ctx.globalAlpha = clamp(e * 1.8) * alpha;
 
-  /* Ground shadow — without it she reads as a sticker pasted on the frame. */
-  const g = ctx.createRadialGradient(cx, bottom - 6, 0, cx, bottom - 6, w * 0.46);
-  g.addColorStop(0, 'rgba(0,0,0,0.55)');
-  g.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.save();
-  ctx.translate(cx, bottom - 6);
-  ctx.scale(1, 0.16);
-  ctx.translate(-cx, -(bottom - 6));
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.arc(cx, bottom - 6, w * 0.46, 0, 7);
-  ctx.fill();
-  ctx.restore();
+    roundRect(ctx, x, y, w, h, 13 * scale);
+    ctx.fillStyle = 'rgba(6,28,16,0.94)';
+    ctx.fill();
+    ctx.strokeStyle = rgba(C.gold, 0.52);
+    ctx.lineWidth = 1.6;
+    ctx.stroke();
 
-  ctx.drawImage(img, cx - w / 2, y, w, h);
-  ctx.restore();
+    /* The desktop gets a stand, so the three silhouettes read apart. */
+    if (lab === 'DESKTOP') {
+      ctx.fillStyle = rgba(C.gold, 0.45);
+      ctx.fillRect(x + w * 0.42, y + h, w * 0.16, 7 * scale);
+      roundRect(ctx, x + w * 0.28, y + h + 6 * scale, w * 0.44, 5 * scale, 2.5 * scale);
+      ctx.fill();
+    }
+
+    const ms = Math.min(w, h) * 0.44;
+    const mx = x + w / 2 - ms / 2, my = y + h / 2 - ms / 2;
+    logoStamp(ctx, mx, my, ms, { radius: ms * 0.22 });
+    ctx.strokeStyle = rgba(C.gold, 0.5);
+    ctx.lineWidth = 1.2;
+    roundRect(ctx, mx, my, ms, ms, ms * 0.22);
+    ctx.stroke();
+
+    setFont(ctx, 15 * scale, 900);
+    ctx.fillStyle = rgba(C.goldLt, 0.92);
+    ctx.textBaseline = 'middle';
+    tracked(ctx, lab, x + w / 2, baseY + (lab === 'DESKTOP' ? 36 : 26) * scale, 2.4, 'center');
+    ctx.restore();
+    x += w + gap;
+  });
 }
 
 /* "STEP 3 / 7" with its own progress dots — the viewer's place in the film. */
@@ -306,19 +325,37 @@ function hAccess(ctx, A) {
   S.reset();
   floorGrid(S, { half: 22, step: 2.4, y: -3.4, alpha: 0.14 * settle });
   railsBehind(S, t, 1.4, settle);
+
+  /* The app icon itself, in 3D — it turns, then leaves to become the shortcut. */
+  const tileIn = E.spring(clamp((t - 250) / 1500), 5.6, 4.4);
+  const tileGo = seg(t, 3000, 4300, E.inOutCubic);
+  const tileA = clamp(tileIn * 1.4) * (1 - tileGo);
+  const TP = V ? [0, 3.65, 0] : [3.6, 2.2, 0];
+  let tileM = null;
+  if (tileA > 0.02) {
+    tileM = M4.chain(M4.translate(TP[0], TP[1], TP[2]),
+      M4.rotY(lerp(-0.95, 0.22, tileIn) + Math.sin(t / 2600) * 0.06),
+      M4.rotX(Math.sin(t / 3100) * 0.05),
+      M4.scale(lerp(0.5, V ? 0.92 : 0.78, tileIn)));
+    S.mesh(Assets.tileRim, M4.chain(tileM, M4.translate(0, 0, -0.09)),
+      { ...fade(MAT.gold, 0.95 * tileA), metal: 0.95, zBias: -1.4 });
+    S.mesh(Assets.tile, tileM, fade(MAT.forest, tileA));
+    S.mesh(Assets.torus, M4.chain(M4.translate(TP[0], TP[1], TP[2]),
+      M4.rotX(1.1 + Math.sin(t / 2000) * 0.08), M4.rotY(t / 1800),
+      M4.scale(0.6)), fade(MAT.gold, 0.32 * tileA));
+  }
   S.render(ctx, cam, W, H);
+  if (tileM && tileA > 0.04) {
+    texQuad3D(ctx, logoTexture(512), cam, W, H, quadCorners(tileM, 1.3, 1.3, 0.168), 6, tileA);
+  }
   dustField(ctx, t, W, H, 34, { speed: 14, alpha: 0.2 });
 
   const out = 1 - seg(t, 17300, 18000, E.inOutQuad);
 
-  /* The presenter opens the film. */
-  presenterFig(ctx, V ? W * 0.5 : W * 0.755, V ? H - SAFE.bottom - 222 : H + 26,
-    V ? 496 : 880, seg(t, 300, 1600), { alpha: out });
-
   /* The real home row, with the OTA icon lit. */
   const hs = seg(t, 2600, 3600);
-  const box = V ? { x: 90, y: SAFE.top + 240, w: 900, h: 266 }
-                : { x: 520, y: 574, w: 584, h: 173 };
+  const box = V ? { x: 90, y: 862, w: 900, h: 266 }
+                : { x: 480, y: 574, w: 584, h: 173 };
   if (hs > 0.004 && IMG.homescreen) {
     const src = { x: 0, y: 0, w: 1, h: 1 };
     src.h = 1 * IMG.homescreen.height / (IMG.homescreen.width * (box.h / box.w));
@@ -328,7 +365,7 @@ function hAccess(ctx, A) {
     ctx.save();
     ctx.globalAlpha = out;
     const map = screenPane(ctx, IMG.homescreen, bx, src, clamp(hs * 1.6), { radius: 18 });
-    spotlight(ctx, bx, [{ r: map(R_HOME.ota), p: seg(t, 4200, 9800), label: 'ONE TAP' }],
+    spotlight(ctx, bx, [{ r: map(R_HOME.ota), p: seg(t, 9400, 16800), label: 'ONE TAP' }],
       { size: V ? 19 : 18, radius: 18, dim: 0.66 });
     ctx.restore();
   }
@@ -336,7 +373,7 @@ function hAccess(ctx, A) {
   /* The icon itself, flying from the title into the row. */
   const fly = seg(t, 3000, 4400, E.inOutCubic);
   if (fly > 0.01 && fly < 0.995) {
-    const from = V ? [W * 0.74, SAFE.top + 120] : [W * 0.14, 300];
+    const from = V ? [W / 2, 650] : [1284, 459];
     const to = V ? [box.x + box.w * 0.38, box.y + box.h * 0.46]
                  : [box.x + box.w * 0.38, box.y + box.h * 0.46];
     const s = lerp(V ? 190 : 170, V ? 96 : 86, fly);
@@ -367,8 +404,7 @@ function hAccess(ctx, A) {
       x: W / 2, y: SAFE.top + 128, size: 27, weight: 600, tracking: 1.2, face: true,
       align: 'center', alpha: out, p: seg(t, 1200, 2000), mode: 'wipe', color: rgba(C.slate, 0.98),
     });
-    chipRow(ctx, ['PHONE', 'TABLET', 'DESKTOP'], W / 2, SAFE.top + 176, t,
-      { size: 21, start: 11200, stagger: 220, alpha: out });
+    deviceGlyphs(ctx, W / 2, 790, 1.25, t, 5000, out);
   } else {
     FX.eyebrow(ctx, 112, 250, 'BEFORE YOU START', seg(t, 200, 900));
     const hOpt = { size: 72, weight: 900, tracking: -1.4, mode: 'wipe' };
@@ -379,8 +415,7 @@ function hAccess(ctx, A) {
     ctx.fillStyle = rgba(C.slate, 0.98);
     ctx.textBaseline = 'alphabetic';
     ctx.fillText('Fast access. Phone or desktop.', 112, 520);
-    chipRow(ctx, ['PHONE', 'TABLET', 'DESKTOP'], 110 + 230, 790, t,
-      { size: 21, start: 11200, stagger: 220, alpha: out });
+    deviceGlyphs(ctx, 1430, 556, 1.3, t, 5000, out);
   }
   ctx.restore();
 }
@@ -996,8 +1031,8 @@ function hClose(ctx, A) {
   ctx.restore();
 }
 
-/* ══ H10 · 152.5 → 176.0s ══  The coach, and the card ═════════════════════ */
-function hCoach(ctx, A) {
+/* ══ H10 · 152.5 → 176.0s ══  The closing line, and the card ══════════════ */
+function hCard(ctx, A) {
   const { t, W, H, V, SAFE } = A;
 
   /* Deep green, going quiet. */
@@ -1005,7 +1040,7 @@ function hCoach(ctx, A) {
   ctx.fillRect(0, 0, W, H);
   const glow = E.outExpo(clamp(t / 2200));
   const gy = V ? H * 0.42 : H * 0.46;
-  const g = ctx.createRadialGradient(W * (V ? 0.5 : 0.33), gy, 0, W * (V ? 0.5 : 0.33), gy, H * 0.9);
+  const g = ctx.createRadialGradient(W / 2, gy, 0, W / 2, gy, H * 0.9);
   g.addColorStop(0, `rgba(10,46,24,${0.9 * glow})`);
   g.addColorStop(0.5, `rgba(5,24,13,${0.6 * glow})`);
   g.addColorStop(1, 'rgba(1,8,4,0)');
@@ -1013,36 +1048,48 @@ function hCoach(ctx, A) {
   ctx.fillRect(0, 0, W, H);
   dustField(ctx, t, W, H, 36, { speed: 10, alpha: 0.2 * glow });
 
-  /* The coach delivers the last line. */
-  const leave = seg(t, 13200, 14600, E.inOutCubic);
-  presenterFig(ctx, V ? W * 0.5 : W * 0.26, V ? H - SAFE.bottom - 240 : H + 20,
-    V ? 610 : 1000, seg(t, 300, 1800), { alpha: 1 - leave * 0.88 });
+  /* No presenter: the line itself is the shot. The mark holds behind it,
+     barely lit, so the frame is still the product. */
+  const ghost = E.outExpo(clamp((t - 200) / 2000)) * (1 - seg(t, 12600, 13600, E.inOutQuad));
+  if (ghost > 0.01) {
+    const gs = V ? 620 : 560;
+    ctx.save();
+    ctx.globalAlpha = ghost * 0.1;
+    drawLogoMark(ctx, W / 2 - gs / 2, (V ? H * 0.44 : H * 0.48) - gs / 2, gs, C.gold);
+    ctx.restore();
+  }
 
-  const cOpt = { weight: 900, tracking: -0.6, mode: 'wipe' };
+  const cOpt = { weight: 900, tracking: -0.6, mode: 'wipe', align: 'center' };
   const quote = 1 - seg(t, 12600, 13600, E.inOutQuad);
   if (quote > 0.004) {
     ctx.save();
     ctx.globalAlpha = quote;
     if (V) {
-      const qy = SAFE.top - 30;
-      const q = { ...cOpt, size: 42, align: 'center', x: W / 2, alpha: quote };
-      kinetic(ctx, 'TRADING ISN’T ABOUT',  { ...q, y: qy,       p: seg(t, 1800, 2900), color: C.cream });
-      kinetic(ctx, 'CATCHING EVERY MOVE.',  { ...q, y: qy + 54,  p: seg(t, 2200, 3300), color: C.cream });
-      const q2 = { ...q, size: 38, color: C.gold, shadow: 0.5 };
-      kinetic(ctx, 'IT’S A STRATEGY.',     { ...q2, y: qy + 134, p: seg(t, 5400, 6400) });
-      kinetic(ctx, 'CONFIRMATION.',         { ...q2, y: qy + 184, p: seg(t, 5900, 6900) });
-      kinetic(ctx, 'MANAGED RISK.',         { ...q2, y: qy + 234, p: seg(t, 6400, 7400) });
-      kinetic(ctx, 'A STRONGER EDGE.',      { ...q2, y: qy + 284, p: seg(t, 6900, 7900) });
-    } else {
-      const qx = W * 0.52, qy = 300;
-      const q = { ...cOpt, size: 54, x: qx, alpha: quote };
-      kinetic(ctx, 'TRADING ISN’T ABOUT', { ...q, y: qy,      p: seg(t, 1800, 2900), color: C.cream });
-      kinetic(ctx, 'CATCHING EVERY MOVE.', { ...q, y: qy + 68, p: seg(t, 2200, 3300), color: C.cream });
+      const qy = SAFE.top + 180;
+      const q = { ...cOpt, size: 52, x: W / 2, alpha: quote };
+      kinetic(ctx, 'TRADING ISN\u2019T ABOUT', { ...q, y: qy,      p: seg(t, 1800, 2900), color: C.cream });
+      kinetic(ctx, 'CATCHING EVERY MOVE.',  { ...q, y: qy + 64, p: seg(t, 2200, 3300), color: C.cream });
+      const rl = seg(t, 3400, 4200, E.outExpo);
+      ctx.fillStyle = rgba(C.gold, 0.85 * rl);
+      ctx.fillRect(W / 2 - 150 * rl, qy + 104, 300 * rl, 3);
       const q2 = { ...q, size: 46, color: C.gold, shadow: 0.5 };
-      kinetic(ctx, 'IT’S A STRATEGY.', { ...q2, y: qy + 168, p: seg(t, 5400, 6400) });
-      kinetic(ctx, 'CONFIRMATION.',     { ...q2, y: qy + 228, p: seg(t, 5900, 6900) });
-      kinetic(ctx, 'MANAGED RISK.',     { ...q2, y: qy + 288, p: seg(t, 6400, 7400) });
-      kinetic(ctx, 'A STRONGER EDGE.',  { ...q2, y: qy + 348, p: seg(t, 6900, 7900) });
+      kinetic(ctx, 'IT\u2019S A STRATEGY.', { ...q2, y: qy + 184, p: seg(t, 5400, 6400) });
+      kinetic(ctx, 'CONFIRMATION.',      { ...q2, y: qy + 248, p: seg(t, 5900, 6900) });
+      kinetic(ctx, 'MANAGED RISK.',      { ...q2, y: qy + 312, p: seg(t, 6400, 7400) });
+      kinetic(ctx, 'A STRONGER EDGE.',   { ...q2, y: qy + 376, p: seg(t, 6900, 7900) });
+    } else {
+      const qy = 320;
+      const q = { ...cOpt, size: 66, x: W / 2, alpha: quote };
+      kinetic(ctx, 'TRADING ISN\u2019T ABOUT', { ...q, y: qy,      p: seg(t, 1800, 2900), color: C.cream });
+      kinetic(ctx, 'CATCHING EVERY MOVE.',  { ...q, y: qy + 80, p: seg(t, 2200, 3300), color: C.cream });
+      const rl = seg(t, 3400, 4200, E.outExpo);
+      ctx.fillStyle = rgba(C.gold, 0.85 * rl);
+      ctx.fillRect(W / 2 - 170 * rl, qy + 128, 340 * rl, 3);
+      const q2 = { ...q, size: 54, color: C.gold, shadow: 0.5 };
+      kinetic(ctx, 'IT\u2019S A STRATEGY.', { ...q2, y: qy + 218, p: seg(t, 5400, 6400) });
+      kinetic(ctx, 'CONFIRMATION.',      { ...q2, y: qy + 288, p: seg(t, 5900, 6900) });
+      kinetic(ctx, 'MANAGED RISK.',      { ...q2, y: qy + 358, p: seg(t, 6400, 7400) });
+      kinetic(ctx, 'A STRONGER EDGE.',   { ...q2, y: qy + 428, p: seg(t, 6900, 7900) });
     }
     ctx.restore();
   }
@@ -1130,6 +1177,6 @@ window.OTA_CUT = {
     { name: 'contract', start: 94500,  end: 110500, draw: hContract, xfade: 300 },
     { name: 'confirm',  start: 110500, end: 128500, draw: hConfirm },
     { name: 'close',    start: 128500, end: 152500, draw: hClose },
-    { name: 'coach',    start: 152500, end: 176000, draw: hCoach },
+    { name: 'card',     start: 152500, end: 176000, draw: hCard },
   ],
 };

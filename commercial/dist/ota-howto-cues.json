@@ -1,0 +1,202 @@
+{
+  "film": "howto",
+  "duration": 176000,
+  "cues": [
+    {
+      "n": 1,
+      "t": 1000,
+      "d": 4600,
+      "text": "Finding a trading setup doesn’t have to start with hours of searching.",
+      "shot": "The app icon turns in 3D over the floor grid."
+    },
+    {
+      "n": 2,
+      "t": 6000,
+      "d": 7200,
+      "text": "Once you have the Options Traders Academy OS, save it directly to your phone or computer as a shortcut",
+      "shot": "The Q icon flies into the real iOS home row and lights up."
+    },
+    {
+      "n": 3,
+      "t": 13700,
+      "d": 3400,
+      "text": "so your trading system is always one click away.",
+      "shot": "PHONE · TABLET · DESKTOP."
+    },
+    {
+      "n": 4,
+      "t": 18600,
+      "d": 4400,
+      "text": "Log into your OTA OS and start inside your profile.",
+      "shot": "Real app: the Q header lights, then the profile card."
+    },
+    {
+      "n": 5,
+      "t": 23400,
+      "d": 3200,
+      "text": "From there, open Your Daily Play.",
+      "shot": "The PROFILE tab in the bottom nav lights."
+    },
+    {
+      "n": 6,
+      "t": 27000,
+      "d": 3400,
+      "text": "This is where you begin building your strategy.",
+      "shot": "PROFILE → YOUR DAILY PLAY."
+    },
+    {
+      "n": 7,
+      "t": 31600,
+      "d": 7600,
+      "text": "Enter the ticker you want to analyze and choose whether you’re looking for an options setup or a futures setup.",
+      "shot": "The Options / Futures toggle lights on the real dashboard."
+    },
+    {
+      "n": 8,
+      "t": 39700,
+      "d": 3600,
+      "text": "You decide what market you want to study.",
+      "shot": "QQQ types itself into the real ticker field."
+    },
+    {
+      "n": 9,
+      "t": 43700,
+      "d": 2600,
+      "text": "The OS helps you organize the analysis.",
+      "shot": "QQQ · SPY · AAPL · NVDA light up."
+    },
+    {
+      "n": 10,
+      "t": 47100,
+      "d": 3200,
+      "text": "Next, pull your charts from TradingView.",
+      "shot": "Five chart cards begin dealing in."
+    },
+    {
+      "n": 11,
+      "t": 50700,
+      "d": 6600,
+      "text": "Upload your full intraday view, four-hour, one-hour, fifteen-minute, and five-minute charts.",
+      "shot": "Each card lands as it is named."
+    },
+    {
+      "n": 12,
+      "t": 57800,
+      "d": 4200,
+      "text": "Those timeframes give the system the market structure it needs.",
+      "shot": "The five cards fly into the device."
+    },
+    {
+      "n": 13,
+      "t": 63100,
+      "d": 5400,
+      "text": "Once your charts are uploaded, OTA OS analyzes the information and builds your plan.",
+      "shot": "Scan passes: trend, support, resistance, structure."
+    },
+    {
+      "n": 14,
+      "t": 69000,
+      "d": 7200,
+      "text": "It may identify a bullish setup, a bearish setup — or tell you there’s no trade worth taking yet.",
+      "shot": "BULLISH · BEARISH · OR WAIT. The last one holds."
+    },
+    {
+      "n": 15,
+      "t": 77600,
+      "d": 2600,
+      "text": "Then read the full strategy.",
+      "shot": "The real trade plan scrolls."
+    },
+    {
+      "n": 16,
+      "t": 80600,
+      "d": 7400,
+      "text": "The system helps you identify the directional bias, important levels, confirmation, possible entry conditions, exits, and risk considerations.",
+      "shot": "Confirmation, entry, exit and stop light in turn."
+    },
+    {
+      "n": 17,
+      "t": 88500,
+      "d": 5000,
+      "text": "And when the better decision may simply be to sit on your hands.",
+      "shot": "BIAS · LEVELS · CONFIRMATION · ENTRY · EXIT · RISK."
+    },
+    {
+      "n": 18,
+      "t": 95100,
+      "d": 6800,
+      "text": "For options setups, continue through the analysis and review the contract or strike the system identifies.",
+      "shot": "PRIMARY STRIKE, then OTM RUNNER, on the real plan."
+    },
+    {
+      "n": 19,
+      "t": 102400,
+      "d": 3400,
+      "text": "Then open your brokerage platform — we use Robinhood —",
+      "shot": "OTA OS → YOUR BROKERAGE → WATCHLIST."
+    },
+    {
+      "n": 20,
+      "t": 106300,
+      "d": 3400,
+      "text": "find that contract, and add it to your watchlist.",
+      "shot": "The real home row again; the broker icon lights."
+    },
+    {
+      "n": 21,
+      "t": 111100,
+      "d": 6600,
+      "text": "And this part matters: a contract appearing on your screen does not mean you automatically buy it.",
+      "shot": "The contract sits on a watchlist. WATCHING — NOT BOUGHT."
+    },
+    {
+      "n": 22,
+      "t": 118200,
+      "d": 5400,
+      "text": "Watch the setup. Confirm the conditions. Review the contract yourself. Manage your risk.",
+      "shot": "The confirmation checklist ticks itself off."
+    },
+    {
+      "n": 23,
+      "t": 124100,
+      "d": 4000,
+      "text": "Then decide whether the opportunity fits your trading plan.",
+      "shot": "YOU DECIDE. NOT THE SCREEN."
+    },
+    {
+      "n": 24,
+      "t": 129100,
+      "d": 8400,
+      "text": "That’s how you use the Options Traders Academy OS to go from a ticker, to market analysis, to a structured trading plan.",
+      "shot": "Phone, tablet and desktop, each carrying a real screen."
+    },
+    {
+      "n": 25,
+      "t": 138000,
+      "d": 4200,
+      "text": "No technology can predict what the market will do next.",
+      "shot": "The line said plainly, in red."
+    },
+    {
+      "n": 26,
+      "t": 142800,
+      "d": 9200,
+      "text": "The advantage is having a system that helps you analyze the information, organize the setup, and make a more informed decision instead of guessing.",
+      "shot": "The edge is the system you use to decide."
+    },
+    {
+      "n": 27,
+      "t": 152800,
+      "d": 4000,
+      "text": "Because trading isn’t about trying to catch every move.",
+      "shot": "Deep green, going quiet. The mark holds, barely lit."
+    },
+    {
+      "n": 28,
+      "t": 157400,
+      "d": 7400,
+      "text": "It’s about having a strategy, waiting for confirmation, managing your risk, and using technology to build a stronger edge.",
+      "shot": "Strategy. Confirmation. Managed risk. A stronger edge."
+    }
+  ]
+}
