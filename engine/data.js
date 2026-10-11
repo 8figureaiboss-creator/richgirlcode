@@ -283,6 +283,34 @@ RGC.topics = {
       imagePrompt: 'Symmetrical geometric gold line diagram resembling outstretched wings over a flat horizon, minimal, no text',
       videoAngle: 'Draw it live in four strokes. The shape IS the explanation — do not talk over the drawing.' },
 
+    { id: 'win-rate-lies', title: 'Your Win Rate Is Lying To You', short: 'win rate', verb: 'judge a strategy',
+      promise: 'An 85% win rate can still lose money. Expectancy is the number that cannot.', mod: 5, motif: 'split', slot: 'applied',
+      beats: [
+        { h: 'Selling far out of the money wins often', b: 'A 0.10 delta short put finishes profitable roughly ninety percent of the time. That figure is seductive, and it is true.' },
+        { h: 'Then look at the sizes', b: 'You collect $40 when you win. The occasional loss is $400. Nine wins do not cover one loss.' },
+        { h: 'Expectancy is the only honest number', b: 'Win rate times average win, minus loss rate times average loss. If that is negative, the strategy loses money no matter how good the streak feels.' },
+        { h: 'High win rates hide fat tails', b: 'The strategies that win most often tend to lose biggest when they finally lose. The comfort is the warning.' },
+        { h: 'Track expectancy, not streaks', b: 'Log every trade with its credit and its real max loss. Twenty trades in, the true number appears, and it is rarely the one you assumed.', key: true }
+      ],
+      proof: '90% x $40 = $36. 10% x $400 = $40. That is negative four dollars per trade, on a strategy that wins nine times out of ten.',
+      tags: ['#winrate', '#expectancy', '#tradingmath', '#riskmanagement'],
+      imagePrompt: 'Brass balance scale, many small coins heaped on one side and a single large weight on the other, dark luxury still life, no text',
+      videoAngle: 'Open with "I won nine trades in a row and lost money." Then do the arithmetic on screen. Nobody scrolls past that sentence.' },
+
+    { id: 'close-early', title: 'The Last 50% Is Not Worth The Wait', short: 'closing early', verb: 'close a winner',
+      promise: 'Half the premium in a third of the time beats the full premium held to zero.', mod: 3, motif: 'decay', slot: 'applied',
+      beats: [
+        { h: 'You sold a put for $200', b: 'Three weeks later it is worth $100. You are up $100 with eighteen days still on the clock.' },
+        { h: 'The second half pays worse', b: 'You earned the first $100 in three weeks. Collecting the rest takes another three, at half the rate.' },
+        { h: 'Return per day is the honest metric', b: 'Divide the credit by the days you held it. That number, not the total, tells you whether the trade was worth the capital.' },
+        { h: 'Closing frees the collateral', b: 'Take the win, release the cash, and open something with a fresh forty-five days on it.' },
+        { h: 'Risk does not shrink with the premium', b: 'The $100 still on the table carries the same assignment risk as the original $200 did. You are risking the whole position to collect the worst-paying half of it.', key: true }
+      ],
+      proof: '$200 collected over 42 days is $4.76 a day. Taking $100 in the first 18 days is $5.56 a day — on a position you are no longer carrying.',
+      tags: ['#optionsmanagement', '#closeearly', '#optionsincome', '#tradingdiscipline'],
+      imagePrompt: 'Gold exponential decay curve with the first half shaded and a clean vertical cut at the midpoint, dark editorial finance, no text',
+      videoAngle: 'Put return-per-day on screen as one number and let it change as you hold. The arithmetic persuades; you do not have to.' },
+
     { id: 'position-sizing', title: 'The Only Rule That Keeps You In The Game', short: 'position sizing', verb: 'size a trade',
       promise: 'Your strategy does not matter if one trade can end you.', mod: 5, motif: 'grid', slot: 'applied',
       beats: [
@@ -295,7 +323,21 @@ RGC.topics = {
       proof: 'On a $10,000 account at 2%, your max loss per trade is $200. That is one $500-wide spread, not five.',
       tags: ['#riskmanagement', '#positionsizing', '#tradingpsychology', '#protectyourcapital'],
       imagePrompt: 'Clean 4x4 gold grid with a single illuminated cell, architectural, dark background, no text',
-      videoAngle: 'Hardest video to make interesting and the most important one. Lead with a blow-up story, then the math.' }
+      videoAngle: 'Hardest video to make interesting and the most important one. Lead with a blow-up story, then the math.' },
+
+    { id: 'rolling-cost', title: 'What A Rolled Position Actually Costs You', short: 'rolling', verb: 'roll a trade',
+      promise: 'Rolling is management when it is for a credit, and denial when it is not.', mod: 3, motif: 'chain', slot: 'applied',
+      beats: [
+        { h: 'A roll is two trades, not one', b: 'You buy back the losing contract and sell a new one further out. Both legs have a price and both show up in your account.' },
+        { h: 'A net credit is management', b: 'If the new contract pays more than closing the old one cost, you were paid to buy time. That is a legitimate adjustment.' },
+        { h: 'A net debit is paying to stay wrong', b: 'Now you are spending money to avoid booking a loss you have already taken. The position did not improve. Only the way it looks did.' },
+        { h: 'Every roll adds duration', b: 'Further out means more time for a thesis to break again — on a trade that has already broken once.' },
+        { h: 'Set the ceiling before you need it', b: 'Decide now how many times you will roll and at what loss you simply close. Two is a common limit. Deciding mid-drawdown is how small losses become large ones.', key: true }
+      ],
+      proof: 'Three rolls at a $40 debit each is $120 spent to postpone a loss you could have booked on day one — with the collateral locked the entire time.',
+      tags: ['#rollingoptions', '#optionsmanagement', '#tradingmistakes', '#riskmanagement'],
+      imagePrompt: 'Chain of heavy gold links receding into darkness, the final link visibly strained, single dramatic light source, no text',
+      videoAngle: 'Show one real roll with both legs priced on screen. The credit-versus-debit distinction is the whole video — do not pad it.' }
   ],
 
   literacy: [
