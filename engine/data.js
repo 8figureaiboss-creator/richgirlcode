@@ -64,7 +64,7 @@ RGC.pillars = [
     boards: ['rich-girl-code-academy', 'money-talk'],
     // Monday teaches a mechanic, Friday applies one. Each slot runs its own
     // list in authored order; rotationOffset picks where the curriculum starts.
-    rotationOffset: 0,
+    rotationOffset: { teach: 0, applied: 2 },
     promise: 'Teach one options mechanic per post, in plain English, with the risk named.',
     audience: 'Women who have money in the market but have never sold a contract.',
     funnel: 'core' },
@@ -241,19 +241,19 @@ RGC.topics = {
       imagePrompt: 'Single elegant brass dial gauge at 40 percent, dark background, shallow depth of field, no text',
       videoAngle: 'One dial on screen. Turn it. "This number is your aggression and your odds at the same time."' },
 
-    { id: 'iron-condor', title: 'An Iron Condor Is A Bet On Boring', short: 'iron condors', verb: 'open a condor',
-      promise: 'Four contracts, one opinion: nothing much happens.', mod: 4, motif: 'condor', slot: 'applied',
+    { id: 'wheel', title: 'The Wheel: One Loop, Three Outcomes', short: 'the wheel', verb: 'run the wheel',
+      promise: 'Cash-secured put, assignment, covered call. Repeat.', mod: 3, motif: 'cycle', slot: 'teach',
       beats: [
-        { h: 'You sell the middle', b: 'A put spread below the price, a call spread above it. You collect both premiums.' },
-        { h: 'You buy the wings', b: 'The outer contracts cap your loss. This is what makes the risk defined instead of open-ended.' },
-        { h: 'Your opinion is "flat"', b: 'You are not predicting up or down. You are predicting the price stays inside your range.' },
-        { h: 'Max profit is known on day one', b: 'The premium you collected. That is the ceiling, and you know it before you enter.' },
-        { h: 'Max loss is known too', b: 'Spread width minus premium. Smaller than the win rate suggests — that is the real trade-off.', key: true }
+        { h: 'Step one: sell a put', b: 'On a stock you want, at a price you want. Collect premium.' },
+        { h: 'If it expires worthless', b: 'Keep the premium. Sell another. This is the loop most weeks.' },
+        { h: 'If you get assigned', b: 'You now own 100 shares at your chosen strike, minus the premium you kept.' },
+        { h: 'Step two: sell a call', b: 'Against those shares. Collect again while you hold.' },
+        { h: 'If the shares get called away', b: 'You are back to cash, having been paid three times. Start the loop over.', key: true }
       ],
-      proof: 'Collect $200 on a $500-wide condor: you risk $300 to make $200, and you need the stock to do nothing.',
-      tags: ['#ironcondor', '#optionsstrategy', '#definedrisk', '#advancedoptions'],
-      imagePrompt: 'Symmetrical geometric gold line diagram resembling outstretched wings over a flat horizon, minimal, no text',
-      videoAngle: 'Draw it live in four strokes. The shape IS the explanation — do not talk over the drawing.' },
+      proof: 'Every leg of the wheel pays you. The risk is holding a stock you no longer want — which is why leg one is "a stock you want."',
+      tags: ['#thewheelstrategy', '#optionsincome', '#coveredcalls', '#cashsecuredputs'],
+      imagePrompt: 'Gold circular loop diagram with three nodes, minimal luxury infographic, dark background, no text',
+      videoAngle: 'The flagship series video. Three outcomes = three chapters. Pin it to the channel.' },
 
     { id: 'iv-crush', title: 'Why You Were Right And Still Lost Money', short: 'IV crush', verb: 'trade earnings',
       promise: 'The earnings trap that catches every beginner exactly once.', mod: 4, motif: 'crush', slot: 'applied',
@@ -269,6 +269,20 @@ RGC.topics = {
       imagePrompt: 'A gold balloon mid-deflation against a dark editorial background, dramatic single light source, no text',
       videoAngle: 'Literally deflate a balloon on camera while the chart plays. The gut-punch is the point.' },
 
+    { id: 'iron-condor', title: 'An Iron Condor Is A Bet On Boring', short: 'iron condors', verb: 'open a condor',
+      promise: 'Four contracts, one opinion: nothing much happens.', mod: 4, motif: 'condor', slot: 'applied',
+      beats: [
+        { h: 'You sell the middle', b: 'A put spread below the price, a call spread above it. You collect both premiums.' },
+        { h: 'You buy the wings', b: 'The outer contracts cap your loss. This is what makes the risk defined instead of open-ended.' },
+        { h: 'Your opinion is "flat"', b: 'You are not predicting up or down. You are predicting the price stays inside your range.' },
+        { h: 'Max profit is known on day one', b: 'The premium you collected. That is the ceiling, and you know it before you enter.' },
+        { h: 'Max loss is known too', b: 'Spread width minus premium. Smaller than the win rate suggests — that is the real trade-off.', key: true }
+      ],
+      proof: 'Collect $200 on a $500-wide condor: you risk $300 to make $200, and you need the stock to do nothing.',
+      tags: ['#ironcondor', '#optionsstrategy', '#definedrisk', '#advancedoptions'],
+      imagePrompt: 'Symmetrical geometric gold line diagram resembling outstretched wings over a flat horizon, minimal, no text',
+      videoAngle: 'Draw it live in four strokes. The shape IS the explanation — do not talk over the drawing.' },
+
     { id: 'position-sizing', title: 'The Only Rule That Keeps You In The Game', short: 'position sizing', verb: 'size a trade',
       promise: 'Your strategy does not matter if one trade can end you.', mod: 5, motif: 'grid', slot: 'applied',
       beats: [
@@ -281,21 +295,7 @@ RGC.topics = {
       proof: 'On a $10,000 account at 2%, your max loss per trade is $200. That is one $500-wide spread, not five.',
       tags: ['#riskmanagement', '#positionsizing', '#tradingpsychology', '#protectyourcapital'],
       imagePrompt: 'Clean 4x4 gold grid with a single illuminated cell, architectural, dark background, no text',
-      videoAngle: 'Hardest video to make interesting and the most important one. Lead with a blow-up story, then the math.' },
-
-    { id: 'wheel', title: 'The Wheel: One Loop, Three Outcomes', short: 'the wheel', verb: 'run the wheel',
-      promise: 'Cash-secured put, assignment, covered call. Repeat.', mod: 3, motif: 'cycle', slot: 'teach',
-      beats: [
-        { h: 'Step one: sell a put', b: 'On a stock you want, at a price you want. Collect premium.' },
-        { h: 'If it expires worthless', b: 'Keep the premium. Sell another. This is the loop most weeks.' },
-        { h: 'If you get assigned', b: 'You now own 100 shares at your chosen strike, minus the premium you kept.' },
-        { h: 'Step two: sell a call', b: 'Against those shares. Collect again while you hold.' },
-        { h: 'If the shares get called away', b: 'You are back to cash, having been paid three times. Start the loop over.', key: true }
-      ],
-      proof: 'Every leg of the wheel pays you. The risk is holding a stock you no longer want — which is why leg one is "a stock you want."',
-      tags: ['#thewheelstrategy', '#optionsincome', '#coveredcalls', '#cashsecuredputs'],
-      imagePrompt: 'Gold circular loop diagram with three nodes, minimal luxury infographic, dark background, no text',
-      videoAngle: 'The flagship series video. Three outcomes = three chapters. Pin it to the channel.' }
+      videoAngle: 'Hardest video to make interesting and the most important one. Lead with a blow-up story, then the math.' }
   ],
 
   literacy: [

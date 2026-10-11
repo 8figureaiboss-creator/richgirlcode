@@ -90,7 +90,9 @@ RGC.engine = (function () {
       const list = all.filter(t => (t.slot || SLOT_NAMES[0]) === want);
       if (list.length) {
         const pil = pillarById(pillarId);
-        const off = (pil && pil.rotationOffset) || 0;
+        const ro = (pil && pil.rotationOffset) || 0;
+        // rotationOffset may be a single number or one anchor per slot
+        const off = (typeof ro === 'object' ? (ro[want] || 0) : ro);
         const n = list.length;
         return list[(((week + off + (variant || 0)) % n) + n) % n];
       }
