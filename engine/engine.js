@@ -72,16 +72,33 @@ RGC.engine = (function () {
   /* A pillar that runs twice a week (Options Desk: Mon + Fri) must not serve the
      same topic on both days, so the slot's position within the week is part of
      the index, not just the week number. */
+  const SLOT_NAMES = ['teach', 'applied'];
+
   function topicFor(pillarId, week, variant, dow) {
-    const list = RGC.topics[pillarId] || [];
-    if (!list.length) return null;
+    const all = RGC.topics[pillarId] || [];
+    if (!all.length) return null;
     const slots = pillarSlots(pillarId);
     const perWeek = Math.max(1, slots.length);
     const occ = Math.max(0, slots.indexOf(dow == null ? -1 : dow));
-    const off = hash(pillarId) % list.length;
-    const n = list.length;
-    const i = (((week * perWeek + occ + off + (variant || 0)) % n) + n) % n;
-    return list[i];
+
+    /* A pillar that runs twice a week can split its library by slot: the first
+       slot of the week teaches a mechanic, the second applies one. Each list
+       then runs in authored order, so the series reads as a curriculum instead
+       of a shuffle. */
+    if (perWeek > 1 && all.some(t => t.slot)) {
+      const want = SLOT_NAMES[Math.min(occ, SLOT_NAMES.length - 1)];
+      const list = all.filter(t => (t.slot || SLOT_NAMES[0]) === want);
+      if (list.length) {
+        const pil = pillarById(pillarId);
+        const off = (pil && pil.rotationOffset) || 0;
+        const n = list.length;
+        return list[(((week + off + (variant || 0)) % n) + n) % n];
+      }
+    }
+
+    const off = hash(pillarId) % all.length;
+    const n = all.length;
+    return all[(((week * perWeek + occ + off + (variant || 0)) % n) + n) % n];
   }
 
   /* ---------- slide composition ---------- */
@@ -103,7 +120,8 @@ RGC.engine = (function () {
       const beat = topic.beats[bi];
       if (!beat) continue;
       bi++;
-      mids.push({ role: r, roleLabel: labelFor(r, bi), headline: beat.h, body: beat.b, motif: null });
+      mids.push({ role: r, roleLabel: beat.key ? 'The risk' : labelFor(r, bi),
+                  headline: beat.h, body: beat.b, motif: null, key: !!beat.key });
     }
 
     /* Trimming to fit must not throw away the slide that gives the format its
@@ -112,13 +130,27 @@ RGC.engine = (function () {
        from the end until it fits and leave the structure alone. */
     const room = Math.max(1, slideCount - 2);
     const keep = mids.slice();
+    const lastWhere = fn => { for (let i = keep.length - 1; i >= 0; i--) if (fn(keep[i])) return i; return -1; };
     while (keep.length > room) {
-      let idx = -1;
-      for (let i = keep.length - 1; i >= 0; i--) {
-        if (keep[i].role === 'beat') { idx = i; break; }
-      }
+      // ordinary beats go first; a beat flagged `key` (the one that names the
+      // risk) only goes if there is nothing else left to drop
+      let idx = lastWhere(x => x.role === 'beat' && !x.key);
+      if (idx === -1) idx = lastWhere(x => x.role === 'beat');
       if (idx === -1) idx = keep.length - 1;   // all structural — drop the last
       keep.splice(idx, 1);
+    }
+
+    /* Short formats consume only the first few beats, so a risk beat written
+       late in a topic would never be reached — on options content that is the
+       one beat that must not go missing. Substitute it for the last ordinary
+       beat rather than lengthening the format. */
+    const keyBeat = topic.beats.filter(b => b.key)[0];
+    if (keyBeat && !keep.some(x => x.key)) {
+      const at = lastWhere(x => x.role === 'beat' && !x.key);
+      if (at !== -1) {
+        keep[at] = { role: 'beat', roleLabel: 'The risk',
+                     headline: keyBeat.h, body: keyBeat.b, motif: null, key: true };
+      }
     }
 
     // visual rhythm: topic motif anchors the hook and returns on the last teaching slide

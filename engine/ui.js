@@ -75,6 +75,12 @@ RGC.ui = (function () {
             detail: 'Options content with no disclaimer on the final slide. Do not approve this.' });
     }
 
+    const riskAt = car.slides.findIndex(x => x.key);
+    if (riskAt !== -1) {
+      f.push({ tone: 'good', label: 'Names the risk on slide ' + (riskAt + 1),
+               detail: car.slides[riskAt].headline + ' — this is the slide that keeps the post educational.' });
+    }
+
     if (car.slides.some(x => x.role === 'proof')) {
       f.push({ tone: 'good', label: 'Contains a real number',
                detail: 'There is a receipt on slide ' +

@@ -62,6 +62,9 @@ RGC.themes = {
 RGC.pillars = [
   { id: 'options',   name: 'Options Desk',        theme: 'academy', otaWeight: 1.00,
     boards: ['rich-girl-code-academy', 'money-talk'],
+    // Monday teaches a mechanic, Friday applies one. Each slot runs its own
+    // list in authored order; rotationOffset picks where the curriculum starts.
+    rotationOffset: 0,
     promise: 'Teach one options mechanic per post, in plain English, with the risk named.',
     audience: 'Women who have money in the market but have never sold a contract.',
     funnel: 'core' },
@@ -183,12 +186,12 @@ RGC.topics = {
 
   options: [
     { id: 'covered-call', title: 'Covered Calls Are Just Rent', short: 'covered calls', verb: 'sell your first call',
-      promise: 'Turn 100 shares you already own into a monthly rent check.', mod: 3, motif: 'payoff',
+      promise: 'Turn 100 shares you already own into a monthly rent check.', mod: 3, motif: 'payoff', slot: 'teach',
       beats: [
         { h: 'You own the asset', b: 'You hold 100 shares. Right now they pay you nothing while you wait.' },
         { h: 'You rent it out', b: 'Selling one call = agreeing to sell those shares at a set price, for a fee you keep today.' },
         { h: 'The fee is yours', b: 'That premium hits your account immediately. It does not come back out.' },
-        { h: 'The trade-off', b: 'If the stock rockets past your strike, your shares get called away. You cap your upside, not your downside.' },
+        { h: 'The trade-off', b: 'If the stock rockets past your strike, your shares get called away. You cap your upside, not your downside.', key: true },
         { h: 'Pick the strike like a landlord', b: 'A strike you would genuinely be happy to sell at. Not a strike you are praying never hits.' }
       ],
       proof: 'One contract on a $50 stock at a 2% premium = $100 collected on $5,000 of stock you already owned.',
@@ -197,13 +200,13 @@ RGC.topics = {
       videoAngle: 'Open on the key-on-chart image. The whole video is one metaphor: you are a landlord, the stock is the property, premium is rent.' },
 
     { id: 'theta', title: 'Time Decay Is Either Your Rent Or Your Clock', short: 'theta', verb: 'trade time decay',
-      promise: 'Why the same day that helps a seller hurts a buyer.', mod: 2, motif: 'decay',
+      promise: 'Why the same day that helps a seller hurts a buyer.', mod: 2, motif: 'decay', slot: 'teach',
       beats: [
         { h: 'Every option has an expiry', b: 'Part of its price is pure time value. That part is going to zero no matter what.' },
         { h: 'Theta measures the bleed', b: 'It is the dollar amount an option loses per day, all else equal.' },
         { h: 'Buyers pay it', b: 'If you bought the contract, a quiet day is a losing day.' },
         { h: 'Sellers collect it', b: 'If you sold it, a quiet day is a paid day. Same market, opposite sign.' },
-        { h: 'It accelerates', b: 'Decay is not linear. The last 30 days fall off a cliff — which is why sellers live there.' }
+        { h: 'It accelerates', b: 'Decay is not linear. The last 30 days fall off a cliff — which is why sellers live there.', key: true }
       ],
       proof: 'A contract with 45 days left decays slowly. The same contract at 7 days out can lose half its remaining value in a week.',
       tags: ['#theta', '#thegreeks', '#optionsincome', '#financialliteracy'],
@@ -211,13 +214,13 @@ RGC.topics = {
       videoAngle: 'Hourglass on screen the whole time. Flip the sign halfway: "now you are the seller." Same hourglass, opposite feeling.' },
 
     { id: 'csp', title: 'Cash-Secured Puts: Get Paid To Wait For Your Price', short: 'cash-secured puts', verb: 'sell a put',
-      promise: 'You wanted the stock cheaper anyway. Get paid for the patience.', mod: 3, motif: 'ladder',
+      promise: 'You wanted the stock cheaper anyway. Get paid for the patience.', mod: 3, motif: 'ladder', slot: 'teach',
       beats: [
         { h: 'Pick a stock you actually want', b: 'This only works if assignment is an outcome you would welcome.' },
         { h: 'Pick the price you want it at', b: 'That is your strike. Below where it trades today.' },
         { h: 'Set the cash aside', b: 'Strike x 100. It sits there, reserved. That is the "cash-secured" part.' },
         { h: 'Collect the premium now', b: 'You are paid today for the promise to buy at your price.' },
-        { h: 'Two endings, both fine', b: 'It stays above your strike: you keep the cash and the premium. It drops below: you own the stock you wanted, at a discount.' }
+        { h: 'Two endings, both fine', b: 'It stays above your strike: you keep the cash and the premium. It drops below: you own the stock you wanted, at a discount.', key: true }
       ],
       proof: 'Wanting a $50 stock at $45? Sell the $45 put, collect $80, and you have cut your effective entry to $44.20.',
       tags: ['#cashsecuredputs', '#thewheel', '#optionsforbeginners', '#womenwhoinvest'],
@@ -225,13 +228,13 @@ RGC.topics = {
       videoAngle: 'Frame it as a limit order that pays you. Most beginners already understand limit orders — build from there.' },
 
     { id: 'delta', title: 'Delta Is Not Hard, It Is Just Two Things At Once', short: 'delta', verb: 'read delta',
-      promise: 'Direction and probability, in one number.', mod: 2, motif: 'dial',
+      promise: 'Direction and probability, in one number.', mod: 2, motif: 'dial', slot: 'teach',
       beats: [
         { h: 'Reading one: speed', b: 'Delta 0.40 means the option moves about $0.40 for every $1 the stock moves.' },
         { h: 'Reading two: odds', b: 'That same 0.40 is roughly a 40% chance of finishing in the money.' },
         { h: 'Why that matters', b: 'You can pick a trade by how aggressive it is, or by how likely it is. Same dial.' },
         { h: 'Sellers go low', b: 'Selling at 0.20 delta means ~80% of the time, you keep the whole premium.' },
-        { h: 'It moves on you', b: 'Delta is not fixed. It climbs as the trade works, which is gamma\'s job to describe.' }
+        { h: 'It moves on you', b: 'Delta is not fixed. It climbs as the trade works, which is gamma\'s job to describe.', key: true }
       ],
       proof: 'A 0.16 delta short put wins roughly 84% of the time. The 16% is why position sizing exists.',
       tags: ['#delta', '#thegreeks', '#optionsstrategy', '#tradingeducation'],
@@ -239,13 +242,13 @@ RGC.topics = {
       videoAngle: 'One dial on screen. Turn it. "This number is your aggression and your odds at the same time."' },
 
     { id: 'iron-condor', title: 'An Iron Condor Is A Bet On Boring', short: 'iron condors', verb: 'open a condor',
-      promise: 'Four contracts, one opinion: nothing much happens.', mod: 4, motif: 'condor',
+      promise: 'Four contracts, one opinion: nothing much happens.', mod: 4, motif: 'condor', slot: 'applied',
       beats: [
         { h: 'You sell the middle', b: 'A put spread below the price, a call spread above it. You collect both premiums.' },
         { h: 'You buy the wings', b: 'The outer contracts cap your loss. This is what makes the risk defined instead of open-ended.' },
         { h: 'Your opinion is "flat"', b: 'You are not predicting up or down. You are predicting the price stays inside your range.' },
         { h: 'Max profit is known on day one', b: 'The premium you collected. That is the ceiling, and you know it before you enter.' },
-        { h: 'Max loss is known too', b: 'Spread width minus premium. Smaller than the win rate suggests — that is the real trade-off.' }
+        { h: 'Max loss is known too', b: 'Spread width minus premium. Smaller than the win rate suggests — that is the real trade-off.', key: true }
       ],
       proof: 'Collect $200 on a $500-wide condor: you risk $300 to make $200, and you need the stock to do nothing.',
       tags: ['#ironcondor', '#optionsstrategy', '#definedrisk', '#advancedoptions'],
@@ -253,13 +256,13 @@ RGC.topics = {
       videoAngle: 'Draw it live in four strokes. The shape IS the explanation — do not talk over the drawing.' },
 
     { id: 'iv-crush', title: 'Why You Were Right And Still Lost Money', short: 'IV crush', verb: 'trade earnings',
-      promise: 'The earnings trap that catches every beginner exactly once.', mod: 4, motif: 'crush',
+      promise: 'The earnings trap that catches every beginner exactly once.', mod: 4, motif: 'crush', slot: 'applied',
       beats: [
         { h: 'Before earnings, fear is expensive', b: 'Implied volatility rises. Every option gets pricier, calls and puts alike.' },
         { h: 'You bought at the top of that', b: 'You paid a premium inflated by uncertainty, not by direction.' },
         { h: 'The news lands', b: 'Uncertainty is gone. IV collapses within minutes of the report.' },
         { h: 'The stock moved your way — barely', b: 'Your directional gain was smaller than the volatility you lost. Net: red.' },
-        { h: 'The fix', b: 'Either sell premium into earnings, or buy it weeks early. Do not buy the day before.' }
+        { h: 'The fix', b: 'Either sell premium into earnings, or buy it weeks early. Do not buy the day before.', key: true }
       ],
       proof: 'A stock can gap up 4% and the calls you bought the night before can still open down 20%.',
       tags: ['#ivcrush', '#earningstrading', '#impliedvolatility', '#optionsmistakes'],
@@ -267,13 +270,13 @@ RGC.topics = {
       videoAngle: 'Literally deflate a balloon on camera while the chart plays. The gut-punch is the point.' },
 
     { id: 'position-sizing', title: 'The Only Rule That Keeps You In The Game', short: 'position sizing', verb: 'size a trade',
-      promise: 'Your strategy does not matter if one trade can end you.', mod: 5, motif: 'grid',
+      promise: 'Your strategy does not matter if one trade can end you.', mod: 5, motif: 'grid', slot: 'applied',
       beats: [
         { h: 'Start from the loss', b: 'Not "how much can I make." How much can I lose on this one and still be fine Monday?' },
         { h: 'Pick a hard percentage', b: '1 to 2% of the account per position. Write it down before you are emotional.' },
         { h: 'Work backwards to the contracts', b: 'Max loss per contract divides into your dollar limit. That is your size. Not a vibe.' },
         { h: 'Correlation is hidden size', b: 'Five tech trades is one tech trade wearing five hats.' },
-        { h: 'This is the whole edge', b: 'A 60% win rate makes money with discipline and loses money without it.' }
+        { h: 'This is the whole edge', b: 'A 60% win rate makes money with discipline and loses money without it.', key: true }
       ],
       proof: 'On a $10,000 account at 2%, your max loss per trade is $200. That is one $500-wide spread, not five.',
       tags: ['#riskmanagement', '#positionsizing', '#tradingpsychology', '#protectyourcapital'],
@@ -281,13 +284,13 @@ RGC.topics = {
       videoAngle: 'Hardest video to make interesting and the most important one. Lead with a blow-up story, then the math.' },
 
     { id: 'wheel', title: 'The Wheel: One Loop, Three Outcomes', short: 'the wheel', verb: 'run the wheel',
-      promise: 'Cash-secured put, assignment, covered call. Repeat.', mod: 3, motif: 'cycle',
+      promise: 'Cash-secured put, assignment, covered call. Repeat.', mod: 3, motif: 'cycle', slot: 'teach',
       beats: [
         { h: 'Step one: sell a put', b: 'On a stock you want, at a price you want. Collect premium.' },
         { h: 'If it expires worthless', b: 'Keep the premium. Sell another. This is the loop most weeks.' },
         { h: 'If you get assigned', b: 'You now own 100 shares at your chosen strike, minus the premium you kept.' },
         { h: 'Step two: sell a call', b: 'Against those shares. Collect again while you hold.' },
-        { h: 'If the shares get called away', b: 'You are back to cash, having been paid three times. Start the loop over.' }
+        { h: 'If the shares get called away', b: 'You are back to cash, having been paid three times. Start the loop over.', key: true }
       ],
       proof: 'Every leg of the wheel pays you. The risk is holding a stock you no longer want — which is why leg one is "a stock you want."',
       tags: ['#thewheelstrategy', '#optionsincome', '#coveredcalls', '#cashsecuredputs'],
