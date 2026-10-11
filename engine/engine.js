@@ -106,8 +106,20 @@ RGC.engine = (function () {
       mids.push({ role: r, roleLabel: labelFor(r, bi), headline: beat.h, body: beat.b, motif: null });
     }
 
+    /* Trimming to fit must not throw away the slide that gives the format its
+       name. Plain 'beat' slides are interchangeable filler; every other role
+       (proof, myth, truth, frame, context, quote) is structural, so drop beats
+       from the end until it fits and leave the structure alone. */
     const room = Math.max(1, slideCount - 2);
-    const keep = mids.slice(0, room);
+    const keep = mids.slice();
+    while (keep.length > room) {
+      let idx = -1;
+      for (let i = keep.length - 1; i >= 0; i--) {
+        if (keep[i].role === 'beat') { idx = i; break; }
+      }
+      if (idx === -1) idx = keep.length - 1;   // all structural — drop the last
+      keep.splice(idx, 1);
+    }
 
     // visual rhythm: topic motif anchors the hook and returns on the last teaching slide
     const beatSlides = keep.filter(s => s.role !== 'proof');
@@ -199,7 +211,7 @@ RGC.engine = (function () {
       audience: pillar.audience,
       rationale:
         `${slot.plan.label} is the ${pillar.name} slot. ${pillar.promise} ` +
-        `Running it as a ${fmt.name.toLowerCase()} because ${fmt.note.toLowerCase()}`,
+        `Running it as a ${fmt.name} post. ${fmt.note}`,
       whyNow: slot.plan.swapped
         ? `${pillar.name} rotates in this week so the smaller boards keep getting fed.`
         : `Fixed weekly slot — the rhythm is what trains the audience to come back.`,
@@ -299,8 +311,10 @@ RGC.engine = (function () {
   }
 
   function safeHook(hp, topic, n) {
-    try { return hp.build(topic, n) || topic.title; }
-    catch (e) { return topic.title; }
+    let out;
+    try { out = hp.build(topic, n) || topic.title; }
+    catch (e) { out = topic.title; }
+    return out.charAt(0).toUpperCase() + out.slice(1);   // topic.short is lowercase by design
   }
 
   function fillCta(c, topic, state) {

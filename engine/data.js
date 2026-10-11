@@ -147,7 +147,7 @@ RGC.hookPatterns = [
   { id: 'question', label: 'Direct question',  build: t => `Could you explain ${t.short} out loud right now?` },
   { id: 'confess',  label: 'Confession',       build: t => `I avoided ${t.short} for two years. Here's why that was expensive.` },
   { id: 'contrast', label: 'Before / after',   build: t => `${t.short}: what you think vs. what's true` },
-  { id: 'permission',label: 'Permission',      build: t => `You're allowed to start ${t.verb} with a small account` }
+  { id: 'permission',label: 'Permission',      build: t => `You're allowed to ${t.verb} before you feel ready` }
 ];
 
 /* --- CTA bank ----------------------------------------------------------- */

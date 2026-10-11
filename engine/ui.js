@@ -50,6 +50,64 @@ RGC.ui = (function () {
     for (let i = 0; i < PLAN_DAYS; i++) plan.push(carFor(E().addDays(planStart, i)));
   }
 
+  /* ---------- density: brief shows only what a decision needs ---------- */
+  function density() { return S().settings().density || 'brief'; }
+  const brief = () => density() === 'brief';
+  const full = (html) => brief() ? '' : html;
+
+  /* ---------- "what matters here": the few things worth your eye ---------- */
+  function flagsFor(car) {
+    const f = [];
+
+    if (car.pillar.otaWeight >= 0.8) {
+      f.push({ tone: 'gold', label: 'Sells the Academy',
+               detail: 'This one carries an enrol CTA. Read the last slide before approving.' });
+    } else if (car.pillar.otaWeight < 0.5) {
+      f.push({ tone: 'muted', label: 'Reach only — no pitch',
+               detail: 'By design. Judge it on the hook, not on the CTA.' });
+    }
+
+    if (car.captions.disclaimer) {
+      const onSlide = car.slides.some(x => x.footer);
+      f.push(onSlide
+        ? { tone: 'good', label: 'Risk disclaimer present', detail: car.captions.disclaimer }
+        : { tone: 'bad', label: 'DISCLAIMER MISSING',
+            detail: 'Options content with no disclaimer on the final slide. Do not approve this.' });
+    }
+
+    if (car.slides.some(x => x.role === 'proof')) {
+      f.push({ tone: 'good', label: 'Contains a real number',
+               detail: 'There is a receipt on slide ' +
+                 (car.slides.findIndex(x => x.role === 'proof') + 1) +
+                 '. Check it is one you can stand behind.' });
+    }
+
+    const ov = S().overridesFor(car.date);
+    const changed = Object.keys(ov).filter(k => {
+      if (k === 'slideCount' || ov[k] == null) return false;
+      if (typeof ov[k] === 'object') return Object.keys(ov[k]).length > 0;
+      return true;
+    });
+    if (changed.length) {
+      f.push({ tone: 'warn', label: 'You changed this from the default',
+               detail: changed.join(', ') });
+    }
+
+    if (car.captions.pinTitle.length > 90) {
+      f.push({ tone: 'warn', label: 'Pin title near the limit',
+               detail: car.captions.pinTitle.length + ' of 100 characters.' });
+    }
+
+    return f;
+  }
+
+  function flagsHtml(car) {
+    const f = flagsFor(car);
+    if (!f.length) return '';
+    return `<div class="flags">${f.map(x => `
+      <div class="flag ${x.tone}"><b>${esc(x.label)}</b><span>${esc(x.detail)}</span></div>`).join('')}</div>`;
+  }
+
   /* ---------- canvas painting after innerHTML ---------- */
   function paintAll(root) {
     (root || document).querySelectorAll('canvas[data-paint]').forEach(cv => {
@@ -202,7 +260,13 @@ RGC.ui = (function () {
      ===================================================================== */
   function renderCalendar() {
     const counts = S().summary(plan.map(c => c.date));
-    const cards = plan.map(c => {
+    const fil = S().settings().planFilter || 'all';
+    const want = c => fil === 'all'
+      || (fil === 'mine' && S().statusOf(c.date) === 'in_review')
+      || (fil === 'open' && ['draft', 'changes_requested'].indexOf(S().statusOf(c.date)) !== -1)
+      || (fil === 'done' && ['approved', 'built'].indexOf(S().statusOf(c.date)) !== -1);
+    const shown = plan.filter(want);
+    const cards = shown.map(c => {
       const st = S().statusOf(c.date), m = S().meta(st);
       return `<div class="cal-card${c.date === date ? ' sel' : ''}" data-act="open" data-date="${c.date}">
         <canvas class="cal-thumb" width="200" height="300" data-paint="${c.date}" data-i="0"></canvas>
@@ -226,19 +290,22 @@ RGC.ui = (function () {
       </div>
       <div class="sec">
         <div class="sec-head">
-          <div class="btn-row">
-            <span class="pill muted">${counts.draft} draft</span>
-            <span class="pill warn">${counts.in_review} awaiting approval</span>
-            <span class="pill bad">${counts.changes_requested} needs changes</span>
-            <span class="pill good">${counts.approved} approved</span>
-            <span class="pill done">${counts.built} built</span>
+          <div class="toggle">
+            <button class="${fil === 'all' ? 'on' : ''}" data-act="filter" data-f="all">All ${plan.length}</button>
+            <button class="${fil === 'mine' ? 'on' : ''}" data-act="filter" data-f="mine">Needs you ${counts.in_review}</button>
+            <button class="${fil === 'open' ? 'on' : ''}" data-act="filter" data-f="open">Not sent ${counts.draft + counts.changes_requested}</button>
+            <button class="${fil === 'done' ? 'on' : ''}" data-act="filter" data-f="done">Approved ${counts.approved + counts.built}</button>
           </div>
           <div class="btn-row" style="margin-left:auto">
             <button class="btn sm" data-act="submit-all">Send all drafts for approval</button>
             <button class="btn sm" data-act="dl-plan">Export plan (.md)</button>
           </div>
         </div>
-        <div class="cal-grid">${cards}</div>
+        ${shown.length ? `<div class="cal-grid">${cards}</div>`
+          : `<div class="lock"><div class="ico">✓</div><h2 style="color:var(--good)">Nothing here</h2>
+             <p>No days match this filter.</p>
+             <div class="btn-row" style="justify-content:center">
+               <button class="btn" data-act="filter" data-f="all">Show all ${plan.length} days</button></div></div>`}
       </div>`;
   }
 
@@ -284,10 +351,23 @@ RGC.ui = (function () {
         <span class="chip gold">${esc(car.dayLabel)}</span>
         <span class="chip">${esc(car.pillar.name)}</span>
         <span class="pill ${m.tone}" style="margin-left:auto">${esc(m.label)}</span>
+        <div class="toggle">
+          <button class="${brief() ? 'on' : ''}" data-act="density" data-d="brief">Just the essentials</button>
+          <button class="${brief() ? '' : 'on'}" data-act="density" data-d="full">Everything</button>
+        </div>
       </div>
 
-      <div class="sb-cols">
-        <aside class="sb-left">
+      ${brief() ? `<div class="brief-lead">
+        <div class="eyebrow">What you are approving</div>
+        <h2 style="font-size:1.3rem;line-height:1.3">${esc(car.topic.title)}</h2>
+        <p style="margin-top:6px;color:var(--txt)">${esc(car.idea.promise)}</p>
+        <p style="margin-top:4px;font-size:.84rem;color:var(--dim)">For: ${esc(car.idea.audience)}
+          &nbsp;·&nbsp; Measured by: ${esc(car.idea.successMetric)}</p>
+        ${flagsHtml(car)}
+      </div>` : ''}
+
+      <div class="sb-cols${brief() ? ' solo' : ''}">
+        <aside class="sb-left"${brief() ? ' hidden' : ''}>
           <div class="card tight">
             <div class="eyebrow">The idea</div>
             <h2 style="font-size:1.05rem;line-height:1.3">${esc(car.topic.title)}</h2>
@@ -334,12 +414,17 @@ RGC.ui = (function () {
         <main>
           <div class="sec">
             <div class="sec-head"><div><h2>The visuals</h2>
-              <p class="lede">Rendered at the real export size, scaled down. What you approve is what gets built —
-              same renderer, no redraw.</p></div></div>
+              <p class="lede">${brief()
+                ? 'Click any slide to edit it. What you approve is exactly what gets built.'
+                : 'Rendered at the real export size, scaled down. What you approve is what gets built — same renderer, no redraw.'}</p></div></div>
             <div class="strip">${slideCards}</div>
+            ${brief() ? `<div class="field" style="margin-top:14px">
+              <label>The hook — the only line most people will ever read</label>
+              <textarea rows="2" data-act="edit" data-field="headline" data-i="0">${esc(car.slides[0].headline)}</textarea>
+            </div>` : ''}
           </div>
 
-          <div class="sec">
+          ${full(`<div class="sec">
             <div class="sec-head"><div><h2>Slide ${sel + 1} — ${esc(s.roleLabel)}</h2>
               <p class="lede">Edit the copy and watch it re-render. Editing an approved day sends it back to draft.</p></div></div>
             <div class="ed-grid">
@@ -364,7 +449,7 @@ RGC.ui = (function () {
                 <canvas width="1000" height="1500" data-paint="${date}" data-i="${sel}"></canvas>
               </div>
             </div>
-          </div>
+          </div>`)}
 
           <div class="sec">
             <div class="sec-head"><div><h2>Alternative options</h2>
@@ -377,7 +462,7 @@ RGC.ui = (function () {
                 it => `<b>${esc(it.text)}</b><small>${esc(it.label)}</small>`)}</div>
             </div>
 
-            <div class="alt-group">
+            ${full(`<div class="alt-group">
               <h3>Concept — other topics in this pillar</h3>
               <p>Same slot, different teaching point.</p>
               <div class="alt-rows">${altRows('topic', car.alternates.topics,
@@ -404,10 +489,10 @@ RGC.ui = (function () {
               <div class="alt-chips">${car.alternates.themes.map(t => `
                 <button class="swatch${t.active ? ' on' : ''}" data-act="alt" data-kind="theme" data-id="${esc(t.id)}">
                   <i style="background:${t.accent}"></i>${esc(t.label)}</button>`).join('')}</div>
-            </div>
+            </div>`)}
           </div>
 
-          <div class="sec">
+          ${full(`<div class="sec">
             <div class="sec-head"><div><h2>Captions</h2>
               <p class="lede">Written for Pinterest search first. Boards: ${esc(car.captions.boards.map(b => b.name).join(' · ') || '—')}</p></div></div>
             ${capBlock('Pin title', 'cap-t', car.captions.pinTitle, car.captions.pinTitle.length + '/100')}
@@ -427,7 +512,12 @@ RGC.ui = (function () {
                 <time>${esc(r.tc)}</time><div class="lbl">${esc(r.label)}</div>
                 <div class="say">${esc(r.say)}</div><div class="show">${esc(r.show)}</div></div>`).join('')}
             </div>
-          </div>
+          </div>`)}
+          ${brief() ? `<div class="sec more-note">
+            Hidden in this view: the full reasoning, 5 caption blocks, concept / CTA / format / theme
+            alternatives, and the ${car.video.shortScript.length}-beat video script.
+            <button class="btn sm" data-act="density" data-d="full">Show everything →</button>
+          </div>` : ''}
         </main>
       </div>
 
@@ -583,6 +673,10 @@ RGC.ui = (function () {
     const act = t.getAttribute('data-act');
 
     if (act === 'view') { view = t.getAttribute('data-view'); render(); return; }
+
+    if (act === 'density') { S().setSetting('density', t.getAttribute('data-d')); render(); return; }
+
+    if (act === 'filter') { S().setSetting('planFilter', t.getAttribute('data-f')); view = 'calendar'; render(); return; }
 
     if (act === 'open') { date = t.getAttribute('data-date'); sel = 0; invalidate(); view = 'storyboard'; render(); return; }
 
