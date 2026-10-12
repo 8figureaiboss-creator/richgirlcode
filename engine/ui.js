@@ -59,6 +59,12 @@ RGC.ui = (function () {
   function flagsFor(car) {
     const f = [];
 
+    if (car.holiday) {
+      f.push({ tone: 'warn', label: car.holiday + ' — teaching slot skipped',
+               detail: 'The ' + (car.replaces || 'usual') + ' lesson is deferred to next week, not dropped. ' +
+                       'A reach post runs instead because a trading lesson lands badly today.' });
+    }
+
     if (car.pillar.otaWeight >= 0.8) {
       f.push({ tone: 'gold', label: 'Sells the Academy',
                detail: 'This one carries an enrol CTA. Read the last slide before approving.' });
@@ -281,7 +287,8 @@ RGC.ui = (function () {
           <div class="cal-title">${esc(c.topic.title)}</div>
           <div class="cal-foot">
             <span class="pill ${m.tone}">${esc(m.label)}</span>
-            ${c.swapped ? '<span class="chip">rotated in</span>' : ''}
+            ${c.holiday ? `<span class="chip" style="color:var(--warn);border-color:rgba(226,162,51,.4)">⛔ ${esc(c.holiday)}</span>`
+                        : c.swapped ? '<span class="chip">rotated in</span>' : ''}
           </div>
         </div>
       </div>`;
@@ -356,6 +363,7 @@ RGC.ui = (function () {
         <button class="btn sm" data-act="shift" data-n="1">→</button>
         <span class="chip gold">${esc(car.dayLabel)}</span>
         <span class="chip">${esc(car.pillar.name)}</span>
+        ${car.holiday ? `<span class="chip" style="color:var(--warn);border-color:rgba(226,162,51,.4)">⛔ holiday — ${esc(car.replaces || '')} deferred</span>` : ''}
         <span class="pill ${m.tone}" style="margin-left:auto">${esc(m.label)}</span>
         <div class="toggle">
           <button class="${brief() ? 'on' : ''}" data-act="density" data-d="brief">Just the essentials</button>

@@ -45,6 +45,74 @@ RGC.engine = (function () {
     return h >>> 0;
   }
 
+  /* ---------- holidays ---------- */
+  function nthDow(y, month, dow, n) {           // n = 1..5, or -1 for last
+    if (n > 0) {
+      const first = new Date(Date.UTC(y, month, 1)).getUTCDay();
+      return Date.UTC(y, month, 1 + ((dow - first + 7) % 7) + (n - 1) * 7);
+    }
+    const lastDay = new Date(Date.UTC(y, month + 1, 0)).getUTCDate();
+    const last = new Date(Date.UTC(y, month, lastDay)).getUTCDay();
+    return Date.UTC(y, month, lastDay - ((last - dow + 7) % 7));
+  }
+
+  function easterSunday(y) {                    // anonymous Gregorian algorithm
+    const a = y % 19, b = Math.floor(y / 100), c = y % 100;
+    const d = Math.floor(b / 4), e = b % 4;
+    const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+    const h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4), k = c % 4;
+    const l = (32 + 2 * e + 2 * i - h - k) % 7;
+    const m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const mo = Math.floor((h + l - 7 * m + 114) / 31);
+    const da = ((h + l - 7 * m + 114) % 31) + 1;
+    return Date.UTC(y, mo - 1, da);
+  }
+
+  const COMPUTED = {
+    'good-friday':    y => [easterSunday(y) - 2 * DAY, 'Good Friday'],
+    'thanksgiving':   y => [nthDow(y, 10, 4, 4), 'Thanksgiving'],
+    'black-friday':   y => [nthDow(y, 10, 4, 4) + DAY, 'Black Friday'],
+    'memorial-day':   y => [nthDow(y, 4, 1, -1), 'Memorial Day'],
+    'labor-day':      y => [nthDow(y, 8, 1, 1), 'Labor Day'],
+    'mlk-day':        y => [nthDow(y, 0, 1, 3), 'MLK Day'],
+    'presidents-day': y => [nthDow(y, 1, 1, 3), 'Presidents Day']
+  };
+
+  const _hol = {};
+  function holidayFor(dateKey) {
+    if (_hol[dateKey] !== undefined) return _hol[dateKey];
+    const H = RGC.holidays || {};
+    let hit = null;
+    const md = dateKey.slice(5);
+    (H.fixed || []).forEach(f => { if (!hit && f.md === md) hit = f.name; });
+    if (!hit && (H.extra || []).indexOf(dateKey) !== -1) hit = 'Blackout';
+    if (!hit) {
+      const y = +dateKey.slice(0, 4);
+      (H.computed || []).forEach(id => {
+        if (hit || !COMPUTED[id]) return;
+        const [ms, name] = COMPUTED[id](y);
+        if (key(ms) === dateKey) hit = name;
+      });
+    }
+    return (_hol[dateKey] = hit);
+  }
+
+  /* How many times this slot has actually run since the epoch. Skipped
+     holidays do not advance the curriculum, so a deferred lesson comes back
+     the following week instead of being lost. */
+  const _seq = {};
+  function slotSeq(dow, week, skip) {
+    if (!skip) return week;
+    const ck = dow + ':' + week;
+    if (_seq[ck] !== undefined) return _seq[ck];
+    let n = 0;
+    for (let w = 0; w < week; w++) {
+      if (!holidayFor(key(EPOCH + (w * 7 + dow) * DAY))) n++;
+    }
+    return (_seq[ck] = n);
+  }
+
   /* ---------- the day's slot ---------- */
   function slotFor(dateKey) {
     const ms = parse(dateKey);
@@ -60,7 +128,16 @@ RGC.engine = (function () {
     if (dow === 0 && ((week % 4) + 4) % 4 === 3) {
       plan = { dow, label: 'Sunday Reset', pillar: 'lifestyle', format: 'identity', swapped: true };
     }
-    return { dayIndex, dow, week, plan };
+
+    const holiday = plan.skipHolidays ? holidayFor(dateKey) : null;
+    const seq = slotSeq(dow, week, !!plan.skipHolidays);
+
+    if (holiday) {
+      const pol = RGC.holidayPolicy || { replaceWith: 'lifestyle', format: 'identity' };
+      plan = { dow, label: holiday, pillar: pol.replaceWith, format: pol.format,
+               swapped: true, holiday: holiday, replaced: plan.label };
+    }
+    return { dayIndex, dow, week, seq, plan, holiday };
   }
 
   function pillarById(id) { return RGC.pillars.find(p => p.id === id); }
@@ -75,7 +152,8 @@ RGC.engine = (function () {
   const SLOT_NAMES = ['teach', 'applied'];
 
   function topicFor(pillarId, week, variant, dow) {
-    const all = RGC.topics[pillarId] || [];
+    // holiday-slot topics are drawn by name, never by rotation
+    const all = (RGC.topics[pillarId] || []).filter(t => t.slot !== 'holiday');
     if (!all.length) return null;
     const slots = pillarSlots(pillarId);
     const perWeek = Math.max(1, slots.length);
@@ -101,6 +179,16 @@ RGC.engine = (function () {
     const off = hash(pillarId) % all.length;
     const n = all.length;
     return all[(((week * perWeek + occ + off + (variant || 0)) % n) + n) % n];
+  }
+
+  function holidayTopic(name) {
+    const pol = RGC.holidayPolicy || {};
+    const pool = [];
+    Object.keys(RGC.topics).forEach(k => (RGC.topics[k] || []).forEach(t => {
+      if (t.slot === 'holiday') pool.push(t);
+    }));
+    const wanted = (pol.topics || {})[name] || pol.fallback;
+    return pool.filter(t => t.id === wanted)[0] || pool[0] || null;
   }
 
   /* ---------- slide composition ---------- */
@@ -246,9 +334,12 @@ RGC.engine = (function () {
       rationale:
         `${slot.plan.label} is the ${pillar.name} slot. ${pillar.promise} ` +
         `Running it as a ${fmt.name} post. ${fmt.note}`,
-      whyNow: slot.plan.swapped
-        ? `${pillar.name} rotates in this week so the smaller boards keep getting fed.`
-        : `Fixed weekly slot — the rhythm is what trains the audience to come back.`,
+      whyNow: slot.holiday
+        ? `${slot.holiday}. The ${slot.plan.replaced} lesson is deferred to next week, not skipped — ` +
+          `a trading lesson lands badly today, and reach content travels further on a holiday.`
+        : slot.plan.swapped
+          ? `${pillar.name} rotates in this week so the smaller boards keep getting fed.`
+          : `Fixed weekly slot — the rhythm is what trains the audience to come back.`,
       successMetric: metric,
       funnel: pillar.funnel,
       otaWeight: pillar.otaWeight,
@@ -337,7 +428,11 @@ RGC.engine = (function () {
       slides: RGC.formats[k].roles.length, active: k === state.format
     }));
 
-    const topicsInPillar = (RGC.topics[pillar.id] || []).map(t => ({
+    const pool = state.holiday
+      ? Object.keys(RGC.topics).reduce((a, k) =>
+          a.concat((RGC.topics[k] || []).filter(t => t.slot === 'holiday')), [])
+      : (RGC.topics[pillar.id] || []).filter(t => t.slot !== 'holiday');
+    const topicsInPillar = pool.map(t => ({
       id: t.id, label: t.title, promise: t.promise, active: t.id === topic.id
     }));
 
@@ -371,7 +466,12 @@ RGC.engine = (function () {
     let topic = overrides.topicId
       ? (RGC.topics[pillar.id] || []).find(t => t.id === overrides.topicId)
       : null;
-    if (!topic) topic = topicFor(pillar.id, slot.week, variant, slot.dow);
+    /* A holiday draws from its own disjoint library, so a fill-in can never
+       repeat the reach post that ran days earlier. */
+    const curriculumWeek = slot.seq;
+    const vary = variant || 0;
+    if (!topic && slot.holiday) topic = holidayTopic(slot.holiday);
+    if (!topic) topic = topicFor(pillar.id, curriculumWeek, vary, slot.dow);
     if (!topic) topic = RGC.topics.options[0];
 
     const format = overrides.format || slot.plan.format;
@@ -385,12 +485,12 @@ RGC.engine = (function () {
     const hp = RGC.hookPatterns.find(h => h.id === hookPatternId) || RGC.hookPatterns[0];
     const hookText = overrides.hookText || safeHook(hp, topic, topic.beats.length);
 
-    let nextTopic = topicFor(pillar.id, slot.week + 1, variant, slot.dow);
+    let nextTopic = topicFor(pillar.id, curriculumWeek + 1, vary, slot.dow);
     if (nextTopic && nextTopic.id === topic.id) {
-      nextTopic = topicFor(pillar.id, slot.week + 1, (variant || 0) + 1, slot.dow);
+      nextTopic = topicFor(pillar.id, curriculumWeek + 1, vary + 1, slot.dow);
     }
     const state = { hookPatternId, themeKey, format, week: slot.week,
-                    pillarName: pillar.name,
+                    pillarName: pillar.name, holiday: slot.holiday,
                     nextTitle: (nextTopic && nextTopic.id !== topic.id)
                       ? nextTopic.title : 'the risk side of this trade',
                     ctaId: null };
@@ -416,6 +516,8 @@ RGC.engine = (function () {
       dayLabel: slot.plan.label,
       week: slot.week,
       swapped: !!slot.plan.swapped,
+      holiday: slot.holiday || null,
+      replaces: slot.plan.replaced || null,
       pillar: { id: pillar.id, name: pillar.name, funnel: pillar.funnel, otaWeight: pillar.otaWeight },
       topic: { id: topic.id, title: topic.title, promise: topic.promise, mod: topic.mod },
       format, formatName: fmt.name,
@@ -456,6 +558,6 @@ RGC.engine = (function () {
     }).sort((a, b) => b.posts - a.posts);
   }
 
-  return { buildCarousel, calendar, coverage, slotFor, todayKey, addDays, pretty,
+  return { buildCarousel, calendar, coverage, slotFor, holidayFor, todayKey, addDays, pretty,
            shortDate, key, parse, hash, pillarById, topicFor, DOW };
 })();

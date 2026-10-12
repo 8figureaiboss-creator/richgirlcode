@@ -58,13 +58,52 @@ RGC.themes = {
              ink: '#F6F2FF', sub: '#9D90BE', pos: '#6EE7B7', neg: '#FB7185', grid: 'rgba(196,163,255,0.10)' }
 };
 
+/* --- Holidays -----------------------------------------------------------
+   Days the engine will not run a teaching slot on. Dates are US market /
+   cultural holidays; `extra` is yours to add to (launch weeks, travel, a
+   funeral — anything you do not want a trading lesson landing on).
+   ------------------------------------------------------------------------ */
+RGC.holidays = {
+  fixed: [
+    { md: '01-01', name: 'New Year\'s Day' },
+    { md: '06-19', name: 'Juneteenth' },
+    { md: '07-04', name: 'Independence Day' },
+    { md: '12-24', name: 'Christmas Eve' },
+    { md: '12-25', name: 'Christmas Day' },
+    { md: '12-31', name: 'New Year\'s Eve' }
+  ],
+  // computed each year — Good Friday is the one that matters most here,
+  // because it is always a Friday and the US market is closed
+  computed: ['good-friday', 'thanksgiving', 'black-friday',
+             'memorial-day', 'labor-day', 'mlk-day', 'presidents-day'],
+  extra: []            // e.g. '2026-11-30'
+};
+
+/* What runs instead when a teaching slot lands on a holiday. Pinterest
+   traffic rises on holidays for lifestyle content, so the slot is handed to
+   a reach pillar rather than left empty — and the skipped lesson is deferred,
+   not lost. */
+RGC.holidayPolicy = {
+  replaceWith: 'lifestyle',        // whose voice, theme and boards the fill-in borrows
+  format: 'identity',
+  topics: {                        // holiday -> the post written for that day
+    'Black Friday':     'black-friday-buy',
+    'Thanksgiving':     'gratitude-ledger',
+    'Christmas Eve':    'year-end-gift',
+    'Christmas Day':    'year-end-gift',
+    "New Year's Eve":   'new-year-floor',
+    "New Year's Day":   'new-year-floor'
+  },
+  fallback: 'market-closed'        // Good Friday, Juneteenth, the 4th, your own blackouts
+};
+
 /* --- Content pillars ---------------------------------------------------- */
 RGC.pillars = [
   { id: 'options',   name: 'Options Desk',        theme: 'academy', otaWeight: 1.00,
     boards: ['rich-girl-code-academy', 'money-talk'],
     // Monday teaches a mechanic, Friday applies one. Each slot runs its own
     // list in authored order; rotationOffset picks where the curriculum starts.
-    rotationOffset: { teach: 0, applied: 2 },
+    rotationOffset: { teach: 0, applied: 4 },
     promise: 'Teach one options mechanic per post, in plain English, with the risk named.',
     audience: 'Women who have money in the market but have never sold a contract.',
     funnel: 'core' },
@@ -114,7 +153,7 @@ RGC.weekPlan = [
   { dow: 2, label: 'Operator Tuesday',  pillar: 'business',  format: 'framework'},
   { dow: 3, label: 'Workflow Wednesday',pillar: 'faceless',  format: 'system'   },
   { dow: 4, label: 'Thesis Thursday',   pillar: 'literacy',  format: 'mythbust' },
-  { dow: 5, label: 'Friday Close',      pillar: 'options',   format: 'proof'    },
+  { dow: 5, label: 'Friday Close',      pillar: 'options',   format: 'proof', skipHolidays: true },
   { dow: 6, label: 'Soft Saturday',     pillar: 'identity',  format: 'identity' }
 ];
 
@@ -663,7 +702,76 @@ RGC.topics = {
       proof: 'The gap between wanting to start and starting is usually a few hundred dollars that is sitting in a closet.',
       tags: ['#declutter', '#fundyouraccount', '#richgirlcode', '#moneymoves'],
       imagePrompt: 'Rose-lit flat lay, neatly folded garments beside a phone showing a rising chart, overhead, no text',
-      videoAngle: 'Film the real audit and the real transfer. The transfer screen is the whole payoff.' }
+      videoAngle: 'Film the real audit and the real transfer. The transfer screen is the whole payoff.' },
+
+    /* --- Holiday slot ---------------------------------------------------
+       Drawn only when a teaching slot is skipped. Kept disjoint from the
+       regular reach rotation so a fill-in can never repeat that week's post.
+       -------------------------------------------------------------------- */
+    { id: 'black-friday-buy', title: 'The Only Thing I Buy On Black Friday', short: 'buying assets', verb: 'spend today',
+      promise: 'One day a year everything is discounted except the thing that pays you back.', mod: 0, motif: 'split', slot: 'holiday',
+      beats: [
+        { h: 'Today is engineered', b: 'The countdown, the stock counter, the doorbuster. All of it is design, not scarcity.' },
+        { h: 'Most of it depreciates by Monday', b: 'Whatever you buy today is worth less tomorrow. That is what a consumer good is.' },
+        { h: 'Buy the thing that appreciates instead', b: 'Take the number you were going to spend, move it to the brokerage, and buy one share of something you would hold for ten years.' },
+        { h: 'You will not miss it', b: 'Nobody remembers what they bought on Black Friday three years ago. You will remember owning the share.', key: true }
+      ],
+      proof: 'Whatever you were about to spend today, multiply it by ten. At 8% that is roughly what it becomes in thirty years. Then decide.',
+      tags: ['#blackfriday', '#antihaul', '#investingforwomen', '#richgirlcode'],
+      imagePrompt: 'Rose-lit still life, an unopened shopping bag beside a phone showing a brokerage confirmation, overhead, no text',
+      videoAngle: 'Film it on the day. Show the actual transfer instead of the actual purchase. No lecture.' },
+
+    { id: 'gratitude-ledger', title: 'The Year You Stopped Apologising For Wanting More', short: 'wanting more', verb: 'want more',
+      promise: 'Gratitude and ambition are not opposites.', mod: 0, motif: 'quote', slot: 'holiday',
+      beats: [
+        { h: 'You were taught to pick one', b: 'Be grateful for what you have, or be hungry for more. Women especially get told these cancel out.' },
+        { h: 'They are different muscles', b: 'Gratitude is about what already happened. Ambition is about what has not. Neither disqualifies the other.' },
+        { h: 'Name both out loud today', b: 'One thing you are genuinely glad of, and one number you are going after. Say them in the same breath.' },
+        { h: 'Wanting more is not ingratitude', b: 'You can be thankful for the table you are sitting at and still intend to buy a bigger one. Both are allowed.', key: true }
+      ],
+      proof: 'The women who build wealth are rarely the least grateful ones. They are the ones who stopped treating the two as a choice.',
+      tags: ['#thanksgiving', '#gratitude', '#ambition', '#richgirlcode'],
+      imagePrompt: 'Rose-lit table after a meal, one chair pushed back, warm low light, intimate still life, no text',
+      videoAngle: 'Voice only over b-roll of the day. Let it be slow. No charts.' },
+
+    { id: 'year-end-gift', title: 'What I Give The Women In My Family Now', short: 'giving assets', verb: 'give a gift',
+      promise: 'A gift worth more every year they do not spend it.', mod: 0, motif: 'curve', slot: 'holiday',
+      beats: [
+        { h: 'A gift that compounds', b: 'A share of something solid, given to a niece at ten, has decades to work before she needs it.' },
+        { h: 'It teaches while it grows', b: 'She will check the price. She will ask why it moved. That curiosity is the actual present.' },
+        { h: 'Custodial accounts are not complicated', b: 'Most brokers open one in under fifteen minutes. An adult manages it until she comes of age.' },
+        { h: 'Say what it is for', b: 'A gift with no explanation is just a gesture. Tell her the plan, and tell her it is hers.', key: true }
+      ],
+      proof: '$100 given at ten and left alone until forty is roughly $1,000 at 8%. The card it came in cost more than the share did.',
+      tags: ['#generationalwealth', '#custodialaccount', '#givingassets', '#richgirlcode'],
+      imagePrompt: 'Rose-lit flat lay, a small wrapped box beside a handwritten certificate, warm holiday light, no text',
+      videoAngle: 'Quiet and warm. Keep every chart off screen until the last ten seconds.' },
+
+    { id: 'new-year-floor', title: 'Before You Set A Money Goal, Set A Money Floor', short: 'money floors', verb: 'set a goal',
+      promise: 'Goals are what you reach for. Floors are what catch you.', mod: 0, motif: 'stack', slot: 'holiday',
+      beats: [
+        { h: 'Everyone sets a ceiling', b: 'A number to hit, a figure to reach. Ambitious, motivating, and abandoned by February.' },
+        { h: 'Almost nobody sets a floor', b: 'The balance you will not go below. The bill paid first. The position size you will not exceed.' },
+        { h: 'Floors survive bad months', b: 'A goal fails the moment you miss it. A floor still works when the year goes sideways.' },
+        { h: 'Write both down today', b: 'One number you are reaching for, one you will not fall below. The second is what keeps you in the game long enough to reach the first.', key: true }
+      ],
+      proof: 'Pick one floor: an emergency fund you do not touch, a contribution you do not skip, or a loss limit you do not override. One is enough.',
+      tags: ['#newyear', '#moneygoals', '#financialplanning', '#richgirlcode'],
+      imagePrompt: 'Rose-lit notebook open to two handwritten numbers, one circled, morning light on linen, overhead, no text',
+      videoAngle: 'Do it on camera. Write your own two numbers and show them. Specificity is the whole thing.' },
+
+    { id: 'market-closed', title: 'The Market Is Closed And So Are You', short: 'resting', verb: 'take a day off',
+      promise: 'There is no trade to miss today. That is the point.', mod: 0, motif: 'quote', slot: 'holiday',
+      beats: [
+        { h: 'Nothing is open', b: 'No fills, no expiries, no news that needs a response. The screen has nothing to tell you.' },
+        { h: 'The urge to check is a habit', b: 'If you reach for the app today, notice it. That is a reflex, not analysis.' },
+        { h: 'Positions do not need supervision', b: 'A well-sized position survives a day you are not watching. If it does not, the size was the problem.', key: true },
+        { h: 'Come back Monday', b: 'The setups will still be there. They always are.' }
+      ],
+      proof: 'If one day away from the screen would change your outcome, the position is too big. That is the whole test.',
+      tags: ['#marketholiday', '#tradingpsychology', '#rest', '#richgirlcode'],
+      imagePrompt: 'Rose-lit still life, a closed laptop and a cup of tea by a window, soft daylight, calm, no text',
+      videoAngle: 'Thirty seconds, no charts. The shortest post of the year and probably the most shared.' }
   ],
 
   podcast: [
