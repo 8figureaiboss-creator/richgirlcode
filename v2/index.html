@@ -14,13 +14,15 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Rich Girl Code" />
 <meta name="twitter:description" content="Rich Girl Code™ — the ecosystem. Own Your 2027. Curated by the culture. Founded for the people." />
-<meta name="theme-color" content="#0A0A0B" />
+<meta name="theme-color" content="#060D20" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;0,6..96,900;1,6..96,400&family=Jost:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" />
 <link rel="stylesheet" href="assets/rgc.css" />
 </head>
 <body>
+
+<a class="skip" href="#main">Skip to content</a>
 
 <div class="curtain" aria-hidden="true">
   <p class="curtain__mark" id="curtainMark">Rich Girl Code</p>
@@ -42,10 +44,45 @@
       <a href="#directories">Directories</a>
       <a href="#media">Media</a>
     </nav>
+    <button class="navtoggle" id="navToggle" type="button"
+            aria-expanded="false" aria-controls="navDrawer" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
 
-<main id="top">
+<div class="drawer" id="navDrawer" data-open="false" aria-hidden="true">
+  <div class="drawer__in">
+    <div>
+      <h2>Ten houses</h2>
+      <ul>
+        <li><a href="index.html"><b>01</b>Rich Girl Code<sup>&trade;</sup></a></li>
+        <li><a href="houses/options-traders-os.html"><b>02</b>Options Traders OS<sup>&trade;</sup></a></li>
+        <li><a href="houses/8-figure-ai.html"><b>03</b>8 Figure AI</a></li>
+        <li><a href="houses/rich-rabbit.html"><b>04</b>Rich Rabbit</a></li>
+        <li><a href="houses/rgc-media-group.html"><b>05</b>RGC Media Group</a></li>
+        <li><a href="houses/ethnicity-cosmetics.html"><b>06</b>Ethnicity Cosmetics</a></li>
+        <li><a href="houses/black-girl-luxury-magazine.html"><b>07</b>Black Girl Luxury Magazine</a></li>
+        <li><a href="houses/rich-girl-code-music-group.html"><b>08</b>Rich Girl Code Music Group<sup>&trade;</sup></a></li>
+        <li><a href="houses/small-business-district.html"><b>09</b>Small Business District</a></li>
+        <li><a href="houses/verified-assets.html"><b>10</b>Verified Assets</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Ecosystem</h2>
+      <div class="drawer__sections">
+        <a href="index.html#ecosystem">Ecosystem</a>
+        <a href="index.html#founder">Founder</a>
+        <a href="index.html#journal">Journal</a>
+        <a href="index.html#commerce">Commerce</a>
+        <a href="index.html#directories">Directories</a>
+        <a href="index.html#media">Media</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main id="main">
 
   <section class="hero">
     <div class="hero__glow"></div>
@@ -77,16 +114,16 @@
       </div>
       <div class="eco__grid">
         <ul class="eco__list" id="ecoList">
-          <li class="eco__row is-on" style="--row-accent:#C8A253"><a class="eco__link" href="#top"><span class="eco__num">01</span><span class="eco__name">Rich Girl Code<sup>&trade;</sup></span><span class="eco__desc">Parent brand</span></a></li>
-          <li class="eco__row" style="--row-accent:#B08A3E"><a class="eco__link" href="houses/options-traders-os.html"><span class="eco__num">02</span><span class="eco__name">Options Traders OS<sup>&trade;</sup></span><span class="eco__desc">Trading education and software</span></a></li>
-          <li class="eco__row" style="--row-accent:#B9B3A4"><a class="eco__link" href="houses/8-figure-ai.html"><span class="eco__num">03</span><span class="eco__name">8 Figure AI</span><span class="eco__desc">AI assistants, GPTs, and technology</span></a></li>
-          <li class="eco__row" style="--row-accent:#7B1C2E"><a class="eco__link" href="houses/rich-rabbit.html"><span class="eco__num">04</span><span class="eco__name">Rich Rabbit</span><span class="eco__desc">Commerce</span></a></li>
-          <li class="eco__row" style="--row-accent:#5A1322"><a class="eco__link" href="houses/rgc-media-group.html"><span class="eco__num">05</span><span class="eco__name">RGC Media Group</span><span class="eco__desc">Media and entertainment</span></a></li>
-          <li class="eco__row" style="--row-accent:#AE7268"><a class="eco__link" href="houses/ethnicity-cosmetics.html"><span class="eco__num">06</span><span class="eco__name">Ethnicity Cosmetics</span><span class="eco__desc">Beauty</span></a></li>
-          <li class="eco__row" style="--row-accent:#F0E9DC"><a class="eco__link" href="houses/black-girl-luxury-magazine.html"><span class="eco__num">07</span><span class="eco__name">Black Girl Luxury Magazine</span><span class="eco__desc">Editorial media</span></a></li>
-          <li class="eco__row" style="--row-accent:#6E2340"><a class="eco__link" href="houses/rich-girl-code-music-group.html"><span class="eco__num">08</span><span class="eco__name">Rich Girl Code Music Group<sup>&trade;</sup></span><span class="eco__desc">Music and entertainment</span></a></li>
-          <li class="eco__row" style="--row-accent:#9A8456"><a class="eco__link" href="houses/small-business-district.html"><span class="eco__num">09</span><span class="eco__name">Small Business District</span><span class="eco__desc">Business discovery and promotion</span></a></li>
-          <li class="eco__row" style="--row-accent:#D6C28A"><a class="eco__link" href="houses/verified-assets.html"><span class="eco__num">10</span><span class="eco__name">Verified Assets</span><span class="eco__desc">Ecosystem house</span></a></li>
+          <li class="eco__row is-on" style="--row-accent:#F08FB4"><a class="eco__link" href="#main"><span class="eco__num">01</span><span class="eco__name">Rich Girl Code<sup>&trade;</sup></span><span class="eco__desc">Parent brand</span></a></li>
+          <li class="eco__row" style="--row-accent:#6E8BE8"><a class="eco__link" href="houses/options-traders-os.html"><span class="eco__num">02</span><span class="eco__name">Options Traders OS<sup>&trade;</sup></span><span class="eco__desc">Trading education and software</span></a></li>
+          <li class="eco__row" style="--row-accent:#9FB4F0"><a class="eco__link" href="houses/8-figure-ai.html"><span class="eco__num">03</span><span class="eco__name">8 Figure AI</span><span class="eco__desc">AI assistants, GPTs, and technology</span></a></li>
+          <li class="eco__row" style="--row-accent:#E86FA0"><a class="eco__link" href="houses/rich-rabbit.html"><span class="eco__num">04</span><span class="eco__name">Rich Rabbit</span><span class="eco__desc">Commerce</span></a></li>
+          <li class="eco__row" style="--row-accent:#2F4FA8"><a class="eco__link" href="houses/rgc-media-group.html"><span class="eco__num">05</span><span class="eco__name">RGC Media Group</span><span class="eco__desc">Media and entertainment</span></a></li>
+          <li class="eco__row" style="--row-accent:#F5A8C4"><a class="eco__link" href="houses/ethnicity-cosmetics.html"><span class="eco__num">06</span><span class="eco__name">Ethnicity Cosmetics</span><span class="eco__desc">Beauty</span></a></li>
+          <li class="eco__row" style="--row-accent:#F6F8FF"><a class="eco__link" href="houses/black-girl-luxury-magazine.html"><span class="eco__num">07</span><span class="eco__name">Black Girl Luxury Magazine</span><span class="eco__desc">Editorial media</span></a></li>
+          <li class="eco__row" style="--row-accent:#DA7CB8"><a class="eco__link" href="houses/rich-girl-code-music-group.html"><span class="eco__num">08</span><span class="eco__name">Rich Girl Code Music Group<sup>&trade;</sup></span><span class="eco__desc">Music and entertainment</span></a></li>
+          <li class="eco__row" style="--row-accent:#7FA0DD"><a class="eco__link" href="houses/small-business-district.html"><span class="eco__num">09</span><span class="eco__name">Small Business District</span><span class="eco__desc">Business discovery and promotion</span></a></li>
+          <li class="eco__row" style="--row-accent:#FBC6DB"><a class="eco__link" href="houses/verified-assets.html"><span class="eco__num">10</span><span class="eco__name">Verified Assets</span><span class="eco__desc">Ecosystem house</span></a></li>
         </ul>
         <div class="eco__stage" id="ecoStage" aria-hidden="true"></div>
       </div>
@@ -137,10 +174,18 @@
         </div>
         <p class="lede">Rich Rabbit, Ethnicity Cosmetics and Verified Assets share one showcase rail. Drag or scroll.</p>
       </div>
-        <article class="shop" style="--accent:#7B1C2E"><div class="shop__art"><i>Rich Rabbit</i></div><div class="shop__body"><h3 class="shop__name">Storefront item</h3><p class="shop__meta">Commerce</p><p class="pend">Live product</p></div></article>
-        <article class="shop" style="--accent:#AE7268"><div class="shop__art"><i>Ethnicity Cosmetics</i></div><div class="shop__body"><h3 class="shop__name">Storefront item</h3><p class="shop__meta">Beauty</p><p class="pend">Live product</p></div></article>
-        <article class="shop" style="--accent:#D6C28A"><div class="shop__art"><i>Verified Assets</i></div><div class="shop__body"><h3 class="shop__name">Storefront item</h3><p class="shop__meta">Ecosystem house</p><p class="pend">Live product</p></div></article>
-        <article class="shop" style="--accent:#7B1C2E"><div class="shop__art"><i>Rich Rabbit</i></div><div class="shop__body"><h3 class="shop__name">Storefront item</h3><p class="shop__meta">Commerce</p><p class="pend">Live product</p></div></article>
+      <div class="railwrap">
+        <div class="rail">
+        <article class="shop" style="--accent:#E86FA0"><div class="shop__art"><i>Rich Rabbit</i></div><div class="shop__body"><h3 class="shop__name">Storefront item</h3><p class="shop__meta">Commerce</p><p class="pend">Live product</p></div></article>
+        <article class="shop" style="--accent:#F5A8C4"><div class="shop__art"><i>Ethnicity Cosmetics</i></div><div class="shop__body"><h3 class="shop__name">Storefront item</h3><p class="shop__meta">Beauty</p><p class="pend">Live product</p></div></article>
+        <article class="shop" style="--accent:#FBC6DB"><div class="shop__art"><i>Verified Assets</i></div><div class="shop__body"><h3 class="shop__name">Storefront item</h3><p class="shop__meta">Ecosystem house</p><p class="pend">Live product</p></div></article>
+        <article class="shop" style="--accent:#E86FA0"><div class="shop__art"><i>Rich Rabbit</i></div><div class="shop__body"><h3 class="shop__name">Storefront item</h3><p class="shop__meta">Commerce</p><p class="pend">Live product</p></div></article>
+        </div>
+        <div class="railnav">
+          <button type="button" data-rail="prev" aria-label="Previous">&larr;</button>
+          <button type="button" data-rail="next" aria-label="Next">&rarr;</button>
+        </div>
+      </div>
       <p class="pend">Product names, imagery, prices and purchase links port from the live storefronts</p>
     </div>
   </section>
@@ -154,13 +199,13 @@
         </div>
       </div>
       <div class="two">
-        <div class="slab" style="--accent:#B9B3A4">
+        <div class="slab" style="--accent:#9FB4F0">
           <p class="eyebrow">8 Figure AI</p>
           <h3 class="slab__title">AI Directory</h3>
           <p class="lede">AI assistants, GPTs and technology, indexed and searchable.</p>
           <a class="cta" href="houses/8-figure-ai.html">Open the directory</a>
         </div>
-        <div class="slab" style="--accent:#9A8456">
+        <div class="slab" style="--accent:#7FA0DD">
           <p class="eyebrow">Small Business District</p>
           <h3 class="slab__title">Business Discovery</h3>
           <p class="lede">Business discovery and promotion across the district.</p>
@@ -179,19 +224,19 @@
         </div>
       </div>
       <div class="two">
-        <div class="slab" style="--accent:#5A1322">
+        <div class="slab" style="--accent:#2F4FA8">
           <p class="eyebrow">House 05</p>
           <h3 class="slab__title">RGC Media Group</h3>
           <p class="lede">Media and entertainment.</p>
           <a class="cta" href="houses/rgc-media-group.html">Enter</a>
         </div>
-        <div class="slab" style="--accent:#6E2340">
+        <div class="slab" style="--accent:#DA7CB8">
           <p class="eyebrow">House 08</p>
           <h3 class="slab__title">Rich Girl Code Music Group&trade;</h3>
           <p class="lede">Music and entertainment.</p>
           <a class="cta" href="houses/rich-girl-code-music-group.html">Enter</a>
         </div>
-        <div class="slab" style="--accent:#F0E9DC">
+        <div class="slab" style="--accent:#F6F8FF">
           <p class="eyebrow">House 07</p>
           <h3 class="slab__title">Black Girl Luxury Magazine</h3>
           <p class="lede">Editorial media.</p>
@@ -255,6 +300,8 @@
     </div>
   </div>
 </footer>
+
+<button class="totop" id="toTop" type="button" data-show="false" aria-label="Back to top">&uarr;</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>

@@ -60,12 +60,21 @@ overwrites it — put lasting changes in `generate.py` or in `assets/`.
 
 ## Brand
 
-Black, white, deep burgundy, cream, refined metallic gold. Bodoni Moda display
-over Jost. Key copy: *Own Your 2027.* and *Curated by the culture. Founded for
-the people.*
+**Deep blue ground, white, pink accent.** Bodoni Moda display over Jost. Key
+copy: *Own Your 2027.* and *Curated by the culture. Founded for the people.*
+
+| Role | Token | Value |
+|---|---|---|
+| Page ground | `--ink` | `#060D20` |
+| Raised surface | `--ink-2` / `--ink-3` | `#0A1430` / `#132149` |
+| White band | `--paper` | `#F6F8FF` |
+| Text | `--white` / `--white-dim` | `#EEF3FF` / `#B9C6E8` |
+| Deep blue | `--blue` / `--blue-lt` | `#1B3A8F` / `#3E63C8` |
+| Pink accent | `--pink` / `--pink-lt` / `--pink-dk` | `#F08FB4` / `#FBC6DB` / `#B85C83` |
 
 Per-house accents are set as `--accent` on `:root` in each page's head, so a
-house inherits the whole system and tints it.
+house inherits the whole system and tints it. All ten sit in the blue-to-pink
+family so no house falls outside the palette.
 
 ## Technology
 
@@ -78,13 +87,49 @@ No Three.js. Nothing in the ecosystem presentation needs a genuine 3D
 experience, and a WebGL layer would cost mobile performance for no gain. Add it
 only if a specific house gains something real from it.
 
+## What is functional
+
+These work now, with no backend:
+
+- **Mobile navigation** — hamburger below 980px opening a full drawer with all
+  ten houses and every section. Focus moves in, Tab is trapped, Escape closes,
+  body scroll is locked while open, and a resize to desktop releases it.
+- **Directory search** — live client-side filter on the 8 Figure AI and Small
+  Business District directories, with a running count and a no-match state.
+  It filters whatever listings are present, so it keeps working once real ones
+  are ported in.
+- **Showcase rail** — prev/next buttons that scroll by exactly one card and
+  disable at each end, alongside drag and trackpad scrolling.
+- **Ecosystem index** — hover or keyboard focus swaps the generative stage
+  panel; every row links to its house page.
+- **Back to top** — appears past 600px.
+- **Scrollspy** — the homepage nav marks the section you are in.
+- **Skip link** — first tab stop on every page, jumping past the masthead.
+- **Newsletter field** — real email validation with an inline error. On a valid
+  address it says the list endpoint still needs connecting. It never claims an
+  address was stored, because nothing stores it yet.
+
+Verified in Chromium at 1440px and 390px: 31 checks covering all of the above,
+no console errors, no horizontal overflow. Interaction is set up before GSAP
+loads, so all of it still works if the CDN is blocked or slow.
+
+### Not functional yet, and why
+
+Anything needing the live site or a backend: product catalogues and prices,
+purchase and checkout links, journal posts, founder copy, directory listings,
+and newsletter storage. These are deliberately empty rather than filled with
+invented content.
+
 ## Accessibility and performance
 
-- All motion is skipped under `prefers-reduced-motion`.
+- All motion is skipped under `prefers-reduced-motion`, including rail and
+  back-to-top smooth scrolling.
 - Every section renders **complete at rest**. Motion is additive via
   `gsap.from()`, so nothing depends on JavaScript to become visible.
 - The ecosystem index responds to keyboard focus, not just hover.
-- Visible focus rings throughout; `:focus-visible` with a gold outline.
+- The drawer carries `aria-expanded`/`aria-controls`; search reports counts via
+  `aria-live`; the skip link is the first tab stop.
+- Visible focus rings throughout; `:focus-visible` with a pink outline.
 - Side gutters use `max(18px, env(safe-area-inset-*))` to clear phone system
   bars; no horizontal page scroll at 400px.
 - Each page carries title, description, canonical, Open Graph and Twitter tags;

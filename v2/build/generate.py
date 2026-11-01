@@ -8,6 +8,7 @@ dependency on this script; deploy v2/ as-is.
 
     python3 v2/build/generate.py
 
+Palette: deep blue ground, white, pink accent.
 HOUSE NAMES AND DESCRIPTORS ARE VERBATIM FROM THE BRAND HANDOFF.
 Nothing here invents products, prices, testimonials or statistics.
 Content that must come from the live site is rendered as a labelled slot.
@@ -19,32 +20,32 @@ TM = '<sup>&trade;</sup>'
 
 # slug, number, display name, plain name, descriptor, accent, pillars, module, slot label, slots
 HOUSES = [
-    ("index", "01", "Rich Girl Code" + TM, "Rich Girl Code", "Parent brand", "#C8A253",
+    ("index", "01", "Rich Girl Code" + TM, "Rich Girl Code", "Parent brand", "#F08FB4",
      ["Parent brand"], "home", "", 0),
     ("options-traders-os", "02", "Options Traders OS" + TM, "Options Traders OS",
-     "Trading education and software", "#B08A3E",
+     "Trading education and software", "#6E8BE8",
      ["Trading education", "Software"], "programme", "Curriculum module", 8),
     ("8-figure-ai", "03", "8 Figure AI", "8 Figure AI",
-     "AI assistants, GPTs, and technology", "#B9B3A4",
+     "AI assistants, GPTs, and technology", "#9FB4F0",
      ["AI assistants", "GPTs", "Technology"], "directory", "Directory listing", 6),
-    ("rich-rabbit", "04", "Rich Rabbit", "Rich Rabbit", "Commerce", "#7B1C2E",
+    ("rich-rabbit", "04", "Rich Rabbit", "Rich Rabbit", "Commerce", "#E86FA0",
      ["Commerce"], "storefront", "Storefront item", 6),
     ("rgc-media-group", "05", "RGC Media Group", "RGC Media Group",
-     "Media and entertainment", "#5A1322",
+     "Media and entertainment", "#2F4FA8",
      ["Media", "Entertainment"], "editorial", "Production", 6),
     ("ethnicity-cosmetics", "06", "Ethnicity Cosmetics", "Ethnicity Cosmetics",
-     "Beauty", "#AE7268", ["Beauty"], "storefront", "Storefront item", 6),
+     "Beauty", "#F5A8C4", ["Beauty"], "storefront", "Storefront item", 6),
     ("black-girl-luxury-magazine", "07", "Black Girl Luxury Magazine",
-     "Black Girl Luxury Magazine", "Editorial media", "#F0E9DC",
+     "Black Girl Luxury Magazine", "Editorial media", "#F6F8FF",
      ["Editorial media"], "editorial", "Issue", 6),
     ("rich-girl-code-music-group", "08", "Rich Girl Code Music Group" + TM,
-     "Rich Girl Code Music Group", "Music and entertainment", "#6E2340",
+     "Rich Girl Code Music Group", "Music and entertainment", "#DA7CB8",
      ["Music", "Entertainment"], "programme", "Release", 8),
     ("small-business-district", "09", "Small Business District", "Small Business District",
-     "Business discovery and promotion", "#9A8456",
+     "Business discovery and promotion", "#7FA0DD",
      ["Business discovery", "Promotion"], "directory", "Business listing", 6),
     ("verified-assets", "10", "Verified Assets", "Verified Assets",
-     "Ecosystem house", "#D6C28A", ["Ecosystem house"], "storefront", "Storefront item", 6),
+     "Ecosystem house", "#FBC6DB", ["Ecosystem house"], "storefront", "Storefront item", 6),
 ]
 
 FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com" />\n'
@@ -80,11 +81,13 @@ def head(title, desc, canonical, base, accent=None):
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="{title}" />
 <meta name="twitter:description" content="{desc}" />
-<meta name="theme-color" content="#0A0A0B" />
+<meta name="theme-color" content="#060D20" />
 {FONTS}
 <link rel="stylesheet" href="{base}assets/rgc.css" />{style}
 </head>
 <body>
+
+<a class="skip" href="#main">Skip to content</a>
 
 <div class="curtain" aria-hidden="true">
   <p class="curtain__mark" id="curtainMark">Rich Girl Code</p>
@@ -95,6 +98,13 @@ def head(title, desc, canonical, base, accent=None):
 
 
 def masthead(base, is_home):
+    drawer_houses = "\n".join(
+        '        <li><a href="%s"><b>%s</b>%s</a></li>' % (
+            (base + "index.html") if h[0] == "index" else (base + "houses/" + h[0] + ".html"),
+            h[1], h[2])
+        for h in HOUSES)
+    drawer_sections = "\n".join(
+        '        <a href="%sindex.html#%s">%s</a>' % (base, a, b) for a, b in NAV)
     if is_home:
         links = "\n".join(
             f'      <a href="#{a}">{b}</a>' for a, b in NAV)
@@ -110,8 +120,29 @@ def masthead(base, is_home):
     <nav class="navlinks" aria-label="Primary">
 {links}
     </nav>
+    <button class="navtoggle" id="navToggle" type="button"
+            aria-expanded="false" aria-controls="navDrawer" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
+
+<div class="drawer" id="navDrawer" data-open="false" aria-hidden="true">
+  <div class="drawer__in">
+    <div>
+      <h2>Ten houses</h2>
+      <ul>
+{drawer_houses}
+      </ul>
+    </div>
+    <div>
+      <h2>Ecosystem</h2>
+      <div class="drawer__sections">
+{drawer_sections}
+      </div>
+    </div>
+  </div>
+</div>
 """
 
 
@@ -168,6 +199,8 @@ def footer(base):
   </div>
 </footer>
 
+<button class="totop" id="toTop" type="button" data-show="false" aria-label="Back to top">&uarr;</button>
+
 {SCRIPTS.format(base=base)}
 </body>
 </html>
@@ -194,7 +227,8 @@ def mod_programme(label, n):
       </ol>"""
 
 
-def mod_directory(label, n):
+def mod_grid(label, n, grid_id=""):
+    gid = f' id="{grid_id}"' if grid_id else ""
     cards = "\n".join(
         f"""        <article class="jcard">
           <div class="jcard__art"></div>
@@ -204,12 +238,25 @@ def mod_directory(label, n):
             <p class="pend" style="margin-top:auto">Live listing</p>
           </div>
         </article>""" for i in range(1, n + 1))
-    return f"""      <div class="jgrid">
+    return f"""      <div class="jgrid"{gid}>
 {cards}
       </div>"""
 
 
-mod_editorial = mod_directory
+def mod_directory(label, n):
+    return f"""      <div class="find">
+        <label class="sr-only" for="findInput">Search listings</label>
+        <input id="findInput" type="search" placeholder="Search {label.lower()}s" autocomplete="off" />
+        <output id="findCount" for="findInput" aria-live="polite">{n} listings</output>
+      </div>
+{mod_grid(label, n, "findGrid")}
+      <div class="nomatch" id="findNone" hidden>
+        <p>No listing matches that search.</p>
+      </div>"""
+
+
+def mod_editorial(label, n):
+    return mod_grid(label, n)
 
 
 def mod_storefront(label, n):
@@ -221,8 +268,14 @@ def mod_storefront(label, n):
             <p class="shop__meta">Ports from the live storefront</p>
           </div>
         </article>""" for i in range(1, n + 1))
-    return f"""      <div class="rail">
+    return f"""      <div class="railwrap">
+        <div class="rail">
 {cards}
+        </div>
+        <div class="railnav">
+          <button type="button" data-rail="prev" aria-label="Previous">&larr;</button>
+          <button type="button" data-rail="next" aria-label="Next">&rarr;</button>
+        </div>
       </div>"""
 
 
@@ -262,7 +315,7 @@ def build_house(h):
                  canonical, base, accent)
             + masthead(base, False)
             + f"""
-<main>
+<main id="main">
   <section class="hero hero--house">
     <div class="hero__glow"></div>
     <div class="shell hero__in">
@@ -348,7 +401,7 @@ def build_home():
     rows = []
     for h in HOUSES:
         slug, num, name, plain, desc, accent = h[0], h[1], h[2], h[3], h[4], h[5]
-        href = "#top" if slug == "index" else f"houses/{slug}.html"
+        href = "#main" if slug == "index" else f"houses/{slug}.html"
         on = " is-on" if slug == "index" else ""
         rows.append(
             f'          <li class="eco__row{on}" style="--row-accent:{accent}">'
@@ -374,10 +427,10 @@ def build_home():
                 f'<p class="pend">Live product</p></div></article>')
 
     rail = "\n".join([
-        shop("Rich Rabbit", "Commerce", "#7B1C2E"),
-        shop("Ethnicity Cosmetics", "Beauty", "#AE7268"),
-        shop("Verified Assets", "Ecosystem house", "#D6C28A"),
-        shop("Rich Rabbit", "Commerce", "#7B1C2E"),
+        shop("Rich Rabbit", "Commerce", "#E86FA0"),
+        shop("Ethnicity Cosmetics", "Beauty", "#F5A8C4"),
+        shop("Verified Assets", "Ecosystem house", "#FBC6DB"),
+        shop("Rich Rabbit", "Commerce", "#E86FA0"),
     ])
 
     jsonld = ('{"@context":"https://schema.org","@type":"Organization",'
@@ -393,7 +446,7 @@ def build_home():
             + f'<script type="application/ld+json">\n{jsonld}\n</script>\n'
             + masthead(base, True)
             + f"""
-<main id="top">
+<main id="main">
 
   <section class="hero">
     <div class="hero__glow"></div>
@@ -474,7 +527,15 @@ def build_home():
         </div>
         <p class="lede">Rich Rabbit, Ethnicity Cosmetics and Verified Assets share one showcase rail. Drag or scroll.</p>
       </div>
+      <div class="railwrap">
+        <div class="rail">
 {rail}
+        </div>
+        <div class="railnav">
+          <button type="button" data-rail="prev" aria-label="Previous">&larr;</button>
+          <button type="button" data-rail="next" aria-label="Next">&rarr;</button>
+        </div>
+      </div>
       <p class="pend">Product names, imagery, prices and purchase links port from the live storefronts</p>
     </div>
   </section>
@@ -488,13 +549,13 @@ def build_home():
         </div>
       </div>
       <div class="two">
-        <div class="slab" style="--accent:#B9B3A4">
+        <div class="slab" style="--accent:#9FB4F0">
           <p class="eyebrow">8 Figure AI</p>
           <h3 class="slab__title">AI Directory</h3>
           <p class="lede">AI assistants, GPTs and technology, indexed and searchable.</p>
           <a class="cta" href="houses/8-figure-ai.html">Open the directory</a>
         </div>
-        <div class="slab" style="--accent:#9A8456">
+        <div class="slab" style="--accent:#7FA0DD">
           <p class="eyebrow">Small Business District</p>
           <h3 class="slab__title">Business Discovery</h3>
           <p class="lede">Business discovery and promotion across the district.</p>
@@ -513,19 +574,19 @@ def build_home():
         </div>
       </div>
       <div class="two">
-        <div class="slab" style="--accent:#5A1322">
+        <div class="slab" style="--accent:#2F4FA8">
           <p class="eyebrow">House 05</p>
           <h3 class="slab__title">RGC Media Group</h3>
           <p class="lede">Media and entertainment.</p>
           <a class="cta" href="houses/rgc-media-group.html">Enter</a>
         </div>
-        <div class="slab" style="--accent:#6E2340">
+        <div class="slab" style="--accent:#DA7CB8">
           <p class="eyebrow">House 08</p>
           <h3 class="slab__title">Rich Girl Code Music Group&trade;</h3>
           <p class="lede">Music and entertainment.</p>
           <a class="cta" href="houses/rich-girl-code-music-group.html">Enter</a>
         </div>
-        <div class="slab" style="--accent:#F0E9DC">
+        <div class="slab" style="--accent:#F6F8FF">
           <p class="eyebrow">House 07</p>
           <h3 class="slab__title">Black Girl Luxury Magazine</h3>
           <p class="lede">Editorial media.</p>
