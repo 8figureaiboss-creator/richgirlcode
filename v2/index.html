@@ -8,279 +8,17 @@
 <link rel="canonical" href="https://www.richgirlcode.com/" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Rich Girl Code" />
-<meta property="og:title" content="Rich Girl Code™ — Own Your 2027." />
-<meta property="og:description" content="Curated by the culture. Founded for the people. Ten houses, one ecosystem." />
+<meta property="og:title" content="Rich Girl Code" />
+<meta property="og:description" content="Rich Girl Code™ — the ecosystem. Own Your 2027. Curated by the culture. Founded for the people." />
 <meta property="og:url" content="https://www.richgirlcode.com/" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Rich Girl Code™ — Own Your 2027." />
-<meta name="twitter:description" content="Curated by the culture. Founded for the people. Ten houses, one ecosystem." />
+<meta name="twitter:title" content="Rich Girl Code" />
+<meta name="twitter:description" content="Rich Girl Code™ — the ecosystem. Own Your 2027. Curated by the culture. Founded for the people." />
 <meta name="theme-color" content="#0A0A0B" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;0,6..96,900;1,6..96,400&family=Jost:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" />
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"Rich Girl Code","url":"https://www.richgirlcode.com/","slogan":"Curated by the culture. Founded for the people.","subOrganization":[{"@type":"Organization","name":"Options Traders OS"},{"@type":"Organization","name":"8 Figure AI"},{"@type":"Organization","name":"Rich Rabbit"},{"@type":"Organization","name":"RGC Media Group"},{"@type":"Organization","name":"Ethnicity Cosmetics"},{"@type":"Organization","name":"Black Girl Luxury Magazine"},{"@type":"Organization","name":"Rich Girl Code Music Group"},{"@type":"Organization","name":"Small Business District"},{"@type":"Organization","name":"Verified Assets"}]}
-</script>
-<style>
-/* Layout concept: a black editorial broadsheet — full-bleed bands of ink and cream,
-   an oversized didone masthead, and a ten-row ecosystem index that swaps its own stage. */
-:root{
-  --ink:#0A0A0B; --ink-2:#121214; --ink-3:#1B1B1E;
-  --cream:#F0E9DC; --cream-dim:#CFC6B5;
-  --wine:#5A1322; --wine-lt:#7B1C2E;
-  --gold:#C8A253; --gold-lt:#E8D4A0; --gold-dk:#8A6E2F;
-  --rule:rgba(200,162,83,.26);
-  --font-display:"Bodoni Moda","Didot","Times New Roman",serif;
-  --font-body:"Jost","Futura","Helvetica Neue",system-ui,sans-serif;
-  --gutter:max(18px,env(safe-area-inset-left,0px));
-  --gutter-r:max(18px,env(safe-area-inset-right,0px));
-  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
-  color-scheme:dark;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{
-  background:var(--ink); color:var(--cream);
-  font-family:var(--font-body); font-weight:300; font-size:1rem; line-height:1.62;
-  overflow-x:hidden; -webkit-font-smoothing:antialiased;
-}
-body::after{ /* film grain */
-  content:""; position:fixed; inset:0; background-image:var(--grain);
-  opacity:.055; pointer-events:none; z-index:9; mix-blend-mode:overlay;
-}
-body::before{ /* paints the safe-area band above the sticky header */
-  content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px);
-  background:var(--ink); z-index:11;
-}
-img{display:block;max-width:100%}
-a{color:inherit;text-decoration:none}
-:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:2px}
-
-/* ── type ─────────────────────────────────────────────── */
-.shell{width:100%;max-width:1320px;margin-inline:auto;padding-left:var(--gutter);padding-right:var(--gutter-r)}
-.eyebrow{
-  font-size:.66rem;font-weight:500;letter-spacing:.32em;text-transform:uppercase;
-  color:var(--gold);display:flex;align-items:center;gap:.9em;
-}
-.eyebrow::before{content:"";width:34px;height:1px;background:var(--gold);opacity:.7;flex:none}
-.display{font-family:var(--font-display);font-weight:400;line-height:.92;letter-spacing:-.015em;text-wrap:balance}
-.lede{max-width:34ch;color:var(--cream-dim);font-size:clamp(1rem,1.5vw,1.12rem)}
-.rule{height:1px;background:var(--rule);border:0}
-
-/* ── cinematic entrance ───────────────────────────────── */
-.curtain{position:fixed;inset:0;z-index:60;background:var(--ink);display:none;place-items:center}
-html.is-entering .curtain{display:grid}
-html.is-entering{overflow:hidden}
-.curtain__mark{
-  font-family:var(--font-display);font-weight:400;
-  font-size:clamp(1.1rem,4.6vw,2.3rem);letter-spacing:.3em;text-transform:uppercase;
-  color:var(--cream);text-align:center;padding-inline:8vw;
-}
-.curtain__mark span{display:inline-block;will-change:transform,opacity}
-.curtain__line{position:absolute;bottom:14vh;left:50%;translate:-50% 0;width:min(240px,46vw);height:1px;background:var(--rule);overflow:hidden}
-.curtain__line i{position:absolute;inset:0;background:var(--gold);transform-origin:left center;scale:0 1}
-
-/* ── gold cursor (desktop only) ───────────────────────── */
-.cursor{position:fixed;top:0;left:0;z-index:50;pointer-events:none;display:none;
-  width:46px;height:46px;margin:-23px 0 0 -23px;will-change:transform}
-.cursor::before{
-  content:"$";position:absolute;inset:0;display:grid;place-items:center;
-  font-family:var(--font-display);font-size:19px;font-weight:500;color:var(--gold-lt);
-  text-shadow:0 0 14px rgba(200,162,83,.55);
-}
-.cursor::after{
-  content:"";position:absolute;inset:0;border:1px solid rgba(200,162,83,.4);border-radius:50%;
-  transition:scale .3s ease,opacity .3s ease;
-}
-.cursor.is-hot::after{scale:1.5;opacity:.25}
-@media (pointer:fine) and (prefers-reduced-motion:no-preference){
-  .cursor{display:block}
-  html.has-cursor,html.has-cursor a,html.has-cursor button{
-    cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Ccircle cx='11' cy='11' r='1.6' fill='%23C8A253'/%3E%3C/svg%3E") 11 11,auto;
-  }
-}
-
-/* ── header ───────────────────────────────────────────── */
-.masthead{
-  position:sticky;top:env(safe-area-inset-top,0px);z-index:12;
-  background:color-mix(in srgb,var(--ink) 86%,transparent);
-  backdrop-filter:blur(14px);border-bottom:1px solid rgba(240,233,220,.09);
-}
-.masthead__in{display:flex;align-items:center;justify-content:space-between;gap:1rem;
-  padding-block:.85rem;padding-left:var(--gutter);padding-right:var(--gutter-r);
-  max-width:1320px;margin-inline:auto}
-.wordmark{font-family:var(--font-display);font-size:.95rem;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap}
-.wordmark sup{font-size:.5em;letter-spacing:0;vertical-align:super;color:var(--gold)}
-.navlinks{display:flex;align-items:center;gap:1.8rem;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;font-weight:400}
-.navlinks a{position:relative;padding-block:.3rem;color:var(--cream-dim);transition:color .3s}
-.navlinks a::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;background:var(--gold);scale:0 1;transform-origin:left;transition:scale .45s cubic-bezier(.19,1,.22,1)}
-.navlinks a:hover,.navlinks a:focus-visible{color:var(--cream)}
-.navlinks a:hover::after,.navlinks a:focus-visible::after{scale:1 1}
-@media (max-width:860px){.navlinks{display:none}}
-
-/* ── hero ─────────────────────────────────────────────── */
-.hero{position:relative;overflow:clip;border-bottom:1px solid rgba(240,233,220,.09)}
-.hero__glow{position:absolute;inset:-20% -10% auto;height:120%;pointer-events:none;
-  background:
-    radial-gradient(42% 46% at 22% 28%,rgba(90,19,34,.62),transparent 70%),
-    radial-gradient(38% 40% at 78% 16%,rgba(200,162,83,.20),transparent 72%),
-    radial-gradient(60% 50% at 50% 92%,rgba(10,10,11,.9),transparent 70%);
-  will-change:transform}
-.hero__in{position:relative;min-height:76svh;display:flex;flex-direction:column;justify-content:flex-end;
-  gap:clamp(1.6rem,4vw,2.8rem);padding-block:clamp(4.5rem,13vh,9rem) clamp(2.2rem,5vh,3.4rem)}
-.hero__title{
-  font-family:var(--font-display);font-weight:400;
-  font-size:clamp(3.6rem,15.5vw,13.5rem);line-height:.84;letter-spacing:-.035em;
-  text-transform:uppercase;margin-left:-.04em;
-}
-.hero__title .ch{display:inline-block;will-change:transform}
-.hero__title em{
-  font-style:italic;font-weight:400;
-  background:linear-gradient(104deg,var(--gold-dk) 2%,var(--gold-lt) 32%,var(--gold) 58%,var(--gold-lt) 86%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.hero__foot{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:2rem}
-.hero__tag{font-family:var(--font-display);font-style:italic;font-size:clamp(1.05rem,2.3vw,1.6rem);
-  line-height:1.3;color:var(--cream);max-width:26ch}
-.scrollcue{display:flex;align-items:center;gap:.8rem;font-size:.62rem;letter-spacing:.3em;
-  text-transform:uppercase;color:var(--cream-dim)}
-.scrollcue i{display:block;width:52px;height:1px;background:var(--rule);position:relative;overflow:hidden}
-.scrollcue i::after{content:"";position:absolute;inset:0;width:40%;background:var(--gold);animation:cue 2.6s ease-in-out infinite}
-@keyframes cue{0%{translate:-110% 0}55%,100%{translate:260% 0}}
-
-/* ── typographic band ─────────────────────────────────── */
-.band{background:var(--cream);color:var(--ink);overflow:hidden;padding-block:clamp(2.4rem,6vw,4.2rem);border-block:1px solid rgba(10,10,11,.12)}
-.band__track{display:flex;gap:3.5rem;white-space:nowrap;will-change:transform}
-.band__item{font-family:var(--font-display);font-size:clamp(2rem,7vw,5.2rem);line-height:1;
-  letter-spacing:-.02em;text-transform:uppercase;display:flex;align-items:center;gap:3.5rem}
-.band__item span:last-child{color:var(--wine)}
-.band__dot{width:.3em;height:.3em;border-radius:50%;background:var(--gold);flex:none}
-
-/* ── section frame ────────────────────────────────────── */
-.sec{padding-block:clamp(4rem,10vw,8rem);position:relative}
-.sec__head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;
-  gap:1.6rem;margin-bottom:clamp(2.2rem,5vw,3.6rem)}
-.sec__title{font-size:clamp(2.2rem,6.5vw,4.6rem)}
-.sec__title em{font-style:italic;color:var(--gold)}
-
-/* ── ecosystem index ──────────────────────────────────── */
-.eco{position:relative;background:var(--ink)}
-.eco__grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.72fr);gap:clamp(2rem,4vw,4rem);align-items:start}
-@media (max-width:980px){.eco__grid{grid-template-columns:minmax(0,1fr)}}
-.eco__list{list-style:none;border-top:1px solid var(--rule)}
-.eco__row{border-bottom:1px solid var(--rule)}
-.eco__link{display:grid;grid-template-columns:3.2rem minmax(0,1fr) auto;align-items:baseline;gap:1rem;
-  padding-block:clamp(.95rem,2vw,1.5rem);position:relative;isolation:isolate}
-.eco__link::before{content:"";position:absolute;inset:0 -1rem;z-index:-1;
-  background:linear-gradient(90deg,color-mix(in srgb,var(--accent,var(--gold)) 13%,transparent),transparent 72%);
-  opacity:0;transition:opacity .5s cubic-bezier(.19,1,.22,1)}
-.eco__row.is-on .eco__link::before{opacity:1}
-.eco__num{font-size:.66rem;letter-spacing:.18em;color:var(--gold);font-variant-numeric:tabular-nums}
-.eco__name{font-family:var(--font-display);font-size:clamp(1.5rem,4.4vw,2.9rem);line-height:1.02;
-  letter-spacing:-.02em;transition:translate .55s cubic-bezier(.19,1,.22,1),color .4s}
-.eco__name sup{font-size:.36em;vertical-align:super;color:var(--gold);letter-spacing:0}
-.eco__row.is-on .eco__name{translate:.5rem 0;color:var(--accent,var(--gold-lt))}
-.eco__desc{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-dim);
-  text-align:right;max-width:16ch;line-height:1.5}
-@media (max-width:620px){
-  .eco__link{grid-template-columns:2.4rem minmax(0,1fr);row-gap:.4rem}
-  .eco__desc{grid-column:2;text-align:left;max-width:none;font-size:.64rem}
-}
-.eco__stage{position:sticky;top:calc(env(safe-area-inset-top,0px) + 5.5rem);aspect-ratio:4/5;
-  border:1px solid var(--rule);overflow:hidden;background:var(--ink-2)}
-@media (max-width:980px){.eco__stage{position:relative;top:0;aspect-ratio:16/10;order:-1;margin-bottom:1.6rem}}
-.eco__panel{position:absolute;inset:0;opacity:0;transition:opacity .7s cubic-bezier(.19,1,.22,1),scale 1.1s cubic-bezier(.19,1,.22,1);scale:1.04}
-.eco__panel.is-on{opacity:1;scale:1}
-.eco__panel::after{content:"";position:absolute;inset:0;background-image:var(--grain);opacity:.1;mix-blend-mode:overlay}
-.eco__panel i{position:absolute;inset:auto 0 0;padding:1.4rem 1.5rem;
-  font-family:var(--font-display);font-style:normal;font-size:clamp(1.1rem,2.6vw,1.7rem);line-height:1.12;
-  color:var(--cream);background:linear-gradient(0deg,rgba(10,10,11,.86),transparent)}
-
-/* ── editorial frame (founder / journal) ──────────────── */
-.ed{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(1.8rem,4vw,3.6rem);align-items:center}
-@media (max-width:860px){.ed{grid-template-columns:minmax(0,1fr)}}
-.frame{position:relative;aspect-ratio:3/4;overflow:hidden;border:1px solid var(--rule);background:var(--ink-2)}
-.frame__art{position:absolute;inset:0;
-  background:
-    radial-gradient(70% 55% at 30% 22%,rgba(123,28,46,.72),transparent 70%),
-    radial-gradient(60% 50% at 76% 76%,rgba(200,162,83,.28),transparent 72%),
-    linear-gradient(165deg,var(--ink-3),var(--ink));
-  will-change:transform}
-.frame__art::after{content:"";position:absolute;inset:0;background-image:var(--grain);opacity:.12;mix-blend-mode:overlay}
-.frame__veil{position:absolute;inset:0;background:var(--ink);transform-origin:bottom center}
-.pend{display:inline-flex;align-items:center;gap:.6rem;margin-top:1.4rem;
-  font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-dk);
-  border:1px solid rgba(138,110,47,.45);padding:.45rem .75rem}
-.pend::before{content:"";width:5px;height:5px;background:var(--gold-dk);border-radius:50%;flex:none}
-
-/* ── journal grid ─────────────────────────────────────── */
-.jgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:clamp(1.2rem,2.6vw,2rem)}
-.jcard{border:1px solid var(--rule);background:var(--ink-2);display:flex;flex-direction:column;min-width:0;
-  transition:border-color .45s,translate .55s cubic-bezier(.19,1,.22,1)}
-.jcard:hover,.jcard:focus-within{border-color:rgba(200,162,83,.6);translate:0 -6px}
-.jcard__art{aspect-ratio:16/10;position:relative;overflow:hidden;
-  background:linear-gradient(150deg,var(--wine),var(--ink-3) 62%)}
-.jcard:nth-child(2) .jcard__art{background:linear-gradient(150deg,var(--gold-dk),var(--ink-3) 62%)}
-.jcard:nth-child(3) .jcard__art{background:linear-gradient(150deg,#6E2340,var(--ink-3) 62%)}
-.jcard__art::after{content:"";position:absolute;inset:0;background-image:var(--grain);opacity:.12;mix-blend-mode:overlay}
-.jcard__body{padding:1.3rem 1.4rem 1.5rem;display:flex;flex-direction:column;gap:.7rem;flex:1;min-width:0}
-.jcard__kicker{font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
-.jcard__title{font-family:var(--font-display);font-size:1.35rem;line-height:1.14}
-
-/* ── showcase rail ────────────────────────────────────── */
-.rail{display:flex;gap:1.1rem;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:1rem;
-  scrollbar-width:thin;scrollbar-color:var(--gold-dk) transparent}
-.rail>*{scroll-snap-align:start;flex:0 0 clamp(228px,30vw,320px);min-width:0}
-.shop{border:1px solid var(--rule);background:var(--ink-2);overflow:hidden;display:flex;flex-direction:column}
-.shop__art{aspect-ratio:1;position:relative;overflow:hidden;background:linear-gradient(150deg,color-mix(in srgb,var(--accent) 55%,var(--ink)),var(--ink-3))}
-.shop__art::after{content:"";position:absolute;inset:0;background-image:var(--grain);opacity:.12;mix-blend-mode:overlay}
-.shop__art i{position:absolute;inset:auto 0 0;padding:.9rem 1rem;font-style:normal;
-  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);
-  background:linear-gradient(0deg,rgba(10,10,11,.8),transparent)}
-.shop__body{padding:1rem 1.1rem 1.2rem;display:flex;flex-direction:column;gap:.5rem}
-.shop__name{font-family:var(--font-display);font-size:1.18rem;line-height:1.16}
-.shop__meta{font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--cream-dim)}
-
-/* ── directory + media ────────────────────────────────── */
-.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:clamp(1.2rem,3vw,2.4rem)}
-.slab{border:1px solid var(--rule);padding:clamp(1.4rem,3vw,2.2rem);background:
-  linear-gradient(160deg,color-mix(in srgb,var(--accent) 10%,var(--ink-2)),var(--ink));min-width:0;
-  display:flex;flex-direction:column;gap:.9rem}
-.slab__title{font-family:var(--font-display);font-size:clamp(1.5rem,3.4vw,2.2rem);line-height:1.08}
-.cta{display:inline-flex;align-items:center;gap:.7rem;align-self:flex-start;margin-top:.4rem;
-  font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);
-  border-bottom:1px solid rgba(200,162,83,.4);padding-bottom:.35rem;transition:gap .4s,color .3s}
-.cta:hover,.cta:focus-visible{gap:1.2rem;color:var(--gold-lt)}
-
-/* ── footer ───────────────────────────────────────────── */
-.foot{background:var(--ink-2);border-top:1px solid var(--rule);padding-block:clamp(3rem,7vw,5rem) 2rem}
-.foot__top{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(2rem,5vw,4rem);margin-bottom:clamp(2.4rem,5vw,3.6rem)}
-@media (max-width:820px){.foot__top{grid-template-columns:minmax(0,1fr)}}
-.foot__mark{font-family:var(--font-display);font-size:clamp(2rem,7vw,3.4rem);line-height:1;text-transform:uppercase;letter-spacing:-.01em}
-.signup{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.2rem}
-.signup input{flex:1 1 200px;min-width:0;background:transparent;border:1px solid var(--rule);
-  color:var(--cream);font-family:var(--font-body);font-size:.9rem;padding:.8rem .95rem}
-.signup input::placeholder{color:rgba(207,198,181,.55)}
-.signup button{background:var(--gold);color:var(--ink);border:0;font-family:var(--font-body);
-  font-weight:500;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;padding:.85rem 1.5rem;
-  cursor:pointer;transition:background .3s}
-.signup button:hover{background:var(--gold-lt)}
-.signup__note{flex:1 1 100%;font-size:.66rem;letter-spacing:.1em;color:var(--gold-dk);min-height:1.2em}
-.foot__cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:1.8rem}
-.foot__cols h3{font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);
-  font-weight:500;margin-bottom:.9rem}
-.foot__cols ul{list-style:none;display:flex;flex-direction:column;gap:.5rem;font-size:.84rem;color:var(--cream-dim)}
-.foot__cols a{transition:color .3s}
-.foot__cols a:hover,.foot__cols a:focus-visible{color:var(--gold-lt)}
-.foot__base{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;
-  padding-top:1.6rem;border-top:1px solid rgba(240,233,220,.09);
-  font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(207,198,181,.6)}
-
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
-}
-</style>
+<link rel="stylesheet" href="assets/rgc.css" />
 </head>
 <body>
 
@@ -289,10 +27,13 @@ html.is-entering{overflow:hidden}
   <span class="curtain__line"><i></i></span>
 </div>
 <div class="cursor" id="cursor" aria-hidden="true"></div>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Rich Girl Code","url":"https://www.richgirlcode.com/","slogan":"Curated by the culture. Founded for the people.","subOrganization":[{"@type":"Organization","name":"Options Traders OS"},{"@type":"Organization","name":"8 Figure AI"},{"@type":"Organization","name":"Rich Rabbit"},{"@type":"Organization","name":"RGC Media Group"},{"@type":"Organization","name":"Ethnicity Cosmetics"},{"@type":"Organization","name":"Black Girl Luxury Magazine"},{"@type":"Organization","name":"Rich Girl Code Music Group"},{"@type":"Organization","name":"Small Business District"},{"@type":"Organization","name":"Verified Assets"}]}
+</script>
 
 <header class="masthead">
   <div class="masthead__in">
-    <a class="wordmark" href="#top">Rich Girl Code<sup>&trade;</sup></a>
+    <a class="wordmark" href="index.html">Rich Girl Code<sup>&trade;</sup></a>
     <nav class="navlinks" aria-label="Primary">
       <a href="#ecosystem">Ecosystem</a>
       <a href="#founder">Founder</a>
@@ -307,10 +48,10 @@ html.is-entering{overflow:hidden}
 <main id="top">
 
   <section class="hero">
-    <div class="hero__glow" id="heroGlow"></div>
+    <div class="hero__glow"></div>
     <div class="shell hero__in">
       <p class="eyebrow">The Ecosystem &mdash; Est. by the culture</p>
-      <h1 class="hero__title" id="heroTitle">Own Your <em>2027.</em></h1>
+      <h1 class="hero__title">Own Your <em>2027.</em></h1>
       <div class="hero__foot">
         <p class="hero__tag">Curated by the culture.<br />Founded for the people.</p>
         <p class="scrollcue"><i></i> Ten houses</p>
@@ -325,7 +66,7 @@ html.is-entering{overflow:hidden}
     </div>
   </section>
 
-  <section class="sec eco" id="ecosystem">
+  <section class="sec" id="ecosystem">
     <div class="shell">
       <div class="sec__head">
         <div>
@@ -334,38 +75,36 @@ html.is-entering{overflow:hidden}
         </div>
         <p class="lede">Every house stands on its own and answers to the same standard. Choose where you enter.</p>
       </div>
-
       <div class="eco__grid">
         <ul class="eco__list" id="ecoList">
-          <li class="eco__row is-on" style="--accent:#C8A253"><a class="eco__link" href="#"><span class="eco__num">01</span><span class="eco__name">Rich Girl Code<sup>&trade;</sup></span><span class="eco__desc">Parent brand</span></a></li>
-          <li class="eco__row" style="--accent:#B08A3E"><a class="eco__link" href="#"><span class="eco__num">02</span><span class="eco__name">Options Traders OS<sup>&trade;</sup></span><span class="eco__desc">Trading education &amp; software</span></a></li>
-          <li class="eco__row" style="--accent:#B9B3A4"><a class="eco__link" href="#"><span class="eco__num">03</span><span class="eco__name">8 Figure AI</span><span class="eco__desc">AI assistants, GPTs &amp; technology</span></a></li>
-          <li class="eco__row" style="--accent:#7B1C2E"><a class="eco__link" href="#"><span class="eco__num">04</span><span class="eco__name">Rich Rabbit</span><span class="eco__desc">Commerce</span></a></li>
-          <li class="eco__row" style="--accent:#5A1322"><a class="eco__link" href="#"><span class="eco__num">05</span><span class="eco__name">RGC Media Group</span><span class="eco__desc">Media &amp; entertainment</span></a></li>
-          <li class="eco__row" style="--accent:#AE7268"><a class="eco__link" href="#"><span class="eco__num">06</span><span class="eco__name">Ethnicity Cosmetics</span><span class="eco__desc">Beauty</span></a></li>
-          <li class="eco__row" style="--accent:#F0E9DC"><a class="eco__link" href="#"><span class="eco__num">07</span><span class="eco__name">Black Girl Luxury Magazine</span><span class="eco__desc">Editorial media</span></a></li>
-          <li class="eco__row" style="--accent:#6E2340"><a class="eco__link" href="#"><span class="eco__num">08</span><span class="eco__name">Rich Girl Code Music Group<sup>&trade;</sup></span><span class="eco__desc">Music &amp; entertainment</span></a></li>
-          <li class="eco__row" style="--accent:#9A8456"><a class="eco__link" href="#"><span class="eco__num">09</span><span class="eco__name">Small Business District</span><span class="eco__desc">Business discovery &amp; promotion</span></a></li>
-          <li class="eco__row" style="--accent:#D6C28A"><a class="eco__link" href="#"><span class="eco__num">10</span><span class="eco__name">Verified Assets</span><span class="eco__desc">Ecosystem house</span></a></li>
+          <li class="eco__row is-on" style="--row-accent:#C8A253"><a class="eco__link" href="#top"><span class="eco__num">01</span><span class="eco__name">Rich Girl Code<sup>&trade;</sup></span><span class="eco__desc">Parent brand</span></a></li>
+          <li class="eco__row" style="--row-accent:#B08A3E"><a class="eco__link" href="houses/options-traders-os.html"><span class="eco__num">02</span><span class="eco__name">Options Traders OS<sup>&trade;</sup></span><span class="eco__desc">Trading education and software</span></a></li>
+          <li class="eco__row" style="--row-accent:#B9B3A4"><a class="eco__link" href="houses/8-figure-ai.html"><span class="eco__num">03</span><span class="eco__name">8 Figure AI</span><span class="eco__desc">AI assistants, GPTs, and technology</span></a></li>
+          <li class="eco__row" style="--row-accent:#7B1C2E"><a class="eco__link" href="houses/rich-rabbit.html"><span class="eco__num">04</span><span class="eco__name">Rich Rabbit</span><span class="eco__desc">Commerce</span></a></li>
+          <li class="eco__row" style="--row-accent:#5A1322"><a class="eco__link" href="houses/rgc-media-group.html"><span class="eco__num">05</span><span class="eco__name">RGC Media Group</span><span class="eco__desc">Media and entertainment</span></a></li>
+          <li class="eco__row" style="--row-accent:#AE7268"><a class="eco__link" href="houses/ethnicity-cosmetics.html"><span class="eco__num">06</span><span class="eco__name">Ethnicity Cosmetics</span><span class="eco__desc">Beauty</span></a></li>
+          <li class="eco__row" style="--row-accent:#F0E9DC"><a class="eco__link" href="houses/black-girl-luxury-magazine.html"><span class="eco__num">07</span><span class="eco__name">Black Girl Luxury Magazine</span><span class="eco__desc">Editorial media</span></a></li>
+          <li class="eco__row" style="--row-accent:#6E2340"><a class="eco__link" href="houses/rich-girl-code-music-group.html"><span class="eco__num">08</span><span class="eco__name">Rich Girl Code Music Group<sup>&trade;</sup></span><span class="eco__desc">Music and entertainment</span></a></li>
+          <li class="eco__row" style="--row-accent:#9A8456"><a class="eco__link" href="houses/small-business-district.html"><span class="eco__num">09</span><span class="eco__name">Small Business District</span><span class="eco__desc">Business discovery and promotion</span></a></li>
+          <li class="eco__row" style="--row-accent:#D6C28A"><a class="eco__link" href="houses/verified-assets.html"><span class="eco__num">10</span><span class="eco__name">Verified Assets</span><span class="eco__desc">Ecosystem house</span></a></li>
         </ul>
-
         <div class="eco__stage" id="ecoStage" aria-hidden="true"></div>
       </div>
-      <p class="pend">House pages port from the live site</p>
     </div>
   </section>
 
-  <section class="sec" id="founder" style="background:var(--ink-2);border-block:1px solid rgba(240,233,220,.09)">
+  <section class="sec sec--alt" id="founder">
     <div class="shell">
       <div class="ed">
-        <div class="frame reveal-frame">
+        <div class="frame">
           <div class="frame__art"></div>
           <div class="frame__veil"></div>
         </div>
         <div>
           <p class="eyebrow">The Founder</p>
           <h2 class="sec__title display" style="margin-block:.6rem 1.1rem">Founded for the <em>people</em></h2>
-          <p class="lede">The founder section keeps its place at the centre of the homepage, between the ecosystem index and the journal.</p>
+          <p class="lede">The founder section keeps its place at the centre of the homepage,
+            between the ecosystem index and the journal.</p>
           <p class="pend">Portrait and founder copy port from the live site</p>
         </div>
       </div>
@@ -379,9 +118,9 @@ html.is-entering{overflow:hidden}
           <p class="eyebrow">Editorial</p>
           <h2 class="sec__title display">The <em>Journal</em></h2>
         </div>
-        <a class="cta" href="#">Read the journal</a>
+        <a class="cta" href="houses/black-girl-luxury-magazine.html">Read the journal</a>
       </div>
-      <div class="jgrid" id="jgrid">
+      <div class="jgrid">
         <article class="jcard"><div class="jcard__art"></div><div class="jcard__body"><p class="jcard__kicker">Feature</p><h3 class="jcard__title">Journal entry</h3><p class="pend" style="margin-top:auto">Live post</p></div></article>
         <article class="jcard"><div class="jcard__art"></div><div class="jcard__body"><p class="jcard__kicker">Feature</p><h3 class="jcard__title">Journal entry</h3><p class="pend" style="margin-top:auto">Live post</p></div></article>
         <article class="jcard"><div class="jcard__art"></div><div class="jcard__body"><p class="jcard__kicker">Feature</p><h3 class="jcard__title">Journal entry</h3><p class="pend" style="margin-top:auto">Live post</p></div></article>
@@ -389,7 +128,7 @@ html.is-entering{overflow:hidden}
     </div>
   </section>
 
-  <section class="sec" id="commerce" style="background:var(--ink-2);border-block:1px solid rgba(240,233,220,.09)">
+  <section class="sec sec--alt" id="commerce">
     <div class="shell">
       <div class="sec__head">
         <div>
@@ -398,12 +137,10 @@ html.is-entering{overflow:hidden}
         </div>
         <p class="lede">Rich Rabbit, Ethnicity Cosmetics and Verified Assets share one showcase rail. Drag or scroll.</p>
       </div>
-      <div class="rail" id="rail">
         <article class="shop" style="--accent:#7B1C2E"><div class="shop__art"><i>Rich Rabbit</i></div><div class="shop__body"><h3 class="shop__name">Storefront item</h3><p class="shop__meta">Commerce</p><p class="pend">Live product</p></div></article>
         <article class="shop" style="--accent:#AE7268"><div class="shop__art"><i>Ethnicity Cosmetics</i></div><div class="shop__body"><h3 class="shop__name">Storefront item</h3><p class="shop__meta">Beauty</p><p class="pend">Live product</p></div></article>
         <article class="shop" style="--accent:#D6C28A"><div class="shop__art"><i>Verified Assets</i></div><div class="shop__body"><h3 class="shop__name">Storefront item</h3><p class="shop__meta">Ecosystem house</p><p class="pend">Live product</p></div></article>
         <article class="shop" style="--accent:#7B1C2E"><div class="shop__art"><i>Rich Rabbit</i></div><div class="shop__body"><h3 class="shop__name">Storefront item</h3><p class="shop__meta">Commerce</p><p class="pend">Live product</p></div></article>
-      </div>
       <p class="pend">Product names, imagery, prices and purchase links port from the live storefronts</p>
     </div>
   </section>
@@ -421,21 +158,19 @@ html.is-entering{overflow:hidden}
           <p class="eyebrow">8 Figure AI</p>
           <h3 class="slab__title">AI Directory</h3>
           <p class="lede">AI assistants, GPTs and technology, indexed and searchable.</p>
-          <a class="cta" href="#">Open the directory</a>
-          <p class="pend">Listings port from the live directory</p>
+          <a class="cta" href="houses/8-figure-ai.html">Open the directory</a>
         </div>
         <div class="slab" style="--accent:#9A8456">
           <p class="eyebrow">Small Business District</p>
           <h3 class="slab__title">Business Discovery</h3>
           <p class="lede">Business discovery and promotion across the district.</p>
-          <a class="cta" href="#">Enter the district</a>
-          <p class="pend">Listings port from the live district</p>
+          <a class="cta" href="houses/small-business-district.html">Enter the district</a>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="sec" id="media" style="background:var(--ink-2);border-top:1px solid rgba(240,233,220,.09)">
+  <section class="sec sec--alt" id="media">
     <div class="shell">
       <div class="sec__head">
         <div>
@@ -448,19 +183,19 @@ html.is-entering{overflow:hidden}
           <p class="eyebrow">House 05</p>
           <h3 class="slab__title">RGC Media Group</h3>
           <p class="lede">Media and entertainment.</p>
-          <a class="cta" href="#">Enter</a>
+          <a class="cta" href="houses/rgc-media-group.html">Enter</a>
         </div>
         <div class="slab" style="--accent:#6E2340">
           <p class="eyebrow">House 08</p>
           <h3 class="slab__title">Rich Girl Code Music Group&trade;</h3>
           <p class="lede">Music and entertainment.</p>
-          <a class="cta" href="#">Enter</a>
+          <a class="cta" href="houses/rich-girl-code-music-group.html">Enter</a>
         </div>
         <div class="slab" style="--accent:#F0E9DC">
           <p class="eyebrow">House 07</p>
           <h3 class="slab__title">Black Girl Luxury Magazine</h3>
           <p class="lede">Editorial media.</p>
-          <a class="cta" href="#">Enter</a>
+          <a class="cta" href="houses/black-girl-luxury-magazine.html">Enter</a>
         </div>
       </div>
       <p class="pend">Reels, releases and issues port from the live media sections</p>
@@ -475,7 +210,7 @@ html.is-entering{overflow:hidden}
         <p class="foot__mark">Own Your<br />2027.</p>
         <p class="lede" style="margin-top:1rem">Curated by the culture. Founded for the people.</p>
         <form class="signup" id="signup" novalidate>
-          <label for="emailField" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">Email address</label>
+          <label for="emailField" class="sr-only">Email address</label>
           <input id="emailField" name="email" type="email" placeholder="Email address" autocomplete="email" />
           <button type="submit">Join</button>
           <p class="signup__note" id="signupNote" role="status"></p>
@@ -485,31 +220,31 @@ html.is-entering{overflow:hidden}
         <div>
           <h3>Houses</h3>
           <ul>
-            <li><a href="#">Rich Girl Code&trade;</a></li>
-            <li><a href="#">Options Traders OS&trade;</a></li>
-            <li><a href="#">8 Figure AI</a></li>
-            <li><a href="#">Rich Rabbit</a></li>
-            <li><a href="#">RGC Media Group</a></li>
+            <li><a href="index.html">Rich Girl Code<sup>&trade;</sup></a></li>
+            <li><a href="houses/options-traders-os.html">Options Traders OS<sup>&trade;</sup></a></li>
+            <li><a href="houses/8-figure-ai.html">8 Figure AI</a></li>
+            <li><a href="houses/rich-rabbit.html">Rich Rabbit</a></li>
+            <li><a href="houses/rgc-media-group.html">RGC Media Group</a></li>
           </ul>
         </div>
         <div>
           <h3>&nbsp;</h3>
           <ul>
-            <li><a href="#">Ethnicity Cosmetics</a></li>
-            <li><a href="#">Black Girl Luxury Magazine</a></li>
-            <li><a href="#">Rich Girl Code Music Group&trade;</a></li>
-            <li><a href="#">Small Business District</a></li>
-            <li><a href="#">Verified Assets</a></li>
+            <li><a href="houses/ethnicity-cosmetics.html">Ethnicity Cosmetics</a></li>
+            <li><a href="houses/black-girl-luxury-magazine.html">Black Girl Luxury Magazine</a></li>
+            <li><a href="houses/rich-girl-code-music-group.html">Rich Girl Code Music Group<sup>&trade;</sup></a></li>
+            <li><a href="houses/small-business-district.html">Small Business District</a></li>
+            <li><a href="houses/verified-assets.html">Verified Assets</a></li>
           </ul>
         </div>
         <div>
           <h3>Ecosystem</h3>
           <ul>
-            <li><a href="#founder">The Founder</a></li>
-            <li><a href="#journal">The Journal</a></li>
-            <li><a href="#commerce">Showcase</a></li>
-            <li><a href="#directories">Directories</a></li>
-            <li><a href="#media">Studios</a></li>
+            <li><a href="index.html#founder">The Founder</a></li>
+            <li><a href="index.html#journal">The Journal</a></li>
+            <li><a href="index.html#commerce">Showcase</a></li>
+            <li><a href="index.html#directories">Directories</a></li>
+            <li><a href="index.html#media">Studios</a></li>
           </ul>
         </div>
       </nav>
@@ -523,160 +258,6 @@ html.is-entering{overflow:hidden}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script>
-(function(){
-  "use strict";
-  var root=document.documentElement;
-  var reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var fine=window.matchMedia("(pointer: fine)").matches;
-  var hasGSAP=typeof window.gsap!=="undefined";
-  var y=document.getElementById("yr"); if(y){y.textContent=String(new Date().getFullYear());}
-
-  /* ── ecosystem stage: build one generative panel per house ── */
-  var rows=[].slice.call(document.querySelectorAll("#ecoList .eco__row"));
-  var stage=document.getElementById("ecoStage");
-  var panels=[];
-  rows.forEach(function(row,i){
-    var accent=row.style.getPropertyValue("--accent").trim()||"#C8A253";
-    var nameEl=row.querySelector(".eco__name");
-    var name=nameEl?nameEl.textContent:"";
-    var p=document.createElement("div");
-    p.className="eco__panel"+(i===0?" is-on":"");
-    p.style.background=
-      "radial-gradient(64% 50% at "+(22+(i%3)*26)+"% "+(20+(i%4)*18)+"%,"+accent+"BF,transparent 70%),"+
-      "radial-gradient(54% 44% at "+(78-(i%3)*22)+"% "+(74-(i%2)*16)+"%,rgba(200,162,83,.30),transparent 72%),"+
-      "linear-gradient("+(140+i*9)+"deg,#1B1B1E,#0A0A0B)";
-    var cap=document.createElement("i"); cap.textContent=name; p.appendChild(cap);
-    if(stage){stage.appendChild(p);} panels.push(p);
-  });
-  function activate(i){
-    rows.forEach(function(r,n){r.classList.toggle("is-on",n===i);});
-    panels.forEach(function(p,n){p.classList.toggle("is-on",n===i);});
-  }
-  rows.forEach(function(row,i){
-    var link=row.querySelector(".eco__link");
-    if(!link)return;
-    if(fine){row.addEventListener("mouseenter",function(){activate(i);});}
-    link.addEventListener("focus",function(){activate(i);});
-    link.addEventListener("click",function(e){
-      if(link.getAttribute("href")==="#"){e.preventDefault();activate(i);}
-    });
-  });
-
-  /* ── gold dollar cursor ── */
-  var cur=document.getElementById("cursor");
-  if(cur&&fine&&!reduced){
-    root.classList.add("has-cursor");
-    var cx=window.innerWidth/2,cy=window.innerHeight/2,tx=cx,ty=cy,raf=null;
-    window.addEventListener("pointermove",function(e){
-      tx=e.clientX;ty=e.clientY;
-      if(!raf){raf=requestAnimationFrame(tick);}
-    },{passive:true});
-    function tick(){
-      cx+=(tx-cx)*0.16; cy+=(ty-cy)*0.16;
-      cur.style.transform="translate3d("+cx.toFixed(1)+"px,"+cy.toFixed(1)+"px,0)";
-      if(Math.abs(tx-cx)>0.4||Math.abs(ty-cy)>0.4){raf=requestAnimationFrame(tick);}else{raf=null;}
-    }
-    document.addEventListener("pointerover",function(e){
-      var t=e.target;
-      var hot=t&&t.closest&&t.closest("a,button,input,.jcard,.shop,.eco__row");
-      cur.classList.toggle("is-hot",!!hot);
-    },{passive:true});
-  }
-
-  /* ── newsletter: honest, no fake success ── */
-  var form=document.getElementById("signup");
-  if(form){
-    form.addEventListener("submit",function(e){
-      e.preventDefault();
-      var note=document.getElementById("signupNote");
-      if(note){note.textContent="Connect the live list endpoint to enable sign-ups.";}
-    });
-  }
-
-  if(reduced||!hasGSAP){return;}
-  gsap.registerPlugin(window.ScrollTrigger);
-
-  /* ── split the hero headline into characters ── */
-  function splitChars(el){
-    var out=[];
-    [].slice.call(el.childNodes).forEach(function(node){
-      if(node.nodeType===3){
-        var frag=document.createDocumentFragment();
-        node.textContent.split("").forEach(function(c){
-          if(c===" "){frag.appendChild(document.createTextNode(" "));return;}
-          var s=document.createElement("span");
-          s.className="ch";s.textContent=c;frag.appendChild(s);out.push(s);
-        });
-        node.parentNode.replaceChild(frag,node);
-      }else if(node.nodeType===1){
-        out=out.concat(splitChars(node));
-      }
-    });
-    return out;
-  }
-  var title=document.getElementById("heroTitle");
-  var chars=title?splitChars(title):[];
-
-  /* ── cinematic entrance ── */
-  var mark=document.getElementById("curtainMark");
-  var markChars=[];
-  if(mark){
-    var txt=mark.textContent;mark.textContent="";
-    txt.split("").forEach(function(c){
-      var s=document.createElement("span");
-      s.textContent=(c===" ")?" ":c;mark.appendChild(s);markChars.push(s);
-    });
-  }
-  root.classList.add("is-entering");
-  var intro=gsap.timeline({onComplete:function(){
-    root.classList.remove("is-entering");
-    window.ScrollTrigger.refresh();
-  }});
-  intro.from(markChars,{yPercent:120,opacity:0,duration:.5,ease:"power3.out",stagger:.018})
-       .to(".curtain__line i",{scale:"1 1",duration:.55,ease:"power2.inOut"},"-=.28")
-       .to(markChars,{yPercent:-110,opacity:0,duration:.38,ease:"power3.in",stagger:.01},"+=.05")
-       .to(".curtain",{yPercent:-101,duration:.72,ease:"expo.inOut"},"-=.22")
-       .from(chars,{yPercent:118,opacity:0,duration:.9,ease:"expo.out",stagger:.028},"-=.55")
-       .from(".hero .eyebrow, .hero__tag, .scrollcue",{y:22,opacity:0,duration:.7,ease:"power3.out",stagger:.1},"-=.6");
-
-  /* ── parallax ── */
-  gsap.to("#heroGlow",{yPercent:16,ease:"none",
-    scrollTrigger:{trigger:".hero",start:"top top",end:"bottom top",scrub:true}});
-  gsap.to("#heroTitle",{yPercent:-13,opacity:.5,ease:"none",
-    scrollTrigger:{trigger:".hero",start:"top top",end:"bottom top",scrub:true}});
-  gsap.utils.toArray(".frame__art").forEach(function(a){
-    gsap.fromTo(a,{yPercent:-7},{yPercent:7,ease:"none",
-      scrollTrigger:{trigger:a.parentNode,start:"top bottom",end:"bottom top",scrub:true}});
-  });
-
-  /* ── scroll-driven typographic band ── */
-  var track=document.getElementById("bandTrack");
-  if(track){
-    gsap.fromTo(track,{xPercent:0},{xPercent:-50,ease:"none",
-      scrollTrigger:{trigger:".band",start:"top bottom",end:"bottom top",scrub:.6}});
-  }
-
-  /* ── section reveals (from a visible resting state) ── */
-  gsap.utils.toArray(".sec__head").forEach(function(h){
-    gsap.from(h.children,{y:34,opacity:0,duration:.9,ease:"expo.out",stagger:.12,
-      scrollTrigger:{trigger:h,start:"top 86%"}});
-  });
-  gsap.from("#ecoList .eco__row",{y:26,opacity:0,duration:.7,ease:"power3.out",stagger:.055,
-    scrollTrigger:{trigger:"#ecoList",start:"top 82%"}});
-  gsap.utils.toArray(".frame__veil").forEach(function(v){
-    gsap.to(v,{scaleY:0,duration:1.25,ease:"expo.inOut",
-      scrollTrigger:{trigger:v.parentNode,start:"top 78%"}});
-  });
-  gsap.from("#jgrid .jcard",{y:44,opacity:0,duration:.85,ease:"expo.out",stagger:.1,
-    scrollTrigger:{trigger:"#jgrid",start:"top 84%"}});
-  gsap.from("#rail .shop",{y:40,opacity:0,duration:.8,ease:"expo.out",stagger:.08,
-    scrollTrigger:{trigger:"#rail",start:"top 86%"}});
-  gsap.utils.toArray(".two").forEach(function(g){
-    gsap.from(g.children,{y:38,opacity:0,duration:.85,ease:"expo.out",stagger:.1,
-      scrollTrigger:{trigger:g,start:"top 86%"}});
-  });
-})();
-</script>
+<script src="assets/rgc.js"></script>
 </body>
 </html>
