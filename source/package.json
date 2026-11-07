@@ -1,0 +1,30 @@
+{
+  "name": "ota-personal-charts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run",
+    "build": "vite build && npm run build:fn",
+    "build:fn": "esbuild base44/function-src/entry.ts --bundle --format=esm --platform=neutral --target=es2022 --external:npm:@base44/sdk --external:base44:runtime --outfile=dist/base44/otaCharts.entry.js",
+    "dev": "vite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lightweight-charts": "^5.2.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261107.1",
+    "esbuild": "^0.28.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0",
+    "wrangler": "^4.158.0"
+  },
+  "type": "module",
+  "private": true
+}

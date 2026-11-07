@@ -1,0 +1,505 @@
+Please add a private "My Charts" workspace to this app. Do NOT change, remove or restyle any existing page, entity, function or navigation item — only add the four things below, using the code exactly as given (do not rewrite or "improve" it).
+
+1) ENTITY named ChartWorkspace
+   Fields: key (text, required), data (text, long).
+   Permissions: only the user who created a record (and admins) can read, update or delete it. Regular users cannot read other people's records.
+
+2) BACKEND FUNCTION named otaCharts
+   Use this code exactly as the function's file:
+-----BEGIN otaCharts-----
+// base44/function-src/entry.ts
+import { createClientFromRequest } from "npm:@base44/sdk";
+
+// shared/time.ts
+var NY = "America/New_York";
+var partsFmt = new Intl.DateTimeFormat("en-US", {
+  timeZone: NY,
+  hourCycle: "h23",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit"
+});
+function nyParts(ms) {
+  const p = {};
+  for (const part of partsFmt.formatToParts(new Date(ms))) {
+    if (part.type !== "literal") p[part.type] = Number(part.value);
+  }
+  return p;
+}
+function nyOffsetMinutes(ms) {
+  const p = nyParts(ms);
+  const asUtc = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
+  return Math.round((asUtc - Math.floor(ms / 1e3) * 1e3) / 6e4);
+}
+function nyToUtc(date, hhmm) {
+  const [y, m, d] = date.split("-").map(Number);
+  const clean = hhmm.replace(":", "");
+  const h = Number(clean.slice(0, 2));
+  const mi = Number(clean.slice(2, 4));
+  const naive = Date.UTC(y, m - 1, d, h, mi);
+  let t = naive - nyOffsetMinutes(naive) * 6e4;
+  const off2 = nyOffsetMinutes(t);
+  t = naive - off2 * 6e4;
+  return Math.floor(t / 1e3);
+}
+function nyDate(sec) {
+  const p = nyParts(sec * 1e3);
+  return `${p.year}-${String(p.month).padStart(2, "0")}-${String(p.day).padStart(2, "0")}`;
+}
+function addDays(date, n) {
+  const [y, m, d] = date.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d + n));
+  return dt.toISOString().slice(0, 10);
+}
+var timeFmt = new Intl.DateTimeFormat("en-US", { timeZone: NY, hour: "numeric", minute: "2-digit" });
+var dayFmt = new Intl.DateTimeFormat("en-US", { timeZone: NY, month: "short", day: "numeric" });
+var monthFmt = new Intl.DateTimeFormat("en-US", { timeZone: NY, month: "short" });
+var fullFmt = new Intl.DateTimeFormat("en-US", {
+  timeZone: NY,
+  weekday: "short",
+  month: "short",
+  day: "numeric",
+  year: "2-digit",
+  hour: "numeric",
+  minute: "2-digit"
+});
+var fullDayFmt = new Intl.DateTimeFormat("en-US", {
+  timeZone: NY,
+  weekday: "short",
+  month: "short",
+  day: "numeric",
+  year: "numeric"
+});
+
+// shared/candles.ts
+var TF_SECONDS = {
+  "1M": 60,
+  "5M": 300,
+  "15M": 900,
+  "1H": 3600,
+  "4H": 14400,
+  "1D": 86400
+};
+var SOURCE_TF = {
+  "1M": "1Min",
+  "5M": "5Min",
+  "15M": "15Min",
+  "1H": "15Min",
+  "4H": "15Min",
+  "1D": "1Day"
+};
+var LOOKBACK_DAYS = {
+  "1M": 5,
+  "5M": 21,
+  "15M": 60,
+  "1H": 150,
+  "4H": 400,
+  "1D": 365 * 6
+};
+function calendarFrom(days) {
+  return new Map(days.map((d) => [d.date, d]));
+}
+function sessionFromAlpaca(row) {
+  return {
+    date: row.date,
+    open: nyToUtc(row.date, row.open),
+    close: nyToUtc(row.date, row.close),
+    extOpen: nyToUtc(row.date, row.session_open ?? "0400"),
+    extClose: nyToUtc(row.date, row.session_close ?? "2000")
+  };
+}
+function bucketOf(t, tf, cal, ext) {
+  const day = cal.get(nyDate(t));
+  if (!day) return null;
+  const start = ext ? day.extOpen : day.open;
+  const end = ext ? day.extClose : day.close;
+  if (t < start || t >= end) return null;
+  if (tf === "1D") return nyToUtc(day.date, "0000");
+  const size = TF_SECONDS[tf];
+  return start + Math.floor((t - start) / size) * size;
+}
+function mergeInto(acc, b) {
+  const v = acc.v + b.v;
+  const pv = (acc.vw ?? acc.c) * acc.v + (b.vw ?? b.c) * b.v;
+  return {
+    t: acc.t,
+    o: acc.o,
+    h: Math.max(acc.h, b.h),
+    l: Math.min(acc.l, b.l),
+    c: b.c,
+    v,
+    vw: v > 0 ? pv / v : b.vw ?? acc.vw,
+    n: (acc.n ?? 0) + (b.n ?? 0)
+  };
+}
+function aggregate(src, tf, cal, ext) {
+  const out = [];
+  for (const b of src) {
+    const bucket = bucketOf(b.t, tf, cal, ext);
+    if (bucket === null) continue;
+    const last = out[out.length - 1];
+    if (last && last.t === bucket) {
+      out[out.length - 1] = mergeInto(last, b);
+    } else if (!last || bucket > last.t) {
+      out.push({ ...b, t: bucket, n: b.n ?? 0 });
+    }
+  }
+  return out;
+}
+function normalizeDaily(src, cal) {
+  const out = [];
+  for (const b of src) {
+    const date = nyDate(b.t + 3600);
+    if (!cal.has(date)) continue;
+    out.push({ ...b, t: nyToUtc(date, "0000") });
+  }
+  return out;
+}
+
+// shared/types.ts
+var TIMEFRAMES = ["1D", "4H", "1H", "15M", "5M", "1M"];
+
+// base44/function-src/entry.ts
+var DATA = "https://data.alpaca.markets";
+var TRADING_BASES = ["https://paper-api.alpaca.markets", "https://api.alpaca.markets"];
+var SIP_DELAY_SEC = 16 * 60;
+var SYMBOL_RE = /^[A-Z][A-Z0-9.\-]{0,9}$/;
+var HttpError = class extends Error {
+  constructor(status, code, message) {
+    super(message);
+    this.status = status;
+    this.code = code;
+  }
+  status;
+  code;
+};
+async function secret(name) {
+  try {
+    const v = globalThis.Deno?.env?.get(name);
+    if (v) return v;
+  } catch {
+  }
+  try {
+    const mod = await import("base44:runtime");
+    return mod.secrets.get(name) ?? void 0;
+  } catch {
+    return void 0;
+  }
+}
+async function getKeys() {
+  const id = await secret("ALPACA_KEY_ID");
+  const sec = await secret("ALPACA_SECRET_KEY");
+  return id && sec ? { id, secret: sec } : null;
+}
+async function alpaca(keys, url) {
+  const res = await fetch(url, {
+    headers: { "APCA-API-KEY-ID": keys.id, "APCA-API-SECRET-KEY": keys.secret, Accept: "application/json" }
+  });
+  if (res.status === 429) throw new HttpError(429, "rate_limited", "Alpaca rate limit reached (200 calls/min on Basic). Try again in a minute.");
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new HttpError(res.status === 401 || res.status === 403 ? 502 : 502, "upstream", `Alpaca ${res.status}: ${body.slice(0, 200)}`);
+  }
+  return res.json();
+}
+async function trading(keys, path) {
+  let last;
+  for (const base of TRADING_BASES) {
+    try {
+      return await alpaca(keys, base + path);
+    } catch (e) {
+      last = e;
+    }
+  }
+  throw last;
+}
+async function sessions(keys, startDate, endDate) {
+  const rows = await trading(keys, `/v2/calendar?start=${startDate}&end=${endDate}`);
+  return rows.map(sessionFromAlpaca);
+}
+var toBar = (b) => ({ t: Math.floor(Date.parse(b.t) / 1e3), o: b.o, h: b.h, l: b.l, c: b.c, v: b.v, vw: b.vw, n: b.n });
+async function fetchBars(keys, symbol, timeframe, feed, start, end, maxPages = 8) {
+  const out = [];
+  let token = "";
+  for (let page = 0; page < maxPages; page++) {
+    const q = new URLSearchParams({
+      timeframe,
+      start: new Date(start * 1e3).toISOString(),
+      end: new Date(end * 1e3).toISOString(),
+      limit: "10000",
+      adjustment: "split",
+      feed,
+      sort: "asc"
+    });
+    if (token) q.set("page_token", token);
+    const json = await alpaca(keys, `${DATA}/v2/stocks/${encodeURIComponent(symbol)}/bars?${q}`);
+    for (const b of json.bars ?? []) out.push(toBar(b));
+    token = json.next_page_token;
+    if (!token) break;
+  }
+  return out;
+}
+function provenance(feed, asOf) {
+  return feed === "iex" ? { feed, timeliness: "realtime", asOf, label: "Real-time \xB7 IEX exchange only" } : { feed, timeliness: "delayed", asOf, label: "Delayed 15 min \xB7 All US exchanges (SIP)" };
+}
+function parseArgs(body) {
+  const symbol = String(body.symbol ?? "").toUpperCase().trim();
+  if (!SYMBOL_RE.test(symbol)) throw new HttpError(400, "bad_request", "Invalid symbol");
+  const tf = body.tf;
+  if (!TIMEFRAMES.includes(tf)) throw new HttpError(400, "bad_request", "Invalid timeframe");
+  const feed = body.feed === "sip" ? "sip" : "iex";
+  const ext = Boolean(body.ext);
+  return { symbol, tf, feed, ext };
+}
+async function minuteTail(keys, symbol, tf, feed, ext, from, end, cal) {
+  const mins = await fetchBars(keys, symbol, "1Min", feed, from, end, 3);
+  return aggregate(mins, tf, cal, ext).filter((b) => b.t >= from);
+}
+async function latestTrade(keys, symbol) {
+  const json = await alpaca(keys, `${DATA}/v2/stocks/${encodeURIComponent(symbol)}/trades/latest?feed=iex`);
+  const tr = json.trade;
+  return tr ? { p: tr.p, t: Math.floor(Date.parse(tr.t) / 1e3) } : null;
+}
+function applyTrade(bars, trade, tf, cal, ext) {
+  if (!trade) return;
+  const bucket = bucketOf(trade.t, tf, cal, ext);
+  if (bucket === null) return;
+  const last = bars[bars.length - 1];
+  if (last && last.t === bucket) {
+    last.h = Math.max(last.h, trade.p);
+    last.l = Math.min(last.l, trade.p);
+    last.c = trade.p;
+  } else if (!last || bucket > last.t) {
+    bars.push({ t: bucket, o: trade.p, h: trade.p, l: trade.p, c: trade.p, v: 0 });
+  }
+}
+async function handleBars(keys, body) {
+  const { symbol, tf, feed, ext } = parseArgs(body);
+  const now = Math.floor(Date.now() / 1e3);
+  const end = feed === "sip" ? now - SIP_DELAY_SEC : now;
+  const startDate = addDays(nyDate(end), -LOOKBACK_DAYS[tf]);
+  const days = await sessions(keys, addDays(startDate, -3), addDays(nyDate(end), 1));
+  const cal = calendarFrom(days);
+  const start = Date.parse(startDate + "T00:00:00Z") / 1e3;
+  const raw = await fetchBars(keys, symbol, SOURCE_TF[tf], feed, start, end);
+  let bars = tf === "1D" ? normalizeDaily(raw, cal) : aggregate(raw, tf, cal, ext);
+  const forming = bucketOf(end, tf, cal, ext);
+  if (forming !== null) {
+    bars = bars.filter((b) => b.t < forming);
+    bars.push(...await minuteTail(keys, symbol, tf, feed, ext, forming, end, cal));
+    if (feed === "iex") applyTrade(bars, await latestTrade(keys, symbol), tf, cal, ext);
+  }
+  return { symbol, tf, ext, bars, formingMinutes: [], provenance: provenance(feed, end), sessions: days };
+}
+async function handleTail(keys, body) {
+  const { symbol, tf, feed, ext } = parseArgs(body);
+  const now = Math.floor(Date.now() / 1e3);
+  const end = feed === "sip" ? now - SIP_DELAY_SEC : now;
+  const from = Number(body.from);
+  if (!Number.isFinite(from) || from < end - 3 * 86400 || from > end + 60) throw new HttpError(400, "bad_request", "Invalid from");
+  const days = await sessions(keys, addDays(nyDate(from), -1), addDays(nyDate(end), 1));
+  const cal = calendarFrom(days);
+  const bars = await minuteTail(keys, symbol, tf, feed, ext, from, end, cal);
+  if (feed === "iex") applyTrade(bars, await latestTrade(keys, symbol), tf, cal, ext);
+  return { bars, provenance: provenance(feed, end), marketOpen: bucketOf(end, tf, cal, ext) !== null, tfSeconds: TF_SECONDS[tf] };
+}
+async function handleQuotes(keys, body) {
+  const symbols = (Array.isArray(body.symbols) ? body.symbols : []).map((s) => String(s).toUpperCase()).filter((s) => SYMBOL_RE.test(s)).slice(0, 100);
+  if (!symbols.length) return { quotes: {}, feed: "iex" };
+  const json = await alpaca(keys, `${DATA}/v2/stocks/snapshots?symbols=${symbols.join(",")}&feed=iex`);
+  const quotes = {};
+  for (const [sym, s] of Object.entries(json ?? {})) {
+    if (!s?.latestTrade) continue;
+    quotes[sym] = { price: s.latestTrade.p, prevClose: s.prevDailyBar?.c ?? null, t: Math.floor(Date.parse(s.latestTrade.t) / 1e3) };
+  }
+  return { quotes, feed: "iex", label: "Last IEX trade" };
+}
+var LISTED = /* @__PURE__ */ new Set(["NYSE", "NASDAQ", "ARCA", "AMEX", "BATS"]);
+async function handleAssets(keys) {
+  const rows = await trading(keys, "/v2/assets?status=active&asset_class=us_equity");
+  const assets = rows.filter((a) => a.tradable && LISTED.has(a.exchange)).map((a) => [a.symbol, a.name ?? "", a.exchange]);
+  return { assets, fetchedAt: Date.now() };
+}
+async function handleStatus(keys) {
+  if (!keys) return { configured: false, message: "Alpaca keys are not set in Base44 Secrets (ALPACA_KEY_ID, ALPACA_SECRET_KEY)." };
+  try {
+    const clock = await trading(keys, "/v2/clock");
+    return { configured: true, connected: true, clock: { isOpen: clock.is_open, nextOpen: clock.next_open, nextClose: clock.next_close, timestamp: clock.timestamp } };
+  } catch (e) {
+    return { configured: true, connected: false, message: e.message };
+  }
+}
+async function isOwner(req) {
+  const base44 = createClientFromRequest(req);
+  const user = await base44.auth.me().catch(() => null);
+  if (!user) return false;
+  const owner = (await secret("OTA_OWNER_EMAIL"))?.trim().toLowerCase();
+  if (owner) return String(user.email ?? "").toLowerCase() === owner;
+  return user.role === "admin";
+}
+async function handler(req) {
+  try {
+    if (!await isOwner(req)) return Response.json({ error: "My Charts is private to the owner account.", code: "unauthorized" }, { status: 403 });
+    const body = await req.json().catch(() => ({}));
+    const keys = await getKeys();
+    if (body.action === "status") return Response.json(await handleStatus(keys));
+    if (!keys) return Response.json({ error: "Market data is not connected yet (Alpaca keys missing).", code: "not_configured" }, { status: 503 });
+    switch (body.action) {
+      case "bars":
+        return Response.json(await handleBars(keys, body));
+      case "tail":
+        return Response.json(await handleTail(keys, body));
+      case "quotes":
+        return Response.json(await handleQuotes(keys, body));
+      case "assets":
+        return Response.json(await handleAssets(keys));
+      default:
+        return Response.json({ error: "Unknown action", code: "bad_request" }, { status: 400 });
+    }
+  } catch (e) {
+    const status = e instanceof HttpError ? e.status : 500;
+    const code = e instanceof HttpError ? e.code : "upstream";
+    return Response.json({ error: e?.message ?? "Unexpected error", code }, { status });
+  }
+}
+try {
+  if (typeof globalThis.Deno?.serve === "function") globalThis.Deno.serve(handler);
+} catch {
+}
+export {
+  handler as default
+};
+
+-----END otaCharts-----
+   Then ask me to set these secrets through the secure secrets screen (never in chat):
+   ALPACA_KEY_ID, ALPACA_SECRET_KEY, OTA_OWNER_EMAIL (the email I log in with).
+
+3) PAGE named MyCharts
+   Use this code exactly:
+-----BEGIN MyCharts-----
+// OTA OS — "My Charts" page (owner only).
+// Paste as a new page named MyCharts. It does not change any other page.
+import React, { useEffect, useRef, useState } from "react";
+import { base44 } from "@/api/base44Client";
+
+// Pinned to an exact build. The integrity hash means the browser refuses to run anything else.
+const CHARTS_SRC =
+  "https://cdn.jsdelivr.net/gh/8figureaiboss-creator/richgirlcode@a7f0e63ec945faa2665456463f252c94b56cff1f/charts/ota-charts.js";
+const CHARTS_SRI = "sha384-tzg13Zqo4/CxXJ0oHwU0DaGQLcl8HOD6oWFYzauE5H/a5j6KE6bG7VoK3Xr0Pi88";
+
+function loadCharts() {
+  if (window.OTACharts) return Promise.resolve(window.OTACharts);
+  return new Promise((resolve, reject) => {
+    let s = document.getElementById("ota-charts-js");
+    if (!s) {
+      s = document.createElement("script");
+      s.id = "ota-charts-js";
+      s.src = CHARTS_SRC;
+      s.integrity = CHARTS_SRI;
+      s.crossOrigin = "anonymous";
+      s.async = true;
+      document.head.appendChild(s);
+    }
+    s.addEventListener("load", () => (window.OTACharts ? resolve(window.OTACharts) : reject(new Error("Chart workspace did not start"))));
+    s.addEventListener("error", () => reject(new Error("Could not load the chart workspace file")));
+  });
+}
+
+// Bridge between the workspace and Base44: data goes through the otaCharts function,
+// saved layouts go into the ChartWorkspace entity. No API keys ever reach this page.
+function makeHost() {
+  let rowId = null;
+  return {
+    async call(action, args = {}) {
+      try {
+        const res = await base44.functions.invoke("otaCharts", { action, ...args });
+        return res.data;
+      } catch (err) {
+        const body = (err && err.response && err.response.data) || {};
+        const e = new Error(body.error || err.message || "Request failed");
+        e.code = body.code;
+        throw e;
+      }
+    },
+    async loadState() {
+      const rows = await base44.entities.ChartWorkspace.filter({ key: "main" });
+      if (!rows || !rows.length) return null;
+      rowId = rows[0].id;
+      try {
+        return JSON.parse(rows[0].data);
+      } catch {
+        return null;
+      }
+    },
+    async saveState(state) {
+      const data = JSON.stringify(state);
+      if (rowId) {
+        await base44.entities.ChartWorkspace.update(rowId, { data });
+      } else {
+        const row = await base44.entities.ChartWorkspace.create({ key: "main", data });
+        rowId = row.id;
+      }
+    },
+  };
+}
+
+export default function MyCharts() {
+  const hostRef = useRef(null);
+  const [phase, setPhase] = useState("checking"); // checking | denied | loading | ready | error
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let app = null;
+    let cancelled = false;
+    (async () => {
+      try {
+        const me = await base44.auth.me();
+        if (!me || me.role !== "admin") {
+          if (!cancelled) setPhase("denied");
+          return;
+        }
+        setPhase("loading");
+        const OTACharts = await loadCharts();
+        if (cancelled || !hostRef.current) return;
+        app = OTACharts.mount(hostRef.current, makeHost());
+        setPhase("ready");
+      } catch (e) {
+        if (!cancelled) {
+          setError(e.message || String(e));
+          setPhase("error");
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+      if (app) app.destroy();
+    };
+  }, []);
+
+  if (phase === "denied") {
+    return (
+      <div style={{ padding: 48, textAlign: "center", color: "#888" }}>
+        My Charts is private to the owner account.
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: 12, height: "calc(100vh - 96px)", minHeight: 620 }}>
+      {phase !== "ready" && (
+        <div style={{ padding: 24, color: "#9a9a9a" }}>
+          {phase === "error" ? `My Charts couldn't start: ${error}` : "Loading My Charts…"}
+        </div>
+      )}
+      <div ref={hostRef} style={{ height: "100%" }} />
+    </div>
+  );
+}
+
+-----END MyCharts-----
+
+4) NAVIGATION
+   Add a navigation item labeled "My Charts" that opens the MyCharts page. Show it only to admin users. Keep every existing navigation item exactly as it is.
